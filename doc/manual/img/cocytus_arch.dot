@@ -1,4 +1,3 @@
-
 digraph Cocytus_Arch {
     "Keras" [style = "solid,filled", shape=box, color = white, fillcolor = red, fontcolor = white, fontname = "Migu 1M"];
     "Cocytus" [style = "solid,filled", shape=box, color = white, fillcolor = black, fontcolor = white, fontname = "Migu 1M"]

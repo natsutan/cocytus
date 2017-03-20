@@ -24,5 +24,5 @@ with open('vgg16.json', 'w') as fp:
     json_string = model.to_json()
     fp.write(json_string)
 
-
+np.save(img_file+'.npy', x, allow_pickle=False)
 print('finish.')

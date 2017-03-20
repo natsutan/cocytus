@@ -1,0 +1,33 @@
+
+digraph Cocytus_Arch {
+    "Keras" [style = "solid,filled", shape=box, color = white, fillcolor = red, fontcolor = white, fontname = "Migu 1M"];
+    "Cocytus" [style = "solid,filled", shape=box, color = white, fillcolor = black, fontcolor = white, fontname = "Migu 1M"]
+    "executable file" [style = "solid,filled", shape=box, fontcolor = white, fontname = "Migu 1M"]
+
+    "Keras" -> "network(json)" -> "Cocytus";
+    "Keras" -> "weight(hdf5)" -> "Cocytus";
+    "Keras" -> "Keras debug infomation";
+
+    "Cocytus" -> "cyt_gen" ; 
+    "Cocytus" -> "cyt_lib" ;
+    "Cocytus" -> "Cocytus weight(numpy)";
+    
+    // link
+    "cyt_gen" -> "executable file" [ label = "link", color = blue, fontcolor = blue]; 
+    "cyt_lib" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
+    "User Program" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
+
+    "Cocytus weight(numpy)" -> "executable file" [label = "read at runtime"];
+
+    "executable file" -> "Execution result";
+    "executable file" -> "Cocytus debug infomation";
+
+    // check
+    "Keras debug infomation" -> "Cocytus debug infomation" [
+     label = "compare for debug",
+     color = yellow,
+     dir = both,
+     taillabel = "expected",       //エッジの終端にラベルをつける
+     headlabel = "result", 
+    ] ;
+}

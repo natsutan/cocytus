@@ -45,6 +45,7 @@ Table: オプション一覧
 | ネットワーク指定| --keras_json | [Cocyuts] | keres_json | "~/foo/baa.json" | 変換するネットワーク(jsonファイル)を指定する。（必須)|
 | 重み指定| --keras_weight | [Cocyuts] | keras_weight | "~/foo/baa.h5" | 変換する重み(hdf5ファイル)を指定する。（必須)|
 | 出力ディレクトリ | --output_dir | [Cocyuts] | output_dir | "~/proj/" | ファイルの出力先（必須)|
+| Ｃライブラリディレクトリ | --c_lib_dir | [Cocyuts] | c_lib_dir | "./../../cocytus/cocytus_net/C/template" | Cライブラリ指定（必須)|
 | 重み出力ディレクトリ| --weight_output_dir | [Cocyuts] | weight_output_dir | "~/proj/weight/" | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
 | 最適化レベル| --optimize | [Optimize] | optimeize | 2 | ニューラルネットの最適化レベルの指定。０で最適化をしない（デフォルト値）。未実装|
 | バージョン表示| --version |  |  |  | コキュートスのバージョンを表示し終了する。|
@@ -60,14 +61,16 @@ Table: オプション一覧
 
 ## cqt_run
 
+## load_from_numpy
 
+## save_to_numpy
 
 # コキュートスが生成するファイル
 ## 共通Cヘッダーファイル
 ### cqt.h
 ### cqt_type.h
 ### cqt_keras.h
-
+### numpy.h
 
 ## コキュートス実行用ソース
 ### cqt_gen.h

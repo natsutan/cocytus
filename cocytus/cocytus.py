@@ -25,7 +25,7 @@ def check_config(config):
     :param config:ConfigParser
     :return:bool
     """
-    cqt_options = ['keres_json', 'output_dir']
+    cqt_options = ['keres_json', 'output_dir', 'c_lib_dir']
     ret = True
 
     for opt in cqt_options:

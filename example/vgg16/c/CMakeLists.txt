@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 #project (cqt_vgg16)
 
-add_definitions("-Wall -g")
+add_definitions("-Wall -g -Iinc")
 
 add_executable(cqt_vgg16
-        cqt_vgg16.c)
+        cqt_vgg16.c
+        cqt_gen/cqt_gen.c
+        )

@@ -1,5 +1,5 @@
 #pragma once
-#include "nnntype.h"
+#include "cqt_type.h"
 
 typedef struct numpy_header_tag {
     unsigned char major_version; //major version

@@ -6,6 +6,6 @@ typedef enum {
     NN_QINT8,
     NN_UINT8,
     //----
-            NN_DTYPE_NONE
+    NN_DTYPE_NONE
 } NN_DTYPE;
 

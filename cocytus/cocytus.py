@@ -1,11 +1,9 @@
 #!/bin/env python3
 import sys
 import configparser
-import keras
 
-class dummy():
-    def __init__(self):
-        pass
+from compiler.compiler import CocytusCompiler
+
 
 
 def open_inifile(ini_file):
@@ -51,6 +49,22 @@ def main(argv):
     if not check_config(config):
         print("ERROR:ini file %s" % ini_file)
         sys.exit(1)
+
+    # jsonの読み込み
+    compiler = CocytusCompiler(config)
+    if not compiler.compile():
+        print("ERROR:compaile failed")
+        sys.exit(1)
+
+    # Cソースの生成
+
+
+    # 重みの変換
+
+
+    print('finish')
+
+
 
 if __name__ == '__main__':
     main(sys.argv)

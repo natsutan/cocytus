@@ -52,6 +52,31 @@ Table: オプション一覧
 ## iniファイル例
 
 
+
+# コキュートスAPI
+## cqt_init
+
+## cqt_load_weight_from_files
+
+## cqt_run
+
+
+
+# コキュートスが生成するファイル
+## 共通Cヘッダーファイル
+### cqt.h
+### cqt_type.h
+### cqt_keras.h
+
+
+## コキュートス実行用ソース
+### cqt_gen.h
+### cqt_gen.c
+
+## Ｃライブラリ(cqt_lib)
+### cqt_lib.h
+### cqt_lib.c
+
 # ディレクトリ構成
 
 - cocytus
@@ -75,7 +100,6 @@ Table: オプション一覧
 
 - tools
 - example
-    - mnist_cnn
     - vgg16
 
 参考：

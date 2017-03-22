@@ -12,8 +12,8 @@ digraph Cocytus_Arch {
     "Cocytus" -> "Cocytus weight(numpy)";
     
     // link
-    "cyt_gen" -> "executable file" [ label = "link", color = blue, fontcolor = blue]; 
-    "cyt_lib" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
+    "cqt_gen" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
+    "cqt_lib" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
     "User Program" -> "executable file" [ label = "link", color = blue, fontcolor = blue];
 
     "Cocytus weight(numpy)" -> "executable file" [label = "read at runtime"];

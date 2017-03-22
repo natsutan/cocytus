@@ -3,7 +3,7 @@ import sys
 import configparser
 
 from compiler.compiler import CocytusCompiler
-
+from cocytus_net.C.c_generator import CGenerator
 
 
 def open_inifile(ini_file):
@@ -57,7 +57,8 @@ def main(argv):
         sys.exit(1)
 
     # Cソースの生成
-
+    c_generator = CGenerator(compiler)
+    c_generator.generate()
 
     # 重みの変換
 

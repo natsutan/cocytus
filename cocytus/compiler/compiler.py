@@ -22,16 +22,16 @@ class CocytusLayerInfo:
 
 
 class CocytusCompiler:
-    def __init__(self, config, name = 'cqt_'):
+    def __init__(self, config, nn_prefix='cqt_'):
         self.config = config
         json_file = config['Cocyuts']['keres_json']
         json_string = open(json_file, 'r').read()
         print("JSON:open %s" % json_file)
-#        self.model = model_from_json(json_string)
-        self.model = model_from_json(json_string, custom_objects={"Normalize": Normalize, "PriorBox": PriorBox})
+        self.model = model_from_json(json_string)
+#        self.model = model_from_json(json_string, custom_objects={"Normalize": Normalize, "PriorBox": PriorBox})
 
         self.layers = self.model.layers
-        self.nn_name = name
+        self.nn_prefix = nn_prefix
         self.cqt_layers = []
 
     def compile(self):
@@ -47,14 +47,15 @@ class CocytusCompiler:
 
             # 型のチェック
             # 将来的には各層を任意の型に買えられるようにする。
-            if l.dtype == 'float32':
-                cl.input_dtypes.append(Dtype.FLOAT32)
-                cl.output_dtypes.append(Dtype.FLOAT32)
-                cl.weight_dtypes.append(Dtype.FLOAT32)
-            else:
-                print("ERROR:dtype %s is not supported")
-                return False
+            #if l.dtype == 'float32':
+            #    cl.input_dtypes.append(Dtype.FLOAT32)
+            #    cl.output_dtypes.append(Dtype.FLOAT32)
+            #    cl.weight_dtypes.append(Dtype.FLOAT32)
+            #else:
+            #    print("ERROR:dtype %s is not supported")
+            #    return False
 
             self.cqt_layers.append(cl)
+
 
         return True

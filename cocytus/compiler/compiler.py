@@ -1,14 +1,16 @@
 from enum import Enum
+import tensorflow as tf
 from keras.models import model_from_json
 
-class Dtype(Enum):
+class CQT_Dtype(Enum):
     """
     型の定義
     """
     NONE = 0
     INT8 = 1
-    INT32 = 2
-    FLOAT32 = 3
+    UINT8 = 2
+    INT32 = 3
+    FLOAT32 = 4
 
 class CocytusLayerInfo:
     """
@@ -34,6 +36,7 @@ class CocytusCompiler:
         self.nn_prefix = nn_prefix
         self.cqt_layers = []
 
+    @property
     def compile(self):
         """
         self.modelから後工程に必要な情報を抜き出す。
@@ -41,21 +44,38 @@ class CocytusCompiler:
         """
         self.model.summary()
         for l in self.layers:
-            print("%s:%s" % (l.__class__.__name__, l.name))
+            keras_layer_type = l.__class__.__name__
+            print("%s:%s" % (keras_layer_type, l.name))
 
             cl = CocytusLayerInfo()
 
             # 型のチェック
             # 将来的には各層を任意の型に買えられるようにする。
-            #if l.dtype == 'float32':
-            #    cl.input_dtypes.append(Dtype.FLOAT32)
-            #    cl.output_dtypes.append(Dtype.FLOAT32)
-            #    cl.weight_dtypes.append(Dtype.FLOAT32)
-            #else:
-            #    print("ERROR:dtype %s is not supported")
-            #    return False
+            input_type = l.input.dtype
+            cl.input_dtypes.append(conv_type_np_to_cqt(input_type))
+            output_type = l.output.dtype
+            cl.output_dtypes.append(conv_type_np_to_cqt(output_type))
+
+            if not l.weights:
+                cl.weight_dtypes.append(CQT_Dtype.NONE)
+            else:
+                for w in l.weights:
+                    wtype = w.dtype
+                    cl.weight_dtypes.append(conv_type_np_to_cqt(wtype))
 
             self.cqt_layers.append(cl)
 
-
         return True
+
+
+def conv_type_np_to_cqt(tf_type):
+    """
+    numpyの型を、cqtの型情報に変換する。
+    :param type:dtype
+    :return:CQT_Dtype
+    """
+    dtype = str(tf_type)
+
+    conv_dic = {"<dtype: 'float32'>": CQT_Dtype.FLOAT32, "<dtype: 'float32_ref'>": CQT_Dtype.FLOAT32}
+
+    return conv_dic[dtype]

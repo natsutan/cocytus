@@ -17,11 +17,14 @@ class CocytusLayerInfo:
     コキュートス用の追加レイヤー情報。
     Kerasから取得できるレイヤー情報と合わせて使用する。
     """
-    def __init__(self):
+    def __init__(self, l):
+        """
+        :param l:  keras layer
+        """
         self.input_dtypes = []
         self.output_dtypes = []
         self.weight_dtypes = []
-
+        self.l = l
 
 class CocytusCompiler:
     def __init__(self, config, nn_prefix='cqt_'):
@@ -47,7 +50,7 @@ class CocytusCompiler:
             keras_layer_type = l.__class__.__name__
             print("%s:%s" % (keras_layer_type, l.name))
 
-            cl = CocytusLayerInfo()
+            cl = CocytusLayerInfo(l)
 
             # 型のチェック
             # 将来的には各層を任意の型に買えられるようにする。

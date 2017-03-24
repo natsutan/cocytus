@@ -133,6 +133,13 @@ class CocytusCompiler:
         # not found
         raise ValueError("Error layer  %s layer is not found" % name)
 
+    def get_model_name(self):
+        """
+        ニューラルネットの名前を返す。
+        一つのプログラムで複数のネットを使いたいときなどは、ここで調整する。
+        """
+        name = "g_cqt_" + self.model.name
+        return name
 
 def conv_type_np_to_cqt(tf_type):
     """

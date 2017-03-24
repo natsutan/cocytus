@@ -118,6 +118,21 @@ class CFile:
         """
         self.wr('\n')
 
+    def write_cqt_network(self, scope=None):
+        """
+        コキュートスニューラルネットの定義を行う。
+        scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
+        """
+        name = self.compiler.get_model_name()
+        if scope is None:
+            scope_s = ''
+        else:
+            scope_s = scope + ' '
+
+        self.wr('// cocytus network\n')
+        self.wr('%sCQT_NET %s;\n' % (scope_s, name))
+
+
     def wr_layer_defination(self, scope=None):
         """
         レイヤー変数の定義を行う。
@@ -163,10 +178,31 @@ class CFile:
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
                 self.wr("%s%s %s%s;\n" % (scope_s, w_type, w_name, w_dim_s))
                 self.wr("%s%s %s%s;\n" % (scope_s, w_type, b_name, b_dim_s))
-
             elif class_name == 'Dense':
-                pass
+                layer_detal = self.compiler.get_cqt_layer_obj(name)
+                input_dim = l['config']['input_dim']
+                output_dim = l['config']['output_dim']
 
+                w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
+
+                if scope is None:
+                    scope_s = ''
+                else:
+                    scope_s = scope + ' '
+                w_type = layer_detal.get_weight_type_str()
+
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
+                self.wr("%s%s %s[%d][%d];\n" % (scope_s, w_type, w_name, output_dim, input_dim))
+                self.wr("%s%s %s[%s];\n" % (scope_s, w_type, b_name, output_dim))
+
+
+    def wr_output_defination(self, scope=None):
+        """
+        output変数の定義を行う。
+        scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
+        :return:
+        """
 
 
 
@@ -197,9 +233,18 @@ class CqtGenH(CFile):
         self.wr('int cqt_run(CQT_NET* np, void *dp);\n')
         self.cr()
 
-        self.wr_layer_defination(scope= 'extern')
+        self.write_cqt_network(scope='extern')
         self.cr()
+
+        self.wr_layer_defination(scope='extern')
+        self.cr()
+
         self.wr_weight_defination(scope='extern')
+        self.cr()
+
+        self.wr_output_defination(scope='extern')
+        self.cr()
+
 
         self.fp.write('\n')
 
@@ -215,15 +260,23 @@ class CqtGenC(CFile):
         self.wr_file_header()
         self.wr_include('cqt_gen.h')
         self.cr()
-        self.wr('CQT_NET* cqt_init(void) { return NULL;};\n')
-        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0;}\n')
-        self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
 
+        self.write_cqt_network()
         self.cr()
 
         self.wr_layer_defination()
         self.cr()
+
         self.wr_weight_defination()
+        self.cr()
+
+        self.wr_output_defination()
+        self.cr()
+
+        self.wr('CQT_NET* cqt_init(void) { return NULL;};\n')
+        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0;}\n')
+        self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
+        self.cr()
 
 
 def create_c_dir(tdir):

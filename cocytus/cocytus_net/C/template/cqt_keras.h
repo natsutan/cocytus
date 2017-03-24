@@ -88,3 +88,27 @@ typedef enum {
     LT_TimeDistributed,
     LT_Bidirectional
 } KR_LAYER_TYPE;
+
+
+typedef struct {
+
+
+} LY_InputLayer;
+
+typedef struct {
+
+
+} LY_Convolution2D;
+
+typedef struct {
+
+} LY_MaxPooling2D;
+
+typedef struct {
+
+
+} LY_Flatten;
+
+typedef struct {
+
+} LY_Dense;

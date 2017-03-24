@@ -48,12 +48,12 @@ class CGenerator:
         """
         cqt_gen_h_path = os.path.join(target_dir, 'cqt_gen', 'cqt_gen.h')
         print("making %s" % cqt_gen_h_path)
-        cqt_gen_h = CqtGenH(cqt_gen_h_path)
+        cqt_gen_h = CqtGenH(cqt_gen_h_path, self.compiler)
         cqt_gen_h.generate()
 
         cqt_gen_c_path = os.path.join(target_dir, 'cqt_gen', 'cqt_gen.c')
         print("making %s" % cqt_gen_c_path)
-        cqt_gen_c = CqtGenH(cqt_gen_c_path)
+        cqt_gen_c = CqtGenC(cqt_gen_c_path, self.compiler)
         cqt_gen_c.generate()
 
 
@@ -66,10 +66,12 @@ class CGenerator:
        """
 
 
+
 class CFile:
-    def __init__(self, file):
+    def __init__(self, file, compier):
         self.file = file
         self.fp = open(file, 'w')
+        self.compiler = compier
 
     def __del__(self):
         self.fp.close()
@@ -116,28 +118,95 @@ class CFile:
         """
         self.wr('\n')
 
+    def wr_layer_defination(self, scope=None):
+        """
+        レイヤー変数の定義を行う。
+        scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
+        :return:
+        """
+        self.wr("//Layers\n")
+        model_config = self.get_config()
+        for l in model_config['layers']:
+            name = l['name']
+            class_name = l['class_name']
+            if scope is None:
+                s = "LY_%s %s;\n" % (class_name, name)
+            else:
+                s = "%s LY_%s %s;\n" % (scope, class_name, name)
+            self.wr(s)
+
+    def wr_weight_defination(self, scope=None):
+        """
+        weight変数の定義を行う。
+        scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
+        :return:
+        """
+        self.wr("//weights\n")
+        model_config = self.get_config()
+        for l in model_config['layers']:
+            name = l['name']
+            class_name = l['class_name']
+            if class_name == 'Convolution2D':
+                layer_detal = self.compiler.get_cqt_layer_obj(name)
+                w_shape = layer_detal.get_Wshape()
+                w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
+                w_dim_s = dim_str_from_keras_4d_shape(w_shape)
+                b_dim_s = dim_str_from_keras_4d_shape_bias(w_shape)
+
+                if scope is None:
+                    scope_s = ''
+                else:
+                    scope_s = scope + ' '
+                w_type = layer_detal.get_weight_type_str()
+
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
+                self.wr("%s%s %s%s;\n" % (scope_s, w_type, w_name, w_dim_s))
+                self.wr("%s%s %s%s;\n" % (scope_s, w_type, b_name, b_dim_s))
+
+            elif class_name == 'Dense':
+                pass
+
+
+
+
+    def get_config(self):
+        """
+        Keras Modelのコンフィグ情報を返す。
+        :return:
+        """
+        return self.compiler.model.get_config()
+
+
 class CqtGenH(CFile):
-    def __init__(self, file):
-        super().__init__(file)
+    def __init__(self, file, compiler):
+        super().__init__(file, compiler)
 
     def __del__(self):
         super().__del__()
 
     def generate(self):
         self.wr_file_header()
+        self.wr_include('stdio.h', stdlib=True)
         self.wr_include('cqt.h')
         self.wr_include('cqt_net.h')
         self.cr()
+
         self.wr('CQT_NET* cqt_init(void);\n')
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path);\n')
         self.wr('int cqt_run(CQT_NET* np, void *dp);\n')
+        self.cr()
+
+        self.wr_layer_defination(scope= 'extern')
+        self.cr()
+        self.wr_weight_defination(scope='extern')
 
         self.fp.write('\n')
 
 
 class CqtGenC(CFile):
-    def __init__(self, file):
-        super().__init__(file)
+    def __init__(self, file, compiler):
+        super().__init__(file, compiler)
 
     def __del__(self):
         super().__del__()
@@ -147,10 +216,14 @@ class CqtGenC(CFile):
         self.wr_include('cqt_gen.h')
         self.cr()
         self.wr('CQT_NET* cqt_init(void) { return NULL;};\n')
-        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0};\n')
-        self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0};\n')
+        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0;}\n')
+        self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
 
-        self.fp.write('\n')
+        self.cr()
+
+        self.wr_layer_defination()
+        self.cr()
+        self.wr_weight_defination()
 
 
 def create_c_dir(tdir):
@@ -166,3 +239,22 @@ def create_c_dir(tdir):
         if not os.path.isdir(path):
             os.makedirs(path)
 
+
+def dim_str_from_keras_4d_shape(shape):
+    assert(len(shape)==4)
+    if shape[3] is None:
+        return "[%d][%d][%d]" % (shape[2], shape[1], shape[0])
+    else:
+        return "[%d][%d][%d][%d]" % (shape[3], shape[2], shape[1], shape[0])
+
+
+def dim_str_from_keras_4d_shape_bias(shape):
+    assert(len(shape)==4)
+    if (shape[3] is None) and (shape[2] is None) and (shape[1] is None):
+        return "[%d]" % shape[0]
+    elif (shape[3] is None) and (shape[2] is None):
+        return "[%d]" % shape[1]
+    elif shape[3] is None:
+        return "[%d]" % shape[2]
+    else:
+        return "[%d]" % shape[3]

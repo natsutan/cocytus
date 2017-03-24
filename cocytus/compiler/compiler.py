@@ -21,10 +21,43 @@ class CocytusLayerInfo:
         """
         :param l:  keras layer
         """
+        self.input_size = []
         self.input_dtypes = []
         self.output_dtypes = []
         self.weight_dtypes = []
         self.l = l
+
+    def get_Wshape(self):
+        return self.l.W_shape
+
+    def get_conv2d_weight_variable_name(self):
+        """
+        重みの変数名
+        重みのnumpyヘッダー変数名
+        biasの変数名
+        biasのnumpyヘッダー変数名
+        :return: str
+        """
+        name = self.l.name
+        w_name = "w_%s_W" % name
+        w_nph_name = "nph_%s_W" % name
+        b_name = "w_%s_b" % name
+        b_nph_name = "nph_%s_b" % name
+        return w_name, w_nph_name, b_name, b_nph_name
+
+    def get_weight_type_str(self):
+        type = self.weight_dtypes[0]
+        if type == CQT_Dtype.INT8:
+            return 'signed char'
+        elif type == CQT_Dtype.UINT8:
+            return 'unsigned char'
+        elif type == CQT_Dtype.INT32:
+            return 'int'
+        elif type == CQT_Dtype.FLOAT32:
+            return 'float'
+
+        raise ValueError("Error layer %s tpye is not supported" % type)
+
 
 class CocytusCompiler:
     def __init__(self, config, nn_prefix='cqt_'):
@@ -34,6 +67,7 @@ class CocytusCompiler:
         print("JSON:open %s" % json_file)
         self.model = model_from_json(json_string)
 #        self.model = model_from_json(json_string, custom_objects={"Normalize": Normalize, "PriorBox": PriorBox})
+        #conf = self.model.get_config()
 
         self.layers = self.model.layers
         self.nn_prefix = nn_prefix
@@ -46,6 +80,7 @@ class CocytusCompiler:
         :return:bool
         """
         self.model.summary()
+
         for l in self.layers:
             keras_layer_type = l.__class__.__name__
             print("%s:%s" % (keras_layer_type, l.name))
@@ -69,6 +104,34 @@ class CocytusCompiler:
             self.cqt_layers.append(cl)
 
         return True
+
+    def get_layer_obj(self, name):
+        """
+        引数のレイヤー名から、KerasのLayerオブジェクトを返す。
+        get_configだけでは取れない情報を取得するために使う。
+        :param name:
+        :return:
+        """
+        for l in self.model.layers:
+            if l.name == name:
+                return l
+
+        # not found
+        raise ValueError("Error layer  %s layer is not found" % name)
+
+    def get_cqt_layer_obj(self, name):
+        """
+        引数のレイヤー名から、CocytuのLayerオブジェクトを返す。
+        get_configだけでは取れない情報を取得するために使う。
+        :param name:
+        :return:
+        """
+        for (i, l) in enumerate(self.model.layers):
+            if l.name == name:
+                return self.cqt_layers[i]
+
+        # not found
+        raise ValueError("Error layer  %s layer is not found" % name)
 
 
 def conv_type_np_to_cqt(tf_type):

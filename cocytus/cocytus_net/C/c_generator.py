@@ -203,8 +203,24 @@ class CFile:
         scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
         :return:
         """
+        self.wr("//outputs\n")
+        model_config = self.get_config()
+        for l in model_config['layers']:
+            name = l['name']
+            class_name = l['class_name']
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+            o_shape = layer_detal.get_output_shape()
+            dim_s = dim_str_from_keras_4d_shape_output(o_shape)
 
+            o_name = layer_detal.get_output_variable_name()
+            o_type = layer_detal.get_output_type_str()
 
+            if scope is None:
+                scope_s = ''
+            else:
+                scope_s = scope + ' '
+
+            self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
 
     def get_config(self):
         """
@@ -299,6 +315,17 @@ def dim_str_from_keras_4d_shape(shape):
         return "[%d][%d][%d]" % (shape[2], shape[1], shape[0])
     else:
         return "[%d][%d][%d][%d]" % (shape[3], shape[2], shape[1], shape[0])
+
+
+def dim_str_from_keras_4d_shape_output(shape):
+    if len(shape) == 4:
+        return "[%d][%d][%d]" % (shape[3], shape[2], shape[1])
+    elif len(shape) == 3:
+        return "[%d][%d]" % (shape[2], shape[1])
+    elif len(shape) == 2:
+        return "[%d]" % shape[1]
+    else:
+        return ""
 
 
 def dim_str_from_keras_4d_shape_bias(shape):

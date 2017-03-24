@@ -45,6 +45,13 @@ class CocytusLayerInfo:
         b_nph_name = "nph_%s_b" % name
         return w_name, w_nph_name, b_name, b_nph_name
 
+    def get_output_variable_name(self):
+        """
+        出力用変数の文字列を返す。
+        """
+        name = self.l.name
+        return name + '_output'
+
     def get_weight_type_str(self):
         type = self.weight_dtypes[0]
         if type == CQT_Dtype.INT8:
@@ -57,6 +64,23 @@ class CocytusLayerInfo:
             return 'float'
 
         raise ValueError("Error layer %s tpye is not supported" % type)
+
+    def get_output_shape(self):
+        return self.l.output_shape
+
+    def get_output_type_str(self):
+        type = self.output_dtypes[0]
+        if type == CQT_Dtype.INT8:
+            return 'signed char'
+        elif type == CQT_Dtype.UINT8:
+            return 'unsigned char'
+        elif type == CQT_Dtype.INT32:
+            return 'int'
+        elif type == CQT_Dtype.FLOAT32:
+            return 'float'
+
+        raise ValueError("Error layer %s tpye is not supported" % type)
+
 
 
 class CocytusCompiler:

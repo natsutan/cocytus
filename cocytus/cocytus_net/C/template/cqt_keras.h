@@ -89,26 +89,62 @@ typedef enum {
     LT_Bidirectional
 } KR_LAYER_TYPE;
 
+typedef enum {
+    PD_NONE,
+    PD_VALID,
+    PD_SAME
+} KR_PADDING;
+
+typedef enum {
+    DF_CHANNELS_LAST,   //default
+    DF_CHANNELS_FIRST
+} KR_DATA_FORMAT;
+
+typedef enum {
+    ACT_LINEAR,  //default
+    ACT_SOFTMAX,
+    ACT_ELU,
+    ACT_SOFTPLUS,
+    ACT_SOFTSIGN,
+    ACT_RELU,
+    ACT_TANH,
+    ACT_SIGMOID,
+    ACT_HARD_SIGMOID
+} KR_ACTIVATION;
+
 
 typedef struct {
-
-
+    int batch_input_shape[4];
+    bool sparse;
 } LY_InputLayer;
 
+
 typedef struct {
-
-
+    int filters;
+    int kernel_size[2];
+    int strides[2];
+    KR_PADDING padding;
+    KR_DATA_FORMAT data_format;
+    int dilation_rate[2];
+    KR_ACTIVATION activation;
+    bool use_bias;
 } LY_Conv2D;
 
 typedef struct {
-
+    int pool_size[2];
+    int strides[2];
+    KR_PADDING padding;
+    KR_DATA_FORMAT data_format;
 } LY_MaxPooling2D;
 
 typedef struct {
 
-
 } LY_Flatten;
 
 typedef struct {
-
+    int units;
+    KR_ACTIVATION activation;
+    bool use_bias;
 } LY_Dense;
+
+

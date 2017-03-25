@@ -143,10 +143,7 @@ class CFile:
             class_name = l['class_name']
             scope_s = add_space(scope)
             s = "%sLY_%s %s;\n" % (scope_s, class_name, name)
-
             self.wr(s)
-
-
 
     def wr_weight_defination(self, scope=None):
         """
@@ -188,7 +185,6 @@ class CFile:
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
                 self.wr("%s%s %s[%d][%d];\n" % (scope_s, w_type, w_name, output_dim, input_dim))
                 self.wr("%s%s %s[%s];\n" % (scope_s, w_type, b_name, output_dim))
-
 
     def wr_output_defination(self, scope=None):
         """

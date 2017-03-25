@@ -28,7 +28,7 @@ class CocytusLayerInfo:
         self.l = l
 
     def get_Wshape(self):
-        return self.l.W_shape
+        return self.l.weights[0]._keras_shape
 
     def get_conv2d_weight_variable_name(self):
         """
@@ -63,7 +63,7 @@ class CocytusLayerInfo:
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
 
-        raise ValueError("Error layer %s tpye is not supported" % type)
+        raise ValueError("Error layer %s type is not supported" % type)
 
     def get_output_shape(self):
         return self.l.output_shape
@@ -164,6 +164,7 @@ class CocytusCompiler:
         """
         name = "g_cqt_" + self.model.name
         return name
+
 
 def conv_type_np_to_cqt(tf_type):
     """

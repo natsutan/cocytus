@@ -161,7 +161,7 @@ class CFile:
         for l in model_config['layers']:
             name = l['name']
             class_name = l['class_name']
-            if class_name == 'Convolution2D':
+            if class_name == 'Conv2D':
                 layer_detal = self.compiler.get_cqt_layer_obj(name)
                 w_shape = layer_detal.get_Wshape()
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
@@ -180,8 +180,9 @@ class CFile:
                 self.wr("%s%s %s%s;\n" % (scope_s, w_type, b_name, b_dim_s))
             elif class_name == 'Dense':
                 layer_detal = self.compiler.get_cqt_layer_obj(name)
-                input_dim = l['config']['input_dim']
-                output_dim = l['config']['output_dim']
+                w_shape = layer_detal.get_Wshape()
+                input_dim = w_shape[0]
+                output_dim = w_shape[1]
 
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 

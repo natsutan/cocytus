@@ -134,7 +134,7 @@ class CocytusCompiler:
         引数のレイヤー名から、KerasのLayerオブジェクトを返す。
         get_configだけでは取れない情報を取得するために使う。
         :param name:
-        :return:
+        :return:NN_DTYPE
         """
         for l in self.model.layers:
             if l.name == name:

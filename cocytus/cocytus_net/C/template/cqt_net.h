@@ -9,12 +9,12 @@ typedef struct cqt_net_layer_tag {
     int cqt_input_shape[4];
     int cqt_output_shape[4];
 
-    NN_DTYPE input_dtype;
-    NN_DTYPE weight_dtype;
-    NN_DTYPE output_dtype;
+    NN_DTYPE input_dtypes[4];
+    NN_DTYPE weight_dtypes[4];
+    NN_DTYPE output_dtypes[4];
 
-    void *p_param;  //pointer to parameters
-    void *p_data;   //pointer to data, eg:weights
+    void *param_p;  //pointer to parameters
+    void *data_p;   //pointer to data, eg:weights
 } CQT_LAYER;
 
 

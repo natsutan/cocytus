@@ -86,7 +86,9 @@ typedef enum {
 
     //Layer wrappers
     LT_TimeDistributed,
-    LT_Bidirectional
+    LT_Bidirectional,
+
+    LT_InputLayer
 } KR_LAYER_TYPE;
 
 typedef enum {

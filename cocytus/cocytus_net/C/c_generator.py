@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+from compiler.compiler import CQT_Dtype
 
 class CGenerator:
     def __init__(self, compiler):
@@ -225,6 +226,7 @@ class CqtGenH(CFile):
     def generate(self):
         self.wr_file_header()
         self.wr_include('stdio.h', stdlib=True)
+        self.wr_include('string.h', stdlib=True)
         self.wr_include('cqt.h')
         self.wr_include('cqt_net.h')
         self.cr()
@@ -245,7 +247,6 @@ class CqtGenH(CFile):
 
         self.wr_output_defination(scope='extern')
         self.cr()
-
 
         self.fp.write('\n')
 
@@ -274,10 +275,62 @@ class CqtGenC(CFile):
         self.wr_output_defination()
         self.cr()
 
-        self.wr('CQT_NET* cqt_init(void) { return NULL;};\n')
+        self.write_cqt_init()
+        self.cr()
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0;}\n')
         self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
         self.cr()
+
+    def write_cqt_init(self):
+        """
+        cqt_init関数を書き出す。
+        :return:
+        """
+        self.wr('CQT_NET* cqt_init(void) {\n')
+        model_config = self.get_config()
+
+        layer_num = len(model_config['layers'])
+        cqt_net_name = self.compiler.get_model_name()
+        self.wr('\t%s.layernum = %d;\n' % (cqt_net_name, layer_num))
+        self.cr()
+
+        for (i, l) in enumerate(model_config['layers']):
+            name = l['name']
+            class_name = l['class_name']
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+            self.wr('\tstrcpy(%s.layer[%d].name, "%s");\n' % (cqt_net_name, i, name))
+            self.wr('\t%s.layer[%d].type = LT_%s;\n' % (cqt_net_name, i, class_name))
+
+            for j in range(4):
+                if j < len(layer_detal.input_dtypes):
+                    c_type = conv_type_cqt_to_c(layer_detal.input_dtypes[j])
+                    self.wr('\t%s.layer[%d].input_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
+                else:
+                    self.wr('\t%s.layer[%d].input_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+
+            for j in range(4):
+                    if j < len(layer_detal.weight_dtypes):
+                        c_type = conv_type_cqt_to_c(layer_detal.weight_dtypes[j])
+                        self.wr('\t%s.layer[%d].weight_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
+                    else:
+                        self.wr('\t%s.layer[%d].weight_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+
+            for j in range(4):
+                if j < len(layer_detal.output_dtypes):
+                    c_type = conv_type_cqt_to_c(layer_detal.output_dtypes[j])
+                    self.wr('\t%s.layer[%d].output_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
+                else:
+                    self.wr('\t%s.layer[%d].output_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+
+            o_name = layer_detal.get_output_variable_name()
+            self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))
+            self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))
+
+
+            self.cr()
+
+        self.wr('\treturn NULL;\n')
+        self.wr('}\n')
 
 
 def create_c_dir(tdir):
@@ -336,3 +389,14 @@ def add_space(s):
         return  ''
     else:
         return s + ' '
+
+def conv_type_cqt_to_c(cqt_type):
+    """
+    コキュートスの型情報から、Ｃの型情報（NN_DTYPE 文字列）を返す。
+    :param cqt_type:
+    :return:  str
+    """
+    dic = {CQT_Dtype.INT8: 'NN_INT8', CQT_Dtype.UINT8: 'NN_UINT8',
+           CQT_Dtype.FLOAT32: 'NN_FLOAT32', CQT_Dtype.NONE: 'NN_DTYPE_NONE'}
+    return dic[cqt_type]
+

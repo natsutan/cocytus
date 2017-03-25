@@ -98,7 +98,7 @@ typedef struct {
 typedef struct {
 
 
-} LY_Convolution2D;
+} LY_Conv2D;
 
 typedef struct {
 

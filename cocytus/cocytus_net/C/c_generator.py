@@ -124,10 +124,7 @@ class CFile:
         scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
         """
         name = self.compiler.get_model_name()
-        if scope is None:
-            scope_s = ''
-        else:
-            scope_s = scope + ' '
+        scope_s = add_space(scope)
 
         self.wr('// cocytus network\n')
         self.wr('%sCQT_NET %s;\n' % (scope_s, name))
@@ -144,11 +141,12 @@ class CFile:
         for l in model_config['layers']:
             name = l['name']
             class_name = l['class_name']
-            if scope is None:
-                s = "LY_%s %s;\n" % (class_name, name)
-            else:
-                s = "%s LY_%s %s;\n" % (scope, class_name, name)
+            scope_s = add_space(scope)
+            s = "%sLY_%s %s;\n" % (scope_s, class_name, name)
+
             self.wr(s)
+
+
 
     def wr_weight_defination(self, scope=None):
         """
@@ -167,11 +165,8 @@ class CFile:
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
                 w_dim_s = dim_str_from_keras_4d_shape(w_shape)
                 b_dim_s = dim_str_from_keras_4d_shape_bias(w_shape)
+                scope_s = add_space(scope)
 
-                if scope is None:
-                    scope_s = ''
-                else:
-                    scope_s = scope + ' '
                 w_type = layer_detal.get_weight_type_str()
 
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
@@ -183,13 +178,10 @@ class CFile:
                 w_shape = layer_detal.get_Wshape()
                 input_dim = w_shape[0]
                 output_dim = w_shape[1]
+                scope_s = add_space(scope)
 
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
-                if scope is None:
-                    scope_s = ''
-                else:
-                    scope_s = scope + ' '
                 w_type = layer_detal.get_weight_type_str()
 
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
@@ -215,11 +207,7 @@ class CFile:
 
             o_name = layer_detal.get_output_variable_name()
             o_type = layer_detal.get_output_type_str()
-
-            if scope is None:
-                scope_s = ''
-            else:
-                scope_s = scope + ' '
+            scope_s = add_space(scope)
 
             self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
 
@@ -339,3 +327,16 @@ def dim_str_from_keras_4d_shape_bias(shape):
         return "[%d]" % shape[2]
     else:
         return "[%d]" % shape[3]
+
+
+def add_space(s):
+    """
+    引数の文字列が空文字列でなかったら、末尾にスペースを追加した文字列を返す。
+    引数が空文字列の場合は、空文字列を返す。
+    :param s: str
+    :return: str
+    """
+    if s is None:
+        return  ''
+    else:
+        return s + ' '

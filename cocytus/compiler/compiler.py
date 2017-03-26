@@ -68,6 +68,9 @@ class CocytusLayerInfo:
     def get_output_shape(self):
         return self.l.output_shape
 
+    def get_input_shape(self):
+        return self.l.input_shape
+
     def get_output_type_str(self):
         type = self.output_dtypes[0]
         if type == CQT_Dtype.INT8:
@@ -80,7 +83,6 @@ class CocytusLayerInfo:
             return 'float'
 
         raise ValueError("Error layer %s tpye is not supported" % type)
-
 
 
 class CocytusCompiler:

@@ -208,6 +208,23 @@ class CFile:
 
             self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
 
+    def wr_assign(self, variable_name, value, tab=1):
+        """
+        Cの代入分を書き出す。tabでタブの個数を指定できる。
+        :param variable_name: str
+        :param value: str
+        :param tab: int
+        :return:
+        """
+        tabs = '\t' * tab
+        if isinstance(value, list) or isinstance(value, tuple):
+            for i, v in enumerate(value):
+                self.wr('%s%s[%d] = %s;\n' % (tabs, variable_name, i, str(v)))
+        else:
+            self.wr('%s%s = %s;\n' % (tabs, variable_name, str(value)))
+
+
+
     def get_config(self):
         """
         Keras Modelのコンフィグ情報を返す。
@@ -253,6 +270,14 @@ class CqtGenH(CFile):
 
 class CqtGenC(CFile):
     def __init__(self, file, compiler):
+
+        self.pd_dic = {'valid': 'PD_VALID', 'same': 'PD_SAME'}
+        self.df_dic = {'channels_last' : 'DF_CHANNELS_LAST', 'channels_first': 'DF_CHANNELS_FIRST'}
+        self.act_dic = {'linear': 'ACT_LINEAR', 'softmax': 'ACT_SOFTMAX', 'elu': 'ACT_ELU', 'softplus': 'ACT_SOFTPLUS',
+                        'softsign': 'ACT_SOFTSIGN', 'relu': 'ACT_RELU', 'tanh': 'ACT_TANH', 'sigmoid': 'ACT_SIGMOID',
+                        'hard_sigmoid': 'ACT_HARD_SIGMOID'
+                        }
+        self.bool_dic = {True: 'true', False: 'false'}
         super().__init__(file, compiler)
 
     def __del__(self):
@@ -281,6 +306,8 @@ class CqtGenC(CFile):
         self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
         self.cr()
 
+
+
     def write_cqt_init(self):
         """
         cqt_init関数を書き出す。
@@ -301,6 +328,20 @@ class CqtGenC(CFile):
             self.wr('\tstrcpy(%s.layer[%d].name, "%s");\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].type = LT_%s;\n' % (cqt_net_name, i, class_name))
 
+            # レイヤー毎の処理
+            if class_name == 'InputLayer' or class_name == 'Flatten':
+                # 何もしない
+                pass
+            elif class_name == 'Conv2D':
+                self.write_conv2d_init(l)
+            elif class_name == 'MaxPooling2D':
+                pass
+            elif class_name == 'Dense':
+                pass
+            else:
+                raise ValueError("Error layer %s tpye is not supported" % class_name)
+
+            # 共通の処理
             for j in range(4):
                 if j < len(layer_detal.input_dtypes):
                     c_type = conv_type_cqt_to_c(layer_detal.input_dtypes[j])
@@ -322,15 +363,83 @@ class CqtGenC(CFile):
                 else:
                     self.wr('\t%s.layer[%d].output_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
 
+            i_shape = [0 if x is None else x for x in layer_detal.get_input_shape()]
+            if len(i_shape) == 4:
+                self.wr('\t%s.layer[%d].cqt_input_shape[0] = %d;\n' % (cqt_net_name, i, i_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[1] = %d;\n' % (cqt_net_name, i, i_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[2] = %d;\n' % (cqt_net_name, i, i_shape[2]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[3] = %d;\n' % (cqt_net_name, i, i_shape[3]))
+            elif len(o_shape) == 3:
+                self.wr('\t%s.layer[%d].cqt_input_shape[0] = %d;\n' % (cqt_net_name, i, i_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[1] = %d;\n' % (cqt_net_name, i, i_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[2] = %d;\n' % (cqt_net_name, i, i_shape[2]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[3] = 0;\n' % (cqt_net_name, i))
+            elif len(o_shape) == 2:
+                self.wr('\t%s.layer[%d].cqt_input_shape[0] = %d;\n' % (cqt_net_name, i, i_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[1] = %d;\n' % (cqt_net_name, i, i_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[2] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_input_shape[3] = 0;\n' % (cqt_net_name, i))
+            elif len(o_shape) == 1:
+                self.wr('\t%s.layer[%d].cqt_input_shape[0] = %d;\n' % (cqt_net_name, i, i_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_input_shape[1] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_input_shape[2] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_input_shape[3] = 0;\n' % (cqt_net_name, i))
+            else:
+                raise ValueError("ERROR unsupported shape %s %s", (name, str(o_shape)))
+
+            # Noneを0に置き換え
+            o_shape = [0 if x is None else x for x in layer_detal.get_output_shape()]
+            if len(o_shape) == 4:
+                self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[2] = %d;\n' % (cqt_net_name, i, o_shape[2]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[3] = %d;\n' % (cqt_net_name, i, o_shape[3]))
+            elif len(o_shape) == 3:
+                self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[2] = %d;\n' % (cqt_net_name, i, o_shape[2]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+            elif len(o_shape) == 2:
+                self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[2] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+            elif len(o_shape) == 1:
+                self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
+                self.wr('\t%s.layer[%d].cqt_output_shape[1] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_output_shape[2] = 0;\n' % (cqt_net_name, i))
+                self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+            else:
+                raise ValueError("ERROR unsupported shape %s %s", (name, str(o_shape)))
+
             o_name = layer_detal.get_output_variable_name()
             self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))
-
-
             self.cr()
 
         self.wr('\treturn NULL;\n')
         self.wr('}\n')
+
+    def write_conv2d_init(self, l):
+        """
+        LY_Conv2dの初期化を書き出す。
+        :param l:
+        :return:
+        """
+        name = l['name']
+        config = l['config']
+        class_name = l['class_name']
+        layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+        self.wr_assign("%s.filters" % name, config['filters'])
+        self.wr_assign("%s.kernel_size" % name, config['kernel_size'])
+        self.wr_assign("%s.strides" % name, config['strides'])
+        self.wr_assign("%s.padding" % name, self.pd_dic[config['padding']])
+        self.wr_assign("%s.data_format" % name, self.df_dic[config['data_format']])
+        self.wr_assign("%s.dilation_rate" % name, config['dilation_rate'])
+        self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
+        self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
+
 
 
 def create_c_dir(tdir):

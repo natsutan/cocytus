@@ -1,12 +1,12 @@
 #pragma once
 
 typedef enum {
-    NN_INT32,
-    NN_FLOAT32,
-    NN_QINT8,
-    NN_UINT8,
-    NN_INT8,
+    CQT_INT32,
+    CQT_FLOAT32,
+    CQT_QINT8,
+    CQT_UINT8,
+    CQT_INT8,
     //----
-    NN_DTYPE_NONE
-} NN_DTYPE;
+    CQT_DTYPE_NONE
+} CQT_DTYPE;
 

@@ -8,7 +8,7 @@
 #include "numpy.h"
 
 //see https://docs.scipy.org/doc/numpy-dev/neps/npy-format.html
-const NUMPY_HEADER default_numpy_header = {0,0,0,NN_DTYPE_NONE, 0, {0,0,0,0}};
+const NUMPY_HEADER default_numpy_header = {0,0,0,CQT_DTYPE_NONE, 0, {0,0,0,0}};
 
 
 //x93NUMPY
@@ -67,11 +67,11 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
   }
 
   switch (hp->descr) {
-  case NN_FLOAT32:
+  case CQT_FLOAT32:
 	  assert(sizeof(float)==4);
 	  fread(dp, 4, size, fp);
 	  break;
-  case NN_UINT8:
+  case CQT_UINT8:
 	  fread(dp, 1, size, fp);
 	  break;
   default:
@@ -169,9 +169,9 @@ int np_parse_header_dic(char *buf, NUMPY_HEADER *hp)
 	if(strstr(cp, "'descr':")!=NULL) {
 	  cp = strtok(NULL, delimiter);
 	  if(strstr(cp, "'<f4'")!=NULL) {
-		hp->descr = NN_FLOAT32; 
+		hp->descr = CQT_FLOAT32;
 	  } else if(strstr(cp, "'|u1'")!=NULL) {
-		hp->descr = NN_UINT8;
+		hp->descr = CQT_UINT8;
 	  } else {
 		printf("ERROR unkown descr %s\n", cp);
 		return CQT_NP_HEADER_ERR;
@@ -223,16 +223,16 @@ void np_print_heaer_info(const NUMPY_HEADER *hp)
 
   printf("descr=");
   switch(hp->descr) {
-  case NN_INT32:
+  case CQT_INT32:
 	printf("int32");
 	break;
-  case  NN_FLOAT32:
+  case  CQT_FLOAT32:
 	printf("float32");
 	break;
-  case  NN_QINT8:
+  case  CQT_QINT8:
 	printf("qint8");
 	break;
-  case NN_DTYPE_NONE:
+  case CQT_DTYPE_NONE:
 	printf("none");
 	break;
   default:
@@ -302,7 +302,7 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
 	buf[i] = ' ';
   }
 
-  if(hp->descr == NN_FLOAT32) {
+  if(hp->descr == CQT_FLOAT32) {
 	descr = type_float;
   } else {
 	printf("ERROR unkown descr %d\n", hp->descr);

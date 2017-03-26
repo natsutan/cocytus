@@ -349,21 +349,21 @@ class CqtGenC(CFile):
                     c_type = conv_type_cqt_to_c(layer_detal.input_dtypes[j])
                     self.wr('\t%s.layer[%d].input_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
                 else:
-                    self.wr('\t%s.layer[%d].input_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+                    self.wr('\t%s.layer[%d].input_dtypes[%d] = CQT_DTYPE_NONE;\n' % (cqt_net_name, i, j))
 
             for j in range(4):
                     if j < len(layer_detal.weight_dtypes):
                         c_type = conv_type_cqt_to_c(layer_detal.weight_dtypes[j])
                         self.wr('\t%s.layer[%d].weight_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
                     else:
-                        self.wr('\t%s.layer[%d].weight_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+                        self.wr('\t%s.layer[%d].weight_dtypes[%d] = CQT_DTYPE_NONE;\n' % (cqt_net_name, i, j))
 
             for j in range(4):
                 if j < len(layer_detal.output_dtypes):
                     c_type = conv_type_cqt_to_c(layer_detal.output_dtypes[j])
                     self.wr('\t%s.layer[%d].output_dtypes[%d] = %s;\n' % (cqt_net_name, i, j, c_type))
                 else:
-                    self.wr('\t%s.layer[%d].output_dtypes[%d] = NN_DTYPE_NONE;\n' % (cqt_net_name, i, j))
+                    self.wr('\t%s.layer[%d].output_dtypes[%d] = CQT_DTYPE_NONE;\n' % (cqt_net_name, i, j))
 
             i_shape = [0 if x is None else x for x in layer_detal.get_input_shape()]
             if len(i_shape) == 4:
@@ -600,7 +600,7 @@ def conv_type_cqt_to_c(cqt_type):
     :param cqt_type:
     :return:  str
     """
-    dic = {CQT_Dtype.INT8: 'NN_INT8', CQT_Dtype.UINT8: 'NN_UINT8',
-           CQT_Dtype.FLOAT32: 'NN_FLOAT32', CQT_Dtype.NONE: 'NN_DTYPE_NONE'}
+    dic = {CQT_Dtype.INT8: 'CQT_INT8', CQT_Dtype.UINT8: 'CQT_UINT8',
+           CQT_Dtype.FLOAT32: 'CQT_FLOAT32', CQT_Dtype.NONE: 'CQT_DTYPE_NONE'}
     return dic[cqt_type]
 

@@ -5,7 +5,7 @@ typedef struct numpy_header_tag {
     unsigned char major_version; //major version
     unsigned char minor_version; //minor version
     unsigned short header_len;
-    NN_DTYPE descr;
+    CQT_DTYPE descr;
     bool fortran_order;
     int shape[4];
 } NUMPY_HEADER;

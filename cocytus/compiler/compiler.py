@@ -17,15 +17,18 @@ class CocytusLayerInfo:
     コキュートス用の追加レイヤー情報。
     Kerasから取得できるレイヤー情報と合わせて使用する。
     """
-    def __init__(self, l):
+    def __init__(self, l, keras_layer_type):
         """
         :param l:  keras layer
+        :param config: keras config
         """
         self.input_size = []
         self.input_dtypes = []
         self.output_dtypes = []
         self.weight_dtypes = []
         self.l = l
+        self.keras_layer_type = keras_layer_type
+        self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8'}
 
     def get_Wshape(self):
         return self.l.weights[0]._keras_shape
@@ -96,6 +99,37 @@ class CocytusLayerInfo:
 
         return self.l.input_shape[-1]
 
+    def make_func_name(self):
+        """
+        このレイヤーを処理する関数名を返す。
+
+        :return: str
+        """
+        class_type = self.keras_layer_type
+
+        fname = 'CQT_' + class_type
+        if class_type == 'Conv2D':
+            size = self.l.kernel_size
+            fname += '_%dx%d' % (size[0], size[1])
+            if size != (3, 3):
+                raise ValueError('ERROR unsuported kernel size %s' % str(size))
+
+        fname += self.mangling(self.input_dtypes, [], self.output_dtypes)
+        return fname
+
+    def mangling(self, ilist, wlist, olist):
+        fname = ''
+        for intype in ilist:
+            fname += '_i' + self.mangle_dic[intype]
+
+        for weight in wlist:
+            fname += '_w' + self.mangle_dic[weight]
+
+        for outtype in olist:
+            fname += '_o' + self.mangle_dic[outtype]
+
+        return fname
+
 
 class CocytusCompiler:
     def __init__(self, config, nn_prefix='cqt_'):
@@ -123,7 +157,7 @@ class CocytusCompiler:
             keras_layer_type = l.__class__.__name__
             print("%s:%s" % (keras_layer_type, l.name))
 
-            cl = CocytusLayerInfo(l)
+            cl = CocytusLayerInfo(l, keras_layer_type)
 
             # 型のチェック
             # 将来的には各層を任意の型に買えられるようにする。
@@ -179,6 +213,17 @@ class CocytusCompiler:
         name = "g_cqt_" + self.model.name
         return name
 
+    def get_prev_layer_output_name(self, i):
+        """
+        i番目のレイヤーの一つ前の層の出力名を返す。
+        :param i: int
+        :return: str
+        """
+        if i == 0:
+            return 'dp'
+
+        layer_detal = self.cqt_layers[i-1]
+        return layer_detal.get_output_variable_name()
 
 def conv_type_np_to_cqt(tf_type):
     """

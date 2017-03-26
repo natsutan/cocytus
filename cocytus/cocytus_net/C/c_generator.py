@@ -56,7 +56,7 @@ class CGenerator:
         cqt_gen_c = CqtGenC(cqt_gen_c_path, self.compiler)
         cqt_gen_c.generate()
 
-        files = ['numpy.c', ]
+        files = ['numpy.c', 'cqt_lib.c']
         for f in files:
             shutil.copy(os.path.join(template_dir, f),
                         os.path.join(target_dir, 'cqt_lib'))
@@ -307,7 +307,8 @@ class CqtGenC(CFile):
         self.write_cqt_init()
         self.cr()
         self.write_cqt_load_weight_from_files()
-        self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
+        self.cr()
+        self.write_cqt_run()
         self.cr()
 
     def write_cqt_init(self):
@@ -531,6 +532,34 @@ class CqtGenC(CFile):
                 self.wr('\t}\n')
 
                 self.cr()
+
+        self.wr('\treturn CQT_RET_OK;\n')
+        self.wr('}\n')
+
+    def write_cqt_run(self):
+        self.wr('int cqt_run(CQT_NET* np, void *dp) {\n')
+        self.wr('\tint ret;\n')
+        self.cr()
+
+        model_config = self.get_config()
+        cqt_net_name = self.compiler.get_model_name()
+
+        for i, l in enumerate(model_config['layers']):
+            class_name = l['class_name']
+            config = l['config']
+            name = config['name']
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+            inp = self.compiler.get_prev_layer_output_name(i)
+            outp = layer_detal.get_output_variable_name()
+            func_name = layer_detal.make_func_name()
+            self.wr('\t//%s\n' % name)
+            self.wr("\tret = %s(&(%s.layer[%d]), %s, %s);\n" % (func_name, cqt_net_name, i, inp, outp))
+            self.wr('\tif(ret != CQT_RET_OK){\n')
+            self.wr('\t\treturn ret;\n')
+            self.wr('\t}\n')
+            self.wr('\n')
+
 
         self.wr('\treturn CQT_RET_OK;\n')
         self.wr('}\n')

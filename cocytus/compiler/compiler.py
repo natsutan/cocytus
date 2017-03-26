@@ -84,6 +84,18 @@ class CocytusLayerInfo:
 
         raise ValueError("Error layer %s tpye is not supported" % type)
 
+    def get_prev_layer_output_dimension(self, i):
+        """
+        前の層の出力数を返す。
+        :param i: int
+        :return: int
+        """
+        if i == 0 or i == 1:
+            # 入力層は1
+            return 1
+
+        return self.l.input_shape[-1]
+
 
 class CocytusCompiler:
     def __init__(self, config, nn_prefix='cqt_'):

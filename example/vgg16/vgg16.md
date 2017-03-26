@@ -16,7 +16,7 @@ python ../../cocytus.py vgg16.ini
 ```
 
 ## Keras
-
+### ネットワーク情報
 ```
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #

@@ -4,6 +4,7 @@ import configparser
 
 from compiler.compiler import CocytusCompiler
 from cocytus_net.C.c_generator import CGenerator
+from weight_converter.weight_converter import WeightConverter
 
 
 def open_inifile(ini_file):
@@ -61,6 +62,14 @@ def main(argv):
     c_generator.generate()
 
     # 重みの変換
+    try:
+        w_out_dir = config.get('Cocyuts', 'weight_output_dir')
+        hdf_file = config.get('Cocyuts', 'keras_weight')
+        w_converter = WeightConverter(w_out_dir, hdf_file)
+        w_converter.convert()
+
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        print("Weight Conversion skipped.")
 
 
     print('finish')

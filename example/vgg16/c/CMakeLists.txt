@@ -7,4 +7,5 @@ include_directories(inc)
 add_executable(cqt_vgg16
         cqt_vgg16.c
         cqt_gen/cqt_gen.c
+        cqt_lib/numpy.c
         )

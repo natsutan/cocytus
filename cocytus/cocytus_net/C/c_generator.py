@@ -23,7 +23,7 @@ class CGenerator:
 
         # Cソースの作成
         target_dir = self.config['Cocyuts']['output_dir']
-        self.generate_cqt_gen(target_dir)
+        self.generate_cqt_gen(target_dir, template_dir)
 
         # ライブラリの作成
         self.generate_cqt_lib()
@@ -40,8 +40,7 @@ class CGenerator:
             shutil.copy(os.path.join(template_dir, h),
                         os.path.join(target_dir, 'inc'))
 
-
-    def generate_cqt_gen(self, target_dir):
+    def generate_cqt_gen(self, target_dir, template_dir):
         """
         target_dirで指定されたディレクトリ/cqt_gen以下にcqt_gen.hとcqt_gen.cのファイルを作成する。
         :param target_dir: str
@@ -56,6 +55,11 @@ class CGenerator:
         print("making %s" % cqt_gen_c_path)
         cqt_gen_c = CqtGenC(cqt_gen_c_path, self.compiler)
         cqt_gen_c.generate()
+
+        files = ['numpy.c', ]
+        for f in files:
+            shutil.copy(os.path.join(template_dir, f),
+                        os.path.join(target_dir, 'cqt_lib'))
 
 
     def generate_cqt_lib(self):
@@ -73,6 +77,13 @@ class CFile:
         self.file = file
         self.fp = open(file, 'w')
         self.compiler = compier
+        self.pd_dic = {'valid': 'PD_VALID', 'same': 'PD_SAME'}
+        self.df_dic = {'channels_last' : 'DF_CHANNELS_LAST', 'channels_first': 'DF_CHANNELS_FIRST'}
+        self.act_dic = {'linear': 'ACT_LINEAR', 'softmax': 'ACT_SOFTMAX', 'elu': 'ACT_ELU', 'softplus': 'ACT_SOFTPLUS',
+                        'softsign': 'ACT_SOFTSIGN', 'relu': 'ACT_RELU', 'tanh': 'ACT_TANH', 'sigmoid': 'ACT_SIGMOID',
+                        'hard_sigmoid': 'ACT_HARD_SIGMOID'
+                        }
+        self.bool_dic = {True: 'true', False: 'false'}
 
     def __del__(self):
         self.fp.close()
@@ -244,6 +255,7 @@ class CqtGenH(CFile):
         self.wr_file_header()
         self.wr_include('stdio.h', stdlib=True)
         self.wr_include('string.h', stdlib=True)
+        self.wr_include('assert.h', stdlib=True)
         self.wr_include('cqt.h')
         self.wr_include('cqt_net.h')
         self.cr()
@@ -270,14 +282,6 @@ class CqtGenH(CFile):
 
 class CqtGenC(CFile):
     def __init__(self, file, compiler):
-
-        self.pd_dic = {'valid': 'PD_VALID', 'same': 'PD_SAME'}
-        self.df_dic = {'channels_last' : 'DF_CHANNELS_LAST', 'channels_first': 'DF_CHANNELS_FIRST'}
-        self.act_dic = {'linear': 'ACT_LINEAR', 'softmax': 'ACT_SOFTMAX', 'elu': 'ACT_ELU', 'softplus': 'ACT_SOFTPLUS',
-                        'softsign': 'ACT_SOFTSIGN', 'relu': 'ACT_RELU', 'tanh': 'ACT_TANH', 'sigmoid': 'ACT_SIGMOID',
-                        'hard_sigmoid': 'ACT_HARD_SIGMOID'
-                        }
-        self.bool_dic = {True: 'true', False: 'false'}
         super().__init__(file, compiler)
 
     def __del__(self):
@@ -302,11 +306,9 @@ class CqtGenC(CFile):
 
         self.write_cqt_init()
         self.cr()
-        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) { return 0;}\n')
+        self.write_cqt_load_weight_from_files()
         self.wr('int cqt_run(CQT_NET* np, void *dp) {return 0;}\n')
         self.cr()
-
-
 
     def write_cqt_init(self):
         """
@@ -471,17 +473,78 @@ class CqtGenC(CFile):
         self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
         self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
 
+    def write_cqt_load_weight_from_files(self):
+        self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) {\n')
+        self.wr('\tchar buf[CQT_MAX_PATH];\n')
+        self.wr('\tint path_len;\n')
+        self.wr('\tint fname_w_len;\n')
+        self.wr('\tint fname_b_len;\n')
+        self.wr('\tint ret;\n')
+        self.wr('\n')
+
+        model_config = self.get_config()
+
+        for i, l in enumerate(model_config['layers']):
+            class_name = l['class_name']
+            config = l['config']
+            name = config['name']
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+            if class_name in ['Conv2D', 'Dense']:
+                fname_w = name + '_W_z.npy'
+                fname_b = name + '_b_z.npy'
+                [variable_name_w, variable_name_w_header, variable_name_b,
+                 variable_name_b_header] = layer_detal.get_conv2d_weight_variable_name()
+
+                if class_name == 'Conv2D':
+                    prev_dim = layer_detal.get_prev_layer_output_dimension(i)
+                    kernel_size = config['kernel_size']
+                    w_size = kernel_size[0] * kernel_size[1] * config['filters'] * prev_dim
+                    b_size = config['filters']
+                else:
+                    # dense
+                    prev_dim = layer_detal.get_prev_layer_output_dimension(i)
+                    i_shape = layer_detal.get_input_shape()
+                    o_shape = layer_detal.get_output_shape()
+                    w_size = i_shape[-1] * o_shape[-1]
+                    b_size = o_shape[-1]
+
+                self.wr('// %s\n' % name)
+                self.wr('\tpath_len = strlen(path);\n')
+                self.wr('\tfname_w_len = strlen("%s");\n' % fname_w)
+                self.wr('\tfname_b_len = strlen("%s");\n' % fname_b)
+                self.wr('\tassert(path_len+fname_w_len<CQT_MAX_PATH);\n')
+                self.wr('\tassert(path_len+fname_b_len<CQT_MAX_PATH);\n')
+                self.cr()
+                self.wr('\tstrcpy(buf, path);\n')
+                self.wr('\tstrcat(buf, "%s");\n' % fname_w)
+                self.wr(
+                    '\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_w, w_size, variable_name_w_header))
+                self.wr('\tif(ret != CQT_RET_OK){\n')
+                self.wr('\t\treturn ret;\n')
+                self.wr('\t}\n')
+                self.wr('\tstrcpy(buf, path);\n')
+                self.wr('\tstrcat(buf, "%s");\n' % fname_b)
+                self.wr('\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_b, b_size, variable_name_b_header))
+                self.wr('\tif(ret != CQT_RET_OK){\n')
+                self.wr('\t\treturn ret;\n')
+                self.wr('\t}\n')
+
+                self.cr()
+
+        self.wr('\treturn CQT_RET_OK;\n')
+        self.wr('}\n')
 
 
 
 def create_c_dir(tdir):
     """
     tdir以下に以下のディレクトリを作成する。
-    inc, cqt_gen, cqt_lib
+    inc, cqt_gen, cqt_lib, weight
     :param tdir: str
     :return:
     """
-    dirs = ['inc', 'cqt_gen', 'cqt_lib']
+    dirs = ['inc', 'cqt_gen', 'cqt_lib', 'weight']
     for d in dirs:
         path = os.path.join(tdir, d)
         if not os.path.isdir(path):

@@ -335,9 +335,9 @@ class CqtGenC(CFile):
             elif class_name == 'Conv2D':
                 self.write_conv2d_init(l)
             elif class_name == 'MaxPooling2D':
-                pass
+                self.write_maxpooling2d(l)
             elif class_name == 'Dense':
-                pass
+                self.write_dense(l)
             else:
                 raise ValueError("Error layer %s tpye is not supported" % class_name)
 
@@ -439,6 +439,38 @@ class CqtGenC(CFile):
         self.wr_assign("%s.dilation_rate" % name, config['dilation_rate'])
         self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
         self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
+
+    def write_maxpooling2d(self, l):
+        """
+        LY_MaxPooling2Dの初期化を書き出す。
+        :param l:
+        :return:
+        """
+        name = l['name']
+        config = l['config']
+        class_name = l['class_name']
+        layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+        self.wr_assign("%s.strides" % name, config['strides'])
+        self.wr_assign("%s.padding" % name, self.pd_dic[config['padding']])
+        self.wr_assign("%s.data_format" % name, self.df_dic[config['data_format']])
+        self.wr_assign("%s.pool_size" % name, config['pool_size'])
+
+    def write_dense(self, l):
+        """
+        LY_Denseの初期化を書き出す。
+        :param l:
+        :return:
+        """
+        name = l['name']
+        config = l['config']
+        class_name = l['class_name']
+        layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+        self.wr_assign("%s.units" % name, config['units'])
+        self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
+        self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
+
 
 
 

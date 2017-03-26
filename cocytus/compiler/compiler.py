@@ -90,7 +90,7 @@ class CocytusLayerInfo:
         :param i: int
         :return: int
         """
-        if i == 0 or i == 1:
+        if i == 0 :
             # 入力層は1
             return 1
 

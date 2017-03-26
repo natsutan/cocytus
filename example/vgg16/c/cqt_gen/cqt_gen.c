@@ -888,26 +888,26 @@ CQT_NET* cqt_init(void) {
 
 int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 	char buf[CQT_MAX_PATH];
-	int path_len;
-	int fname_w_len;
-	int fname_b_len;
+	size_t path_len;
+	size_t fname_w_len;
+	size_t fname_b_len;
 	int ret;
 
 // block1_conv1
 	path_len = strlen(path);
-	fname_w_len = strlen("block1_conv1_W_z.npy");
-	fname_b_len = strlen("block1_conv1_b_z.npy");
+	fname_w_len = strlen("block1_conv1_W_1_z.npy");
+	fname_b_len = strlen("block1_conv1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block1_conv1_W_z.npy");
-	ret = load_from_numpy(w_block1_conv1_W, buf, 576, &nph_block1_conv1_W);
+	strcat(buf, "block1_conv1_W_1_z.npy");
+	ret = load_from_numpy(w_block1_conv1_W, buf, 1728, &nph_block1_conv1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block1_conv1_b_z.npy");
+	strcat(buf, "block1_conv1_b_1_z.npy");
 	ret = load_from_numpy(w_block1_conv1_b, buf, 64, &nph_block1_conv1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -915,19 +915,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block1_conv2
 	path_len = strlen(path);
-	fname_w_len = strlen("block1_conv2_W_z.npy");
-	fname_b_len = strlen("block1_conv2_b_z.npy");
+	fname_w_len = strlen("block1_conv2_W_1_z.npy");
+	fname_b_len = strlen("block1_conv2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block1_conv2_W_z.npy");
+	strcat(buf, "block1_conv2_W_1_z.npy");
 	ret = load_from_numpy(w_block1_conv2_W, buf, 36864, &nph_block1_conv2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block1_conv2_b_z.npy");
+	strcat(buf, "block1_conv2_b_1_z.npy");
 	ret = load_from_numpy(w_block1_conv2_b, buf, 64, &nph_block1_conv2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -935,19 +935,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block2_conv1
 	path_len = strlen(path);
-	fname_w_len = strlen("block2_conv1_W_z.npy");
-	fname_b_len = strlen("block2_conv1_b_z.npy");
+	fname_w_len = strlen("block2_conv1_W_1_z.npy");
+	fname_b_len = strlen("block2_conv1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block2_conv1_W_z.npy");
+	strcat(buf, "block2_conv1_W_1_z.npy");
 	ret = load_from_numpy(w_block2_conv1_W, buf, 73728, &nph_block2_conv1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block2_conv1_b_z.npy");
+	strcat(buf, "block2_conv1_b_1_z.npy");
 	ret = load_from_numpy(w_block2_conv1_b, buf, 128, &nph_block2_conv1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -955,19 +955,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block2_conv2
 	path_len = strlen(path);
-	fname_w_len = strlen("block2_conv2_W_z.npy");
-	fname_b_len = strlen("block2_conv2_b_z.npy");
+	fname_w_len = strlen("block2_conv2_W_1_z.npy");
+	fname_b_len = strlen("block2_conv2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block2_conv2_W_z.npy");
+	strcat(buf, "block2_conv2_W_1_z.npy");
 	ret = load_from_numpy(w_block2_conv2_W, buf, 147456, &nph_block2_conv2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block2_conv2_b_z.npy");
+	strcat(buf, "block2_conv2_b_1_z.npy");
 	ret = load_from_numpy(w_block2_conv2_b, buf, 128, &nph_block2_conv2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -975,19 +975,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block3_conv1
 	path_len = strlen(path);
-	fname_w_len = strlen("block3_conv1_W_z.npy");
-	fname_b_len = strlen("block3_conv1_b_z.npy");
+	fname_w_len = strlen("block3_conv1_W_1_z.npy");
+	fname_b_len = strlen("block3_conv1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block3_conv1_W_z.npy");
+	strcat(buf, "block3_conv1_W_1_z.npy");
 	ret = load_from_numpy(w_block3_conv1_W, buf, 294912, &nph_block3_conv1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block3_conv1_b_z.npy");
+	strcat(buf, "block3_conv1_b_1_z.npy");
 	ret = load_from_numpy(w_block3_conv1_b, buf, 256, &nph_block3_conv1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -995,19 +995,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block3_conv2
 	path_len = strlen(path);
-	fname_w_len = strlen("block3_conv2_W_z.npy");
-	fname_b_len = strlen("block3_conv2_b_z.npy");
+	fname_w_len = strlen("block3_conv2_W_1_z.npy");
+	fname_b_len = strlen("block3_conv2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block3_conv2_W_z.npy");
+	strcat(buf, "block3_conv2_W_1_z.npy");
 	ret = load_from_numpy(w_block3_conv2_W, buf, 589824, &nph_block3_conv2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block3_conv2_b_z.npy");
+	strcat(buf, "block3_conv2_b_1_z.npy");
 	ret = load_from_numpy(w_block3_conv2_b, buf, 256, &nph_block3_conv2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1015,19 +1015,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block3_conv3
 	path_len = strlen(path);
-	fname_w_len = strlen("block3_conv3_W_z.npy");
-	fname_b_len = strlen("block3_conv3_b_z.npy");
+	fname_w_len = strlen("block3_conv3_W_1_z.npy");
+	fname_b_len = strlen("block3_conv3_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block3_conv3_W_z.npy");
+	strcat(buf, "block3_conv3_W_1_z.npy");
 	ret = load_from_numpy(w_block3_conv3_W, buf, 589824, &nph_block3_conv3_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block3_conv3_b_z.npy");
+	strcat(buf, "block3_conv3_b_1_z.npy");
 	ret = load_from_numpy(w_block3_conv3_b, buf, 256, &nph_block3_conv3_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1035,19 +1035,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block4_conv1
 	path_len = strlen(path);
-	fname_w_len = strlen("block4_conv1_W_z.npy");
-	fname_b_len = strlen("block4_conv1_b_z.npy");
+	fname_w_len = strlen("block4_conv1_W_1_z.npy");
+	fname_b_len = strlen("block4_conv1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block4_conv1_W_z.npy");
+	strcat(buf, "block4_conv1_W_1_z.npy");
 	ret = load_from_numpy(w_block4_conv1_W, buf, 1179648, &nph_block4_conv1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block4_conv1_b_z.npy");
+	strcat(buf, "block4_conv1_b_1_z.npy");
 	ret = load_from_numpy(w_block4_conv1_b, buf, 512, &nph_block4_conv1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1055,19 +1055,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block4_conv2
 	path_len = strlen(path);
-	fname_w_len = strlen("block4_conv2_W_z.npy");
-	fname_b_len = strlen("block4_conv2_b_z.npy");
+	fname_w_len = strlen("block4_conv2_W_1_z.npy");
+	fname_b_len = strlen("block4_conv2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block4_conv2_W_z.npy");
+	strcat(buf, "block4_conv2_W_1_z.npy");
 	ret = load_from_numpy(w_block4_conv2_W, buf, 2359296, &nph_block4_conv2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block4_conv2_b_z.npy");
+	strcat(buf, "block4_conv2_b_1_z.npy");
 	ret = load_from_numpy(w_block4_conv2_b, buf, 512, &nph_block4_conv2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1075,19 +1075,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block4_conv3
 	path_len = strlen(path);
-	fname_w_len = strlen("block4_conv3_W_z.npy");
-	fname_b_len = strlen("block4_conv3_b_z.npy");
+	fname_w_len = strlen("block4_conv3_W_1_z.npy");
+	fname_b_len = strlen("block4_conv3_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block4_conv3_W_z.npy");
+	strcat(buf, "block4_conv3_W_1_z.npy");
 	ret = load_from_numpy(w_block4_conv3_W, buf, 2359296, &nph_block4_conv3_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block4_conv3_b_z.npy");
+	strcat(buf, "block4_conv3_b_1_z.npy");
 	ret = load_from_numpy(w_block4_conv3_b, buf, 512, &nph_block4_conv3_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1095,19 +1095,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block5_conv1
 	path_len = strlen(path);
-	fname_w_len = strlen("block5_conv1_W_z.npy");
-	fname_b_len = strlen("block5_conv1_b_z.npy");
+	fname_w_len = strlen("block5_conv1_W_1_z.npy");
+	fname_b_len = strlen("block5_conv1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block5_conv1_W_z.npy");
+	strcat(buf, "block5_conv1_W_1_z.npy");
 	ret = load_from_numpy(w_block5_conv1_W, buf, 2359296, &nph_block5_conv1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block5_conv1_b_z.npy");
+	strcat(buf, "block5_conv1_b_1_z.npy");
 	ret = load_from_numpy(w_block5_conv1_b, buf, 512, &nph_block5_conv1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1115,19 +1115,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block5_conv2
 	path_len = strlen(path);
-	fname_w_len = strlen("block5_conv2_W_z.npy");
-	fname_b_len = strlen("block5_conv2_b_z.npy");
+	fname_w_len = strlen("block5_conv2_W_1_z.npy");
+	fname_b_len = strlen("block5_conv2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block5_conv2_W_z.npy");
+	strcat(buf, "block5_conv2_W_1_z.npy");
 	ret = load_from_numpy(w_block5_conv2_W, buf, 2359296, &nph_block5_conv2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block5_conv2_b_z.npy");
+	strcat(buf, "block5_conv2_b_1_z.npy");
 	ret = load_from_numpy(w_block5_conv2_b, buf, 512, &nph_block5_conv2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1135,19 +1135,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // block5_conv3
 	path_len = strlen(path);
-	fname_w_len = strlen("block5_conv3_W_z.npy");
-	fname_b_len = strlen("block5_conv3_b_z.npy");
+	fname_w_len = strlen("block5_conv3_W_1_z.npy");
+	fname_b_len = strlen("block5_conv3_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "block5_conv3_W_z.npy");
+	strcat(buf, "block5_conv3_W_1_z.npy");
 	ret = load_from_numpy(w_block5_conv3_W, buf, 2359296, &nph_block5_conv3_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "block5_conv3_b_z.npy");
+	strcat(buf, "block5_conv3_b_1_z.npy");
 	ret = load_from_numpy(w_block5_conv3_b, buf, 512, &nph_block5_conv3_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1155,19 +1155,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // fc1
 	path_len = strlen(path);
-	fname_w_len = strlen("fc1_W_z.npy");
-	fname_b_len = strlen("fc1_b_z.npy");
+	fname_w_len = strlen("fc1_W_1_z.npy");
+	fname_b_len = strlen("fc1_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "fc1_W_z.npy");
+	strcat(buf, "fc1_W_1_z.npy");
 	ret = load_from_numpy(w_fc1_W, buf, 102760448, &nph_fc1_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "fc1_b_z.npy");
+	strcat(buf, "fc1_b_1_z.npy");
 	ret = load_from_numpy(w_fc1_b, buf, 4096, &nph_fc1_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1175,19 +1175,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // fc2
 	path_len = strlen(path);
-	fname_w_len = strlen("fc2_W_z.npy");
-	fname_b_len = strlen("fc2_b_z.npy");
+	fname_w_len = strlen("fc2_W_1_z.npy");
+	fname_b_len = strlen("fc2_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "fc2_W_z.npy");
+	strcat(buf, "fc2_W_1_z.npy");
 	ret = load_from_numpy(w_fc2_W, buf, 16777216, &nph_fc2_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "fc2_b_z.npy");
+	strcat(buf, "fc2_b_1_z.npy");
 	ret = load_from_numpy(w_fc2_b, buf, 4096, &nph_fc2_b);
 	if(ret != CQT_RET_OK){
 		return ret;
@@ -1195,19 +1195,19 @@ int cqt_load_weight_from_files(CQT_NET* np, const char *path) {
 
 // predictions
 	path_len = strlen(path);
-	fname_w_len = strlen("predictions_W_z.npy");
-	fname_b_len = strlen("predictions_b_z.npy");
+	fname_w_len = strlen("predictions_W_1_z.npy");
+	fname_b_len = strlen("predictions_b_1_z.npy");
 	assert(path_len+fname_w_len<CQT_MAX_PATH);
 	assert(path_len+fname_b_len<CQT_MAX_PATH);
 
 	strcpy(buf, path);
-	strcat(buf, "predictions_W_z.npy");
+	strcat(buf, "predictions_W_1_z.npy");
 	ret = load_from_numpy(w_predictions_W, buf, 4096000, &nph_predictions_W);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 	strcpy(buf, path);
-	strcat(buf, "predictions_b_z.npy");
+	strcat(buf, "predictions_b_1_z.npy");
 	ret = load_from_numpy(w_predictions_b, buf, 1000, &nph_predictions_b);
 	if(ret != CQT_RET_OK){
 		return ret;

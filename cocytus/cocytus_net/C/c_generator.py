@@ -476,9 +476,9 @@ class CqtGenC(CFile):
     def write_cqt_load_weight_from_files(self):
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) {\n')
         self.wr('\tchar buf[CQT_MAX_PATH];\n')
-        self.wr('\tint path_len;\n')
-        self.wr('\tint fname_w_len;\n')
-        self.wr('\tint fname_b_len;\n')
+        self.wr('\tsize_t path_len;\n')
+        self.wr('\tsize_t fname_w_len;\n')
+        self.wr('\tsize_t fname_b_len;\n')
         self.wr('\tint ret;\n')
         self.wr('\n')
 
@@ -491,8 +491,8 @@ class CqtGenC(CFile):
             layer_detal = self.compiler.get_cqt_layer_obj(name)
 
             if class_name in ['Conv2D', 'Dense']:
-                fname_w = name + '_W_z.npy'
-                fname_b = name + '_b_z.npy'
+                fname_w = name + '_W_1_z.npy'
+                fname_b = name + '_b_1_z.npy'
                 [variable_name_w, variable_name_w_header, variable_name_b,
                  variable_name_b_header] = layer_detal.get_conv2d_weight_variable_name()
 

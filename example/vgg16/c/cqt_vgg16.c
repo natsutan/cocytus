@@ -12,9 +12,15 @@
 int main(void)
 {
     CQT_NET *vgg16_p;
+    int ret;
 
     vgg16_p = cqt_init();
     printf("hello cqt\n");
+
+    ret = cqt_load_weight_from_files(vgg16_p, "weight/");
+    if (ret != CQT_RET_OK) {
+        printf("ERROR in cqt_load_weight_from_files %d\n", ret);
+    }
 
     return 0;
 }

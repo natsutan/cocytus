@@ -24,7 +24,6 @@ class WeightConverter:
         if hasattr(f, 'close'):
             f.close()
 
-
     def save_weights_from_hdf5_group(self, f):
         layer_names = [n.decode('utf8') for n in f.attrs['layer_names']]
         print(layer_names)

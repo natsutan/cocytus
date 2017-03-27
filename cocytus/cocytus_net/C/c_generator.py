@@ -26,7 +26,7 @@ class CGenerator:
         self.generate_cqt_gen(target_dir, template_dir)
 
         # ライブラリの作成
-        self.generate_cqt_lib()
+        self.generate_cqt_lib(target_dir, template_dir)
 
     def generate_hedarfiles(self, target_dir, template_dir):
         """
@@ -61,15 +61,17 @@ class CGenerator:
             shutil.copy(os.path.join(template_dir, f),
                         os.path.join(target_dir, 'cqt_lib'))
 
-
-    def generate_cqt_lib(self):
-       """
+    def generate_cqt_lib(self, target_dir, template_dir):
+        """
         ## Ｃライブラリ(cqt_lib)
         ### cqt_lib.h
         ### cqt_lib.c
         ### numpy.c
-       """
-
+        """
+        cqt_lib_h_path = os.path.join(target_dir, 'inc', 'cqt_lib.h')
+        print("making %s" % cqt_lib_h_path)
+        cqt_lib_h = CqtLibH(cqt_lib_h_path, self.compiler)
+        cqt_lib_h.generate()
 
 
 class CFile:
@@ -290,6 +292,7 @@ class CqtGenC(CFile):
     def generate(self):
         self.wr_file_header()
         self.wr_include('cqt_gen.h')
+        self.wr_include('cqt_lib.h')
         self.cr()
 
         self.write_cqt_network()
@@ -560,10 +563,40 @@ class CqtGenC(CFile):
             self.wr('\t}\n')
             self.wr('\n')
 
-
         self.wr('\treturn CQT_RET_OK;\n')
         self.wr('}\n')
 
+
+class CqtLibH(CFile):
+    def __init__(self, file, compiler):
+        super().__init__(file, compiler)
+
+    def __del__(self):
+        super().__del__()
+
+    def generate(self):
+        self.wr_file_header()
+        self.wr_include('cqt.h')
+        self.wr_include('cqt_net.h')
+        self.cr()
+
+        model_config = self.get_config()
+        cqt_net_name = self.compiler.get_model_name()
+
+        func_list = []
+
+        for i, l in enumerate(model_config['layers']):
+            class_name = l['class_name']
+            config = l['config']
+            name = config['name']
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+
+            func_name = layer_detal.make_func_name()
+            if not func_name in func_list:
+                self.wr('int %s(CQT_LAYER *lp, void *inp, void *outp);\n' % func_name)
+                func_list.append(func_name)
+
+        self.cr()
 
 
 def create_c_dir(tdir):

@@ -22,11 +22,12 @@ int main(void)
     //    printf("ERROR in cqt_load_weight_from_files %d\n", ret);
     //}
 
-
     ret = cqt_run(vgg16_p, NULL);
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+
+
 
     return 0;
 }

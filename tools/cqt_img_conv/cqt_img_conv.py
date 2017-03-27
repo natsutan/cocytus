@@ -67,9 +67,6 @@ def main():
     np.save(img_file+'.npy', new_data, allow_pickle=False)
 
 
-
-
-
 if __name__ == '__main__':
     main()
 

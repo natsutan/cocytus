@@ -2,6 +2,7 @@ import os
 import shutil
 import datetime
 from compiler.compiler import CQT_Dtype
+from cocytus_net.C.function_generator import FunctionGenerator
 
 class CGenerator:
     def __init__(self, compiler):
@@ -73,6 +74,10 @@ class CGenerator:
         cqt_lib_h = CqtLibH(cqt_lib_h_path, self.compiler)
         cqt_lib_h.generate()
 
+        fg = FunctionGenerator(self.compiler, self.config, target_dir, template_dir)
+        fg.generate()
+
+
 
 class CFile:
     def __init__(self, file, compier):
@@ -143,7 +148,6 @@ class CFile:
         self.wr('// cocytus network\n')
         self.wr('%sCQT_NET %s;\n' % (scope_s, name))
 
-
     def wr_layer_defination(self, scope=None):
         """
         レイヤー変数の定義を行う。
@@ -159,7 +163,7 @@ class CFile:
             s = "%sLY_%s %s;\n" % (scope_s, class_name, name)
             self.wr(s)
 
-    def wr_weight_defination(self, scope=None):
+    def wr_weight_definition(self, scope=None):
         """
         weight変数の定義を行う。
         scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
@@ -236,8 +240,6 @@ class CFile:
         else:
             self.wr('%s%s = %s;\n' % (tabs, variable_name, str(value)))
 
-
-
     def get_config(self):
         """
         Keras Modelのコンフィグ情報を返す。
@@ -273,7 +275,7 @@ class CqtGenH(CFile):
         self.wr_layer_defination(scope='extern')
         self.cr()
 
-        self.wr_weight_defination(scope='extern')
+        self.wr_weight_definition(scope='extern')
         self.cr()
 
         self.wr_output_defination(scope='extern')
@@ -301,7 +303,7 @@ class CqtGenC(CFile):
         self.wr_layer_defination()
         self.cr()
 
-        self.wr_weight_defination()
+        self.wr_weight_definition()
         self.cr()
 
         self.wr_output_defination()

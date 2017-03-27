@@ -4,27 +4,17 @@ import itertools
 from PIL import Image
 import numpy as np
 
+
 def main():
     parser = argparse.ArgumentParser(description='Image converter')
-    parser.add_argument('-x', nargs='?', help='output image width')
-    parser.add_argument('-y', nargs='?', help='output image height')
     parser.add_argument('img', help='input image')
 
     args = parser.parse_args()
 
     img_file = args.img
     img = Image.open(img_file)
-
-    # サイズ変更
-    if 'x' in args:
-        width = int(args.x)
-    else:
-        width = img.size[0]
-
-    if 'y' in args:
-        height = int(args.y)
-    else:
-        height = img.size[1]
+    width = 224
+    height = 224
 
     if img.size != (width, height):
         img = img.resize((width, height))
@@ -60,9 +50,7 @@ def main():
     new_data[1,:,:] = new_data[1,:,:] - vgg_mean[1]
     new_data[2,:,:] = new_data[2,:,:] - vgg_mean[0]
 
-
     np.save(img_file+'.npy', new_data, allow_pickle=False)
-
 
 if __name__ == '__main__':
     main()

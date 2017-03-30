@@ -130,6 +130,11 @@ typedef struct {
     int dilation_rate[2];
     KR_ACTIVATION activation;
     bool use_bias;
+
+    NUMPY_HEADER *weight_np_header_p;
+    void *weight_p;
+    NUMPY_HEADER *bias_np_header_p;
+    void *bias_p;
 } LY_Conv2D;
 
 typedef struct {
@@ -147,6 +152,12 @@ typedef struct {
     int units;
     KR_ACTIVATION activation;
     bool use_bias;
+
+    NUMPY_HEADER *weight_np_header_p;
+    void *weight_p;
+    NUMPY_HEADER *bias_np_header_p;
+    void *bias_p;
+
 } LY_Dense;
 
 

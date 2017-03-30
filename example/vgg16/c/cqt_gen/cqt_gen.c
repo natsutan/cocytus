@@ -165,6 +165,10 @@ CQT_NET* cqt_init(void) {
 	block1_conv1.dilation_rate[1] = 1;
 	block1_conv1.activation = ACT_RELU;
 	block1_conv1.use_bias = true;
+	block1_conv1.weight_np_header_p = &nph_block1_conv1_W;
+	block1_conv1.weight_p = &w_block1_conv1_W;
+	block1_conv1.bias_np_header_p = &nph_block1_conv1_b;
+	block1_conv1.bias_p = &w_block1_conv1_b;
 	g_cqt_vgg16.layer[1].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[1].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[1].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -201,6 +205,10 @@ CQT_NET* cqt_init(void) {
 	block1_conv2.dilation_rate[1] = 1;
 	block1_conv2.activation = ACT_RELU;
 	block1_conv2.use_bias = true;
+	block1_conv2.weight_np_header_p = &nph_block1_conv2_W;
+	block1_conv2.weight_p = &w_block1_conv2_W;
+	block1_conv2.bias_np_header_p = &nph_block1_conv2_b;
+	block1_conv2.bias_p = &w_block1_conv2_b;
 	g_cqt_vgg16.layer[2].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[2].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[2].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -268,6 +276,10 @@ CQT_NET* cqt_init(void) {
 	block2_conv1.dilation_rate[1] = 1;
 	block2_conv1.activation = ACT_RELU;
 	block2_conv1.use_bias = true;
+	block2_conv1.weight_np_header_p = &nph_block2_conv1_W;
+	block2_conv1.weight_p = &w_block2_conv1_W;
+	block2_conv1.bias_np_header_p = &nph_block2_conv1_b;
+	block2_conv1.bias_p = &w_block2_conv1_b;
 	g_cqt_vgg16.layer[4].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[4].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[4].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -304,6 +316,10 @@ CQT_NET* cqt_init(void) {
 	block2_conv2.dilation_rate[1] = 1;
 	block2_conv2.activation = ACT_RELU;
 	block2_conv2.use_bias = true;
+	block2_conv2.weight_np_header_p = &nph_block2_conv2_W;
+	block2_conv2.weight_p = &w_block2_conv2_W;
+	block2_conv2.bias_np_header_p = &nph_block2_conv2_b;
+	block2_conv2.bias_p = &w_block2_conv2_b;
 	g_cqt_vgg16.layer[5].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[5].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[5].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -371,6 +387,10 @@ CQT_NET* cqt_init(void) {
 	block3_conv1.dilation_rate[1] = 1;
 	block3_conv1.activation = ACT_RELU;
 	block3_conv1.use_bias = true;
+	block3_conv1.weight_np_header_p = &nph_block3_conv1_W;
+	block3_conv1.weight_p = &w_block3_conv1_W;
+	block3_conv1.bias_np_header_p = &nph_block3_conv1_b;
+	block3_conv1.bias_p = &w_block3_conv1_b;
 	g_cqt_vgg16.layer[7].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[7].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[7].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -407,6 +427,10 @@ CQT_NET* cqt_init(void) {
 	block3_conv2.dilation_rate[1] = 1;
 	block3_conv2.activation = ACT_RELU;
 	block3_conv2.use_bias = true;
+	block3_conv2.weight_np_header_p = &nph_block3_conv2_W;
+	block3_conv2.weight_p = &w_block3_conv2_W;
+	block3_conv2.bias_np_header_p = &nph_block3_conv2_b;
+	block3_conv2.bias_p = &w_block3_conv2_b;
 	g_cqt_vgg16.layer[8].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[8].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[8].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -443,6 +467,10 @@ CQT_NET* cqt_init(void) {
 	block3_conv3.dilation_rate[1] = 1;
 	block3_conv3.activation = ACT_RELU;
 	block3_conv3.use_bias = true;
+	block3_conv3.weight_np_header_p = &nph_block3_conv3_W;
+	block3_conv3.weight_p = &w_block3_conv3_W;
+	block3_conv3.bias_np_header_p = &nph_block3_conv3_b;
+	block3_conv3.bias_p = &w_block3_conv3_b;
 	g_cqt_vgg16.layer[9].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[9].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[9].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -510,6 +538,10 @@ CQT_NET* cqt_init(void) {
 	block4_conv1.dilation_rate[1] = 1;
 	block4_conv1.activation = ACT_RELU;
 	block4_conv1.use_bias = true;
+	block4_conv1.weight_np_header_p = &nph_block4_conv1_W;
+	block4_conv1.weight_p = &w_block4_conv1_W;
+	block4_conv1.bias_np_header_p = &nph_block4_conv1_b;
+	block4_conv1.bias_p = &w_block4_conv1_b;
 	g_cqt_vgg16.layer[11].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[11].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[11].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -546,6 +578,10 @@ CQT_NET* cqt_init(void) {
 	block4_conv2.dilation_rate[1] = 1;
 	block4_conv2.activation = ACT_RELU;
 	block4_conv2.use_bias = true;
+	block4_conv2.weight_np_header_p = &nph_block4_conv2_W;
+	block4_conv2.weight_p = &w_block4_conv2_W;
+	block4_conv2.bias_np_header_p = &nph_block4_conv2_b;
+	block4_conv2.bias_p = &w_block4_conv2_b;
 	g_cqt_vgg16.layer[12].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[12].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[12].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -582,6 +618,10 @@ CQT_NET* cqt_init(void) {
 	block4_conv3.dilation_rate[1] = 1;
 	block4_conv3.activation = ACT_RELU;
 	block4_conv3.use_bias = true;
+	block4_conv3.weight_np_header_p = &nph_block4_conv3_W;
+	block4_conv3.weight_p = &w_block4_conv3_W;
+	block4_conv3.bias_np_header_p = &nph_block4_conv3_b;
+	block4_conv3.bias_p = &w_block4_conv3_b;
 	g_cqt_vgg16.layer[13].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[13].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[13].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -649,6 +689,10 @@ CQT_NET* cqt_init(void) {
 	block5_conv1.dilation_rate[1] = 1;
 	block5_conv1.activation = ACT_RELU;
 	block5_conv1.use_bias = true;
+	block5_conv1.weight_np_header_p = &nph_block5_conv1_W;
+	block5_conv1.weight_p = &w_block5_conv1_W;
+	block5_conv1.bias_np_header_p = &nph_block5_conv1_b;
+	block5_conv1.bias_p = &w_block5_conv1_b;
 	g_cqt_vgg16.layer[15].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[15].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[15].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -685,6 +729,10 @@ CQT_NET* cqt_init(void) {
 	block5_conv2.dilation_rate[1] = 1;
 	block5_conv2.activation = ACT_RELU;
 	block5_conv2.use_bias = true;
+	block5_conv2.weight_np_header_p = &nph_block5_conv2_W;
+	block5_conv2.weight_p = &w_block5_conv2_W;
+	block5_conv2.bias_np_header_p = &nph_block5_conv2_b;
+	block5_conv2.bias_p = &w_block5_conv2_b;
 	g_cqt_vgg16.layer[16].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[16].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[16].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -721,6 +769,10 @@ CQT_NET* cqt_init(void) {
 	block5_conv3.dilation_rate[1] = 1;
 	block5_conv3.activation = ACT_RELU;
 	block5_conv3.use_bias = true;
+	block5_conv3.weight_np_header_p = &nph_block5_conv3_W;
+	block5_conv3.weight_p = &w_block5_conv3_W;
+	block5_conv3.bias_np_header_p = &nph_block5_conv3_b;
+	block5_conv3.bias_p = &w_block5_conv3_b;
 	g_cqt_vgg16.layer[17].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[17].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[17].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -805,6 +857,10 @@ CQT_NET* cqt_init(void) {
 	fc1.units = 4096;
 	fc1.activation = ACT_RELU;
 	fc1.use_bias = true;
+	fc1.weight_np_header_p = &nph_fc1_W;
+	fc1.weight_p = &w_fc1_W;
+	fc1.bias_np_header_p = &nph_fc1_b;
+	fc1.bias_p = &w_fc1_b;
 	g_cqt_vgg16.layer[20].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[20].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[20].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -833,6 +889,10 @@ CQT_NET* cqt_init(void) {
 	fc2.units = 4096;
 	fc2.activation = ACT_RELU;
 	fc2.use_bias = true;
+	fc2.weight_np_header_p = &nph_fc2_W;
+	fc2.weight_p = &w_fc2_W;
+	fc2.bias_np_header_p = &nph_fc2_b;
+	fc2.bias_p = &w_fc2_b;
 	g_cqt_vgg16.layer[21].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[21].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[21].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -861,6 +921,10 @@ CQT_NET* cqt_init(void) {
 	predictions.units = 1000;
 	predictions.activation = ACT_SOFTMAX;
 	predictions.use_bias = true;
+	predictions.weight_np_header_p = &nph_predictions_W;
+	predictions.weight_p = &w_predictions_W;
+	predictions.bias_np_header_p = &nph_predictions_b;
+	predictions.bias_p = &w_predictions_b;
 	g_cqt_vgg16.layer[22].input_dtypes[0] = CQT_FLOAT32;
 	g_cqt_vgg16.layer[22].input_dtypes[1] = CQT_DTYPE_NONE;
 	g_cqt_vgg16.layer[22].input_dtypes[2] = CQT_DTYPE_NONE;
@@ -1227,13 +1291,13 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	//block1_conv1
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[1]), input_1_output, block1_conv1_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[1]), input_1_output, block1_conv1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block1_conv2
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[2]), block1_conv1_output, block1_conv2_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[2]), block1_conv1_output, block1_conv2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -1245,13 +1309,13 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	//block2_conv1
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[4]), block1_pool_output, block2_conv1_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[4]), block1_pool_output, block2_conv1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block2_conv2
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[5]), block2_conv1_output, block2_conv2_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[5]), block2_conv1_output, block2_conv2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -1263,19 +1327,19 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	//block3_conv1
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[7]), block2_pool_output, block3_conv1_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[7]), block2_pool_output, block3_conv1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block3_conv2
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[8]), block3_conv1_output, block3_conv2_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[8]), block3_conv1_output, block3_conv2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block3_conv3
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[9]), block3_conv2_output, block3_conv3_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[9]), block3_conv2_output, block3_conv3_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -1287,19 +1351,19 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	//block4_conv1
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[11]), block3_pool_output, block4_conv1_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[11]), block3_pool_output, block4_conv1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block4_conv2
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[12]), block4_conv1_output, block4_conv2_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[12]), block4_conv1_output, block4_conv2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block4_conv3
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[13]), block4_conv2_output, block4_conv3_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[13]), block4_conv2_output, block4_conv3_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -1311,19 +1375,19 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	//block5_conv1
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[15]), block4_pool_output, block5_conv1_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[15]), block4_pool_output, block5_conv1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block5_conv2
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[16]), block5_conv1_output, block5_conv2_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[16]), block5_conv1_output, block5_conv2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
 
 	//block5_conv3
-	ret = CQT_Conv2D_3x3_if_of(&(g_cqt_vgg16.layer[17]), block5_conv2_output, block5_conv3_output);
+	ret = CQT_Conv2D_same_3x3_if_of(&(g_cqt_vgg16.layer[17]), block5_conv2_output, block5_conv3_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}

@@ -438,6 +438,7 @@ class CqtGenC(CFile):
         config = l['config']
         class_name = l['class_name']
         layer_detal = self.compiler.get_cqt_layer_obj(name)
+        w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
         self.wr_assign("%s.filters" % name, config['filters'])
         self.wr_assign("%s.kernel_size" % name, config['kernel_size'])
@@ -447,6 +448,11 @@ class CqtGenC(CFile):
         self.wr_assign("%s.dilation_rate" % name, config['dilation_rate'])
         self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
         self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
+        self.wr_assign("%s.weight_np_header_p" % name, '&'+ w_nph_name)
+        self.wr_assign("%s.weight_p" % name, '&'+ w_name)
+        self.wr_assign("%s.bias_np_header_p" % name, '&'+ b_nph_name)
+        self.wr_assign("%s.bias_p" % name, '&'+ b_name)
+
 
     def write_maxpooling2d(self, l):
         """
@@ -474,10 +480,16 @@ class CqtGenC(CFile):
         config = l['config']
         class_name = l['class_name']
         layer_detal = self.compiler.get_cqt_layer_obj(name)
+        w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
         self.wr_assign("%s.units" % name, config['units'])
         self.wr_assign("%s.activation" % name, self.act_dic[config['activation']])
         self.wr_assign("%s.use_bias" % name, self.bool_dic[config['use_bias']])
+        self.wr_assign("%s.weight_np_header_p" % name, '&'+ w_nph_name)
+        self.wr_assign("%s.weight_p" % name, '&'+ w_name)
+        self.wr_assign("%s.bias_np_header_p" % name, '&'+ b_nph_name)
+        self.wr_assign("%s.bias_p" % name, '&'+ b_name)
+
 
     def write_cqt_load_weight_from_files(self):
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) {\n')

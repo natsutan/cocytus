@@ -9,4 +9,5 @@ add_executable(cqt_vgg16
         cqt_gen/cqt_gen.c
         cqt_lib/numpy.c
         cqt_lib/cqt_lib.c
+        cqt_lib/InputLayer.c
         )

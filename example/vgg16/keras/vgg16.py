@@ -3,9 +3,9 @@ from keras.preprocessing import image
 from keras import backend as K
 import numpy as np
 
-#img_file = '../img/3.jpg'
+img_file = '../img/3.jpg'
 #img_file = '../img/test_00.png'
-img_file = '../img/dog.jpg'
+#img_file = '../img/dog.jpg'
 
 model = VGG16(include_top=True, weights='imagenet', input_tensor=None, input_shape=None)
 

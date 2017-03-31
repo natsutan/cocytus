@@ -3,9 +3,9 @@ from keras.preprocessing import image
 from keras import backend as K
 import numpy as np
 
-img_file = '../img/3.jpg'
+#img_file = '../img/3.jpg'
 #img_file = '../img/test_00.png'
-#img_file = '../img/dog.jpg'
+img_file = '../img/dog.png'
 
 model = VGG16(include_top=True, weights='imagenet', input_tensor=None, input_shape=None)
 
@@ -33,20 +33,20 @@ with open('vgg16.json', 'w') as fp:
     fp.write(json_string)
 
 
-l = 0
+l = 1
 get_layer_output = K.function([model.layers[0].input, K.learning_phase()], [model.layers[l].output])
 layer_output = get_layer_output([x, 0])
 
 
 print('L ', l, ' ', layer_output[0].shape)
-if l == 0:
+if l == 1:
     arr = layer_output[0][0]
     r = layer_output[0][0][:,:,0]
     g = layer_output[0][0][:,:,1]
-    b = layer_output[0][0][:,:,2]
+    b = layer_output[0][0][:,:,63]
 
-    np.save('output/l%02d_0.npy' % l, r, allow_pickle=False)
-    np.save('output/l%02d_1.npy' % l, g, allow_pickle=False)
-    np.save('output/l%02d_2.npy' % l, b, allow_pickle=False)
+    np.save('output/dog_l%02d_0.npy' % l, r, allow_pickle=False)
+    np.save('output/dog_l%02d_1.npy' % l, g, allow_pickle=False)
+    np.save('output/dog_l%02d_63.npy' % l, b, allow_pickle=False)
 
 print('finish.')

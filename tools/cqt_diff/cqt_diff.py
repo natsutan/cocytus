@@ -6,9 +6,9 @@ keras_dir = '../../example/vgg16/keras/output/'
 cqt_dir = '../../example/vgg16/c/output/'
 
 def layer0_comp():
-    for i in range(3):
-        keras_path = os.path.join(keras_dir, "l00_%d.npy" % i)
-        cqt_path = os.path.join(cqt_dir, "l00_%d.npy" % i)
+    for i in [0,1,63]:
+        keras_path = os.path.join(keras_dir, "dog_l01_%d.npy" % i)
+        cqt_path = os.path.join(cqt_dir, "dog_l01_%d.npy" % i)
 
         keras_data = np.load(keras_path)
         cqt_data = np.load(cqt_path)

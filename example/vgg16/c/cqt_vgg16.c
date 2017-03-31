@@ -12,6 +12,7 @@
 NUMPY_HEADER np;
 
 void layer0_output(void);
+void layer1_output(void);
 
 int main(void)
 {
@@ -23,23 +24,23 @@ int main(void)
 
     //input layer の出力に画像データを格納する。
 
-    ret = load_from_numpy(input_1_output, "../img/dog.jpg.npy", 3*224*224, &np);
+    ret = load_from_numpy(input_1_output, "../img/dog.png.npy", 3*224*224, &np);
     if(ret != CQT_RET_OK) {
         printf("error in load_from_numpy %d\n", ret);
         exit(1);
     }
 
-    //ret = cqt_load_weight_from_files(vgg16_p, "weight/");
-    //if (ret != CQT_RET_OK) {
-    //    printf("ERROR in cqt_load_weight_from_files %d\n", ret);
-    //}
+    ret = cqt_load_weight_from_files(vgg16_p, "weight/");
+    if (ret != CQT_RET_OK) {
+        printf("ERROR in cqt_load_weight_from_files %d\n", ret);
+    }
 
     ret = cqt_run(vgg16_p, NULL);
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    layer0_output();
+    layer1_output();
 
     return 0;
 }
@@ -71,4 +72,28 @@ void layer0_output(void)
     }
 
 
+}
+
+void layer1_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 224 * 224;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(block1_conv1_output[0], "output/dog_l01_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+    ret = save_to_numpy(block1_conv1_output[1], "output/dog_l01_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+    ret = save_to_numpy(block1_conv1_output[63], "output/dog_l01_63.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
 }

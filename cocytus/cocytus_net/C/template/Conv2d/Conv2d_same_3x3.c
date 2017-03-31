@@ -54,9 +54,9 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 			for(y=0;y<input_size_y;y++) {
 				for(x=0;x<input_size_x;x++) {
 					//get data
-					idx_i = n * (input_size_y * input_size_x) + ((y - 1) * input_size_x) + x;
-					idx_o = f * (input_size_y * input_size_x) + ((y - 1) * (input_size_y)) + (x - 1);
-                    o_data = *(op + idx_o);
+					idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
+					idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
+					o_data = *(op + idx_o);
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
@@ -90,9 +90,9 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         data3x3[0][2] = 0;
                     }
                     if (y == (input_size_y - 1)) {
-                        data3x3[0][0] = 0;
-                        data3x3[0][1] = 0;
-                        data3x3[0][2] = 0;
+                        data3x3[2][0] = 0;
+                        data3x3[2][1] = 0;
+                        data3x3[2][2] = 0;
                     }
 
 

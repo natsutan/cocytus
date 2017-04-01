@@ -17,6 +17,7 @@ void layer2_output(void);
 void layer3_output(void);
 void layer15_output(void);
 void layer17_output(void);
+void layer19_output(void);
 
 int main(void)
 {
@@ -34,17 +35,17 @@ int main(void)
         exit(1);
     }
 
-    //ret = cqt_load_weight_from_files(vgg16_p, "weight/");
-    //if (ret != CQT_RET_OK) {
-    //    printf("ERROR in cqt_load_weight_from_files %d\n", ret);
-    //}
+    ret = cqt_load_weight_from_files(vgg16_p, "weight/");
+    if (ret != CQT_RET_OK) {
+        printf("ERROR in cqt_load_weight_from_files %d\n", ret);
+    }
 
     ret = cqt_run(vgg16_p, NULL);
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    layer15_output();
+    layer19_output();
 
     return 0;
 }
@@ -189,7 +190,30 @@ void layer15_output(void)
         printf("ERROR in layer1_output %d\n", ret);
     }
     ret = save_to_numpy(block5_conv1_output[1], "output/dog_l15_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {void layer17_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 14 * 14;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(block5_conv3_output[0], "output/dog_l17_0.npy", &np_0);
     if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+    ret = save_to_numpy(block5_conv3_output[1], "output/dog_l17_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+    ret = save_to_numpy(block5_conv3_output[511], "output/dog_l17_511.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+}
+
         printf("ERROR in layer1_output %d\n", ret);
     }
     ret = save_to_numpy(block5_conv1_output[511], "output/dog_l15_511.npy", &np_0);
@@ -216,7 +240,23 @@ void layer17_output(void)
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer1_output %d\n", ret);
     }
-    ret = save_to_numpy(block5_conv3_output[512], "output/dog_l17_512.npy", &np_0);
+    ret = save_to_numpy(block5_conv3_output[511], "output/dog_l17_511.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+}
+
+void layer19_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 25088;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(flatten_output, "output/dog_l19_0.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer1_output %d\n", ret);
     }

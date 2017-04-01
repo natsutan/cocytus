@@ -16,6 +16,8 @@ class FunctionGenerator:
 
         self.conv2d_same_3x3_first = True
         self.maxpoolong2d_first = True
+        self.flatten_first = True
+
 
     def get_config(self):
         """
@@ -45,6 +47,8 @@ class FunctionGenerator:
                     self.generate_conv2d(layer_detail)
                 elif class_name == 'MaxPooling2D':
                     self.generate_maxpooling2d(layer_detail)
+                elif class_name == 'Flatten':
+                    self.generate_flatten(layer_detail)
 
                 func_list.append(func_name)
 
@@ -117,5 +121,29 @@ class FunctionGenerator:
                                     output_type=ctype_dic[output_type])
             fpout.write(func_str)
 
+    def generate_flatten(self, layer_detail):
+
+        func_name = layer_detail.make_func_name()
+        input_type = layer_detail.input_dtypes[0]
+        output_type = layer_detail.output_dtypes[0]
+
+        output_file = os.path.join(self.target_dir, 'cqt_lib', 'Flatten.c')
+        template_file = os.path.join(self.template_dir, 'Flatten', 'Flatten.c')
+
+        if self.flatten_first:
+            with open(output_file, 'w') as fp:
+                fp.write('#include <string.h>\n')
+                fp.write('#include <assert.h>\n')
+                fp.write('#include "cqt.h"\n')
+                fp.write('#include "cqt_net.h"\n')
+                fp.write('\n')
+            self.flatten_first = False
+
+        with open(output_file, 'a') as fpout:
+            t = string.Template(open(template_file).read())
+            func_str = t.substitute(func_name=func_name,
+                                    input_type=ctype_dic[input_type],
+                                    output_type=ctype_dic[output_type])
+            fpout.write(func_str)
 
 

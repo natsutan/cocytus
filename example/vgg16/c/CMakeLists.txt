@@ -12,4 +12,5 @@ add_executable(cqt_vgg16
         cqt_lib/InputLayer.c
         cqt_lib/Conv2d_same_3x3.c
         cqt_lib/MaxPooling2D.c
+        cqt_lib/Flatten.c
         )

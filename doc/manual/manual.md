@@ -30,25 +30,22 @@
 ## 起動方法
 コマンドラインからcocytus.pyを実行する。
 ```
-python cocuytus.py [options] iniファイル
+python cocuytus.py iniファイル
 ```
-コマンドラインのオプションと、iniファイルでは同じ内容を指定でき、内容が重複する場合はコマンドラインによる指定が優先される。
 
 
-## オプション一覧
-オプションの一覧を以下に示す。表中、空欄の箇所は対応するオプションが存在しないことを示す。
+## 設定一覧
+設定の一覧を以下に示す。
 
 Table: オプション一覧
 
-| オプション名 | コマンドラインオプション| iniファイルセクション|iniファイルエントリー |設定例|内容|
-|:-----------|:------------|:------------|:------------|:------------|:--------|
-| ネットワーク指定| --keras_json | [Cocyuts] | keres_json | "~/foo/baa.json" | 変換するネットワーク(jsonファイル)を指定する。（必須)|
-| 重み指定| --keras_weight | [Cocyuts] | keras_weight | "~/foo/baa.h5" | 変換する重み(hdf5ファイル)を指定する。（必須)|
-| 出力ディレクトリ | --output_dir | [Cocyuts] | output_dir | "~/proj/" | ファイルの出力先（必須)|
-| Ｃライブラリディレクトリ | --c_lib_dir | [Cocyuts] | c_lib_dir | "./../../cocytus/cocytus_net/C/template" | Cライブラリ指定（必須)|
-| 重み出力ディレクトリ| --weight_output_dir | [Cocyuts] | weight_output_dir | "~/proj/weight/" | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
-| 最適化レベル| --optimize | [Optimize] | optimeize | 2 | ニューラルネットの最適化レベルの指定。０で最適化をしない（デフォルト値）。未実装|
-| バージョン表示| --version |  |  |  | コキュートスのバージョンを表示し終了する。|
+| オプション名 |  iniファイルセクション|iniファイルエントリー |設定例|内容|
+|:-----------|:------------|:------------|:------------|:--------|
+| ネットワーク指定|  [Cocyuts] | keres_json | "~/foo/baa.json" | 変換するネットワーク(jsonファイル)を指定する。（必須)|
+| 重み指定|  [Cocyuts] | keras_weight | "~/foo/baa.h5" | 変換する重み(hdf5ファイル)を指定する。（必須)|
+| 出力ディレクトリ |  [Cocyuts] | output_dir | "~/proj/" | ファイルの出力先（必須)|
+| Ｃライブラリディレクトリ |  [Cocyuts] | c_lib_dir | "./../../cocytus/cocytus_net/C/template" | Cライブラリ指定（必須)|
+| 重み出力ディレクトリ|  [Cocyuts] | weight_output_dir | "~/proj/weight/" | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
 
 ## iniファイル例
 

@@ -16,6 +16,6 @@ add_executable(cqt_vgg16
         cqt_lib/MaxPooling2D.c
         cqt_lib/Flatten.c
         cqt_lib/Dense.c
-        )
+        vgg16_debug.c vgg_table.h)
 
 target_link_libraries(cqt_vgg16 m)

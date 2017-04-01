@@ -2,7 +2,7 @@
 #pragma once
 //-----------------------------
 //compile時のdefine上書きで変更可能
-#define CQT_MAX_LAYER_NUM   16  //最大レイヤー数
+#define CQT_MAX_LAYER_NUM   32  //最大レイヤー数
 #define CQT_MAX_LAYER_NAME 256  //レイヤー名の最大文字数
 
 //-----------------------------

@@ -33,20 +33,33 @@ with open('vgg16.json', 'w') as fp:
     fp.write(json_string)
 
 
-l = 1
+l = 3
 get_layer_output = K.function([model.layers[0].input, K.learning_phase()], [model.layers[l].output])
 layer_output = get_layer_output([x, 0])
 
 
 print('L ', l, ' ', layer_output[0].shape)
-if l == 1:
+if l == 2:
     arr = layer_output[0][0]
-    r = layer_output[0][0][:,:,0]
-    g = layer_output[0][0][:,:,1]
-    b = layer_output[0][0][:,:,63]
+    d0 = layer_output[0][0][:,:,0]
+    d1 = layer_output[0][0][:,:,1]
+    d2 = layer_output[0][0][:,:,63]
 
-    np.save('output/dog_l%02d_0.npy' % l, r, allow_pickle=False)
-    np.save('output/dog_l%02d_1.npy' % l, g, allow_pickle=False)
-    np.save('output/dog_l%02d_63.npy' % l, b, allow_pickle=False)
+    np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
+    np.save('output/dog_l%02d_1.npy' % l, d1, allow_pickle=False)
+    np.save('output/dog_l%02d_63.npy' % l, d2, allow_pickle=False)
+
+
+if l == 3:
+    arr = layer_output[0][0]
+    d0 = layer_output[0][0][:,:,0]
+    d1 = layer_output[0][0][:,:,1]
+    d2 = layer_output[0][0][:,:,63]
+
+    np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
+    np.save('output/dog_l%02d_1.npy' % l, d1, allow_pickle=False)
+    np.save('output/dog_l%02d_63.npy' % l, d2, allow_pickle=False)
+
+
 
 print('finish.')

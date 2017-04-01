@@ -1,17 +1,14 @@
 int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 {
-	//sizeチェック必要
-	LY_Flatten *flp;
-	flp = lp->param_p;
 
    //loop counter
 	int k, l, m, n;
 
     //コメントは、入力の形が 40x12x12の時
-	int k_max = lp->cqt_input_shape[3]; //1
-	int l_max = lp->cqt_input_shape[2]; //12
-	int m_max = lp->cqt_input_shape[1]; //12
-	int n_max = lp->cqt_input_shape[0]; //40
+	int k_max = lp->cqt_input_shape[0]; //1
+	int l_max = lp->cqt_input_shape[1]; //12
+	int m_max = lp->cqt_input_shape[2]; //12
+	int n_max = lp->cqt_input_shape[3]; //40
 	//assert(k_max!=0);
 	assert(l_max!=0);
 	assert(m_max!=0);

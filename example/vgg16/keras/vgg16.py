@@ -33,10 +33,9 @@ with open('vgg16.json', 'w') as fp:
     fp.write(json_string)
 
 
-l = 19
+l = 21
 get_layer_output = K.function([model.layers[0].input, K.learning_phase()], [model.layers[l].output])
 layer_output = get_layer_output([x, 0])
-
 
 print('L ', l, ' ', layer_output[0].shape)
 if l == 2:
@@ -97,6 +96,14 @@ if l == 19:
 
     np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
 
+if l == 21:
+    arr = layer_output[0][0]
+    d0 = layer_output[0][:]
+
+    np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
+
+
+np.save('output/pred.npy' , preds, allow_pickle=False)
 
 
 

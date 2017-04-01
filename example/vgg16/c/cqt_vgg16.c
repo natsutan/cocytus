@@ -18,6 +18,8 @@ void layer3_output(void);
 void layer15_output(void);
 void layer17_output(void);
 void layer19_output(void);
+void layer21_output(void);
+void last_layer_output(void);
 
 int main(void)
 {
@@ -45,7 +47,10 @@ int main(void)
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    layer19_output();
+    //layer19_output();
+    layer21_output();
+    last_layer_output();
+
 
     return 0;
 }
@@ -260,4 +265,47 @@ void layer19_output(void)
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer1_output %d\n", ret);
     }
+}
+
+
+void layer21_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 4096;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(fc2_output, "output/dog_l21_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+}
+
+
+void last_layer_output(void)
+{
+//    int i;
+//    for(i=0;i<1000;i++) {
+//        float pred = predictions_output[i];
+//        printf("%d %f\n", i, pred);
+//
+//    }
+
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 1000;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(predictions_output, "output/pred.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer1_output %d\n", ret);
+    }
+
+
 }

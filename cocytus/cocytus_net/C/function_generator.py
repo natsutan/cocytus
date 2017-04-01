@@ -17,6 +17,7 @@ class FunctionGenerator:
         self.conv2d_same_3x3_first = True
         self.maxpoolong2d_first = True
         self.flatten_first = True
+        self.dense_first = True
 
 
     def get_config(self):
@@ -49,6 +50,8 @@ class FunctionGenerator:
                     self.generate_maxpooling2d(layer_detail)
                 elif class_name == 'Flatten':
                     self.generate_flatten(layer_detail)
+                elif class_name == 'Dense':
+                    self.generate_dense(layer_detail)
 
                 func_list.append(func_name)
 
@@ -143,6 +146,34 @@ class FunctionGenerator:
             t = string.Template(open(template_file).read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
+                                    output_type=ctype_dic[output_type])
+            fpout.write(func_str)
+
+    def generate_dense(self, layer_detail):
+
+        func_name = layer_detail.make_func_name()
+        input_type = layer_detail.input_dtypes[0]
+        output_type = layer_detail.output_dtypes[0]
+        weight_type = layer_detail.weight_dtypes[0]
+
+        output_file = os.path.join(self.target_dir, 'cqt_lib', 'Dense.c')
+        template_file = os.path.join(self.template_dir, 'Dense', 'Dense.c')
+
+        if self.dense_first:
+            with open(output_file, 'w') as fp:
+                fp.write('#include <string.h>\n')
+                fp.write('#include <assert.h>\n')
+                fp.write('#include <math.h>\n')
+                fp.write('#include "cqt.h"\n')
+                fp.write('#include "cqt_net.h"\n')
+                fp.write('\n')
+            self.dense_first = False
+
+        with open(output_file, 'a') as fpout:
+            t = string.Template(open(template_file).read())
+            func_str = t.substitute(func_name=func_name,
+                                    input_type=ctype_dic[input_type],
+                                    weight_type=ctype_dic[weight_type],
                                     output_type=ctype_dic[output_type])
             fpout.write(func_str)
 

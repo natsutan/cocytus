@@ -7,8 +7,8 @@ digraph Cocytus_Arch {
     "Keras" -> "weight(hdf5)" -> "Cocytus";
     "Keras" -> "Keras debug infomation";
 
-    "Cocytus" -> "cyt_gen" ; 
-    "Cocytus" -> "cyt_lib" ;
+    "Cocytus" -> "cqt_gen" ;
+    "Cocytus" -> "cqt_lib" ;
     "Cocytus" -> "Cocytus weight(numpy)";
     
     // link

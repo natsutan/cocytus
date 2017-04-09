@@ -51,7 +51,7 @@ int main(void)
 
     //input layer の出力に画像データを格納する。
 
-    ret = load_from_numpy(input_1_output, "../img/cat.png.npy", 3*224*224, &np);
+    ret = load_from_numpy(input_1_output, "../img/dog.png.npy", 3*224*224, &np);
     if(ret != CQT_RET_OK) {
         printf("error in load_from_numpy %d\n", ret);
         exit(1);
@@ -62,13 +62,18 @@ int main(void)
         printf("ERROR in cqt_load_weight_from_files %d\n", ret);
     }
 
+    printf("start run\n");
     ret = cqt_run(vgg16_p, NULL);
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-
-
     print_result();
+
+
+    layer0_output();
+    layer21_output();
+    last_layer_output();
+
 
     return 0;
 }

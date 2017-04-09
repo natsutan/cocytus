@@ -17,17 +17,17 @@ void layer0_output(void)
     np_0.shape[2] = 0;
     np_0.shape[3] = 0;
 
-    ret = save_to_numpy(input_1_output[0], "output/l00_0.npy", &np_0);
+    ret = save_to_numpy(input_1_output[0], "output/dog_l00_0.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer0_output %d\n", ret);
 
     }
-    ret = save_to_numpy(input_1_output[1], "output/l00_1.npy", &np_0);
+    ret = save_to_numpy(input_1_output[1], "output/dog_l00_1.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer0_output %d\n", ret);
 
     }
-    ret = save_to_numpy(input_1_output[2], "output/l00_2.npy", &np_0);
+    ret = save_to_numpy(input_1_output[2], "output/dog_l00_2.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer0_output %d\n", ret);
 

@@ -1,8 +1,14 @@
 import argparse
 import sys
 import itertools
-from PIL import Image
+
+from keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
+# from keras.preprocessing import image
+from keras import backend as K
+
+
 import numpy as np
+from PIL import Image
 
 
 def main():
@@ -24,8 +30,6 @@ def main():
 
     ori_shape = arr.shape
 
-    np.save(img_file + '.npy', arr, allow_pickle=False)
-
     if len(ori_shape) == 1:
         np.save(img_file + '.npy', arr, allow_pickle=False)
         sys.exit(0)
@@ -39,16 +43,24 @@ def main():
 
     if len(ori_shape) == 3:
         for i, j, k in itertools.product(i_r, j_r, range(new_shape[2])):
-            new_data[i][k][j] = arr[k][j][i]
+            # RGB -> BGR
+            if i == 0:
+                id = 2
+            elif i == 2:
+                id = 0
+            else:
+                id = 1
+
+            new_data[id][k][j] = arr[k][j][i]
     else:
         print("error")
         sys.exit(1)
 
     # ＶＧＧ平均値の減算
     vgg_mean = [103.939, 116.779, 123.68]
-    new_data[0,:,:] = new_data[0,:,:] - vgg_mean[2]
+    new_data[0,:,:] = new_data[0,:,:] - vgg_mean[0]
     new_data[1,:,:] = new_data[1,:,:] - vgg_mean[1]
-    new_data[2,:,:] = new_data[2,:,:] - vgg_mean[0]
+    new_data[2,:,:] = new_data[2,:,:] - vgg_mean[2]
 
     np.save(img_file+'.npy', new_data, allow_pickle=False)
 

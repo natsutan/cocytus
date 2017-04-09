@@ -1,27 +1,19 @@
 from keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
-# from keras.preprocessing import image
+from keras.preprocessing import image
 from keras import backend as K
 import numpy as np
-from PIL import Image
 
 #img_file = '../img/3.jpg'
 #img_file = '../img/test_00.png'
 img_file = '../img/dog.png'
 
 
-#img = image.load_img(img_file, target_size=(224, 224))
-
 width = 224
 height = 224
 
-
 def main():
-    img = Image.open(img_file)
-    if img.size != (width, height):
-        img = img.resize((width, height))
-
-    x0 = np.asarray(img, dtype=np.float32)
-    x = x0.copy()
+    img = image.load_img(img_file, target_size=(224, 224))
+    x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     pre_x = preprocess_input(x)
 

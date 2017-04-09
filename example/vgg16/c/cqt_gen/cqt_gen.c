@@ -919,7 +919,7 @@ CQT_NET* cqt_init(void) {
 	strcpy(g_cqt_vgg16.layer[22].name, "predictions");
 	g_cqt_vgg16.layer[22].type = LT_Dense;
 	predictions.units = 1000;
-	predictions.activation = ACT_LINEAR;
+	predictions.activation = ACT_SOFTMAX;
 	predictions.use_bias = true;
 	predictions.weight_np_header_p = &nph_predictions_W;
 	predictions.weight_p = &w_predictions_W;

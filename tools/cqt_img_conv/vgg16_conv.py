@@ -2,14 +2,8 @@ import argparse
 import sys
 import itertools
 
-from keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
-# from keras.preprocessing import image
-from keras import backend as K
-
-
 import numpy as np
 from PIL import Image
-
 
 def main():
     parser = argparse.ArgumentParser(description='Image converter')

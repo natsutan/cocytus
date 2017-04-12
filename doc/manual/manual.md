@@ -1,7 +1,7 @@
 # はじめに
 コキュートスとは、組込向けDeep Learningフレームワークである。Kerasから、ネットワーク構成と学習結果を読みだし、移植性の高いＣソースコードを生成する。コキュートスは以下の特徴を持つ。
 - 組込み向けＣソースコードの生成機能
-- 生成されたＣソースとＫｅｒａｓの出力を比較するデバッグ機能
+- 生成されたＣソースとKerasの出力を比較するデバッグ機能
 
 本マニュアルは、コキュートスの使用方法について記述したものである。
 
@@ -48,8 +48,25 @@ Table: オプション一覧
 | 重み出力ディレクトリ|  [Cocyuts] | weight_output_dir | "~/proj/weight/" | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
 
 ## iniファイル例
+iniファイルの例を以下に示す。
 
+```
+[Cocyuts]
+; 変換するネットワーク(jsonファイル)を指定する。
+keres_json=keras/vgg16.json
 
+; ファイルの出力先
+output_dir=c
+
+; コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。
+;weight_output_dir=c/weight
+
+; 変換する重み(hdf5ファイル)を指定する。
+keras_weight=~/.keras/models/vgg16_weights_tf_dim_ordering_tf_kernels.h5
+
+; C言語のテンプレートディレクトリ
+c_lib_dir=../../cocytus/cocytus_net/C/template/
+```
 
 # コキュートスAPI
 ## cqt_init

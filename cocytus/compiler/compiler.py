@@ -1,4 +1,6 @@
 from enum import Enum
+import configparser
+
 import tensorflow as tf
 from keras.models import model_from_json
 
@@ -225,6 +227,20 @@ class CocytusCompiler:
 
         layer_detal = self.cqt_layers[i-1]
         return layer_detal.get_output_variable_name()
+
+    def get_conv2d_optlevel(self):
+        """
+        CONV2dレイヤの最適化レベルを取得する。
+        最適化レベルが指定されていない時は、""を返す。
+        :return:
+        """
+
+        try:
+            opt = self.config.get('CGEN', 'Conv2d_OPTLEVEL')
+            return opt
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return ""
+
 
 def conv_type_np_to_cqt(tf_type):
     """

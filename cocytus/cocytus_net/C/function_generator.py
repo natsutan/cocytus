@@ -76,7 +76,16 @@ class FunctionGenerator:
 
         if kernel_size == (3, 3) and padding == 'same':
             output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_3x3.c')
-            template_file = os.path.join(self.template_dir, 'Conv2d', 'Conv2d_same_3x3.c')
+
+            opt_level = self.compiler.get_conv2d_optlevel()
+            if opt_level == 'dash':
+                conv2d_template_fname = 'Conv2d_same_3x3_dash.c'
+            else:
+                if opt_level != '':
+                    print("WARNING unkown Conv2d optimze level %s, use dafalut(no optimize)." % opt_level)
+                conv2d_template_fname = 'Conv2d_same_3x3.c'
+
+            template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 
             if self.conv2d_same_3x3_first:
                 with open(output_file, 'w') as fp:

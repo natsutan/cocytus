@@ -41,11 +41,14 @@ Table: オプション一覧
 
 | オプション名 |  iniファイルセクション|iniファイルエントリー |設定例|内容|
 |:-----------|:------------|:------------|:------------|:--------|
-| ネットワーク指定|  [Cocyuts] | keres_json | "~/foo/baa.json" | 変換するネットワーク(jsonファイル)を指定する。（必須)|
-| 重み指定|  [Cocyuts] | keras_weight | "~/foo/baa.h5" | 変換する重み(hdf5ファイル)を指定する。（必須)|
-| 出力ディレクトリ |  [Cocyuts] | output_dir | "~/proj/" | ファイルの出力先（必須)|
-| Ｃライブラリディレクトリ |  [Cocyuts] | c_lib_dir | "./../../cocytus/cocytus_net/C/template" | Cライブラリ指定（必須)|
-| 重み出力ディレクトリ|  [Cocyuts] | weight_output_dir | "~/proj/weight/" | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
+| ネットワーク指定|  [Cocyuts] | keres_json | ~/foo/baa.json | 変換するネットワーク(jsonファイル)を指定する。（必須)|
+| 重み指定|  [Cocyuts] | keras_weight | ~/foo/baa.h5 | 変換する重み(hdf5ファイル)を指定する。（必須)|
+| 出力ディレクトリ |  [Cocyuts] | output_dir | ~/proj/ | ファイルの出力先（必須)|
+| Ｃライブラリディレクトリ |  [Cocyuts] | c_lib_dir | ./../../cocytus/cocytus_net/C/template | Cライブラリ指定（必須)|
+| 重み出力ディレクトリ|  [Cocyuts] | weight_output_dir | ~/proj/weight/ | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
+| Conv2d最適化レベル |  [CGEN] | Conv2d_OPTLEVEL | dash | CONV2dレイヤの最適化レベルを指定します。dashで最適化をONにします。デフォルト値は最適化無しです。|
+
+
 
 ## iniファイル例
 iniファイルの例を以下に示す。

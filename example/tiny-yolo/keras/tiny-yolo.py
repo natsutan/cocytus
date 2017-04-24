@@ -117,12 +117,15 @@ def box_iou(a, b):
     return box_intersection(a, b)/box_union(a, b);
 
 
-1
+
 def get_region_box(x, biases, n, index, i, j, w, h):
     b = box()
+    row = index // r_w
+    col = index % r_w
+
     b.x = (i + logistic_activate(x[index + 0])) / w
     b.y = (j + logistic_activate(x[index + 1])) / h
-    b.w = math.exp(x[index + 2]) * biases[2*n]   / w
+    b.w = math.exp(x[index + 2]) * biases[2*n] / w
     b.h = math.exp(x[index + 3]) * biases[2*n+1] / h
     return b
 
@@ -130,33 +133,31 @@ def get_region_box(x, biases, n, index, i, j, w, h):
 def logistic_activate(x):
     return 1./(1. + math.exp(-x))
 
-def get_region_boxes(predications):
 
-    for row in range(r_h):  # 13
-        for col in range(r_w):  # 13
-            i = row * r_w + col
-            for n in range(r_n):  # 5
-                #index = i * r_n + n
-                index = n
-                # p_index = index * (classes + 5) + 4
-                p_index = classes * n + 4 # 4, 29, 54, 79, 104
-                scale = predications[0][row][col][p_index]
-                box_index = index * (classes * 5)
-                boxes[index] = get_region_box(predications, region_biases[0], n, box_index, col, row, r_w, r_h)
-                boxes[index].x *= r_w
-                boxes[index].y *= r_h
-                boxes[index].w *= r_w
-                boxes[index].h *= r_h
+def get_region_boxes(predictions):
+    for i in range(r_w*r_h):
+        row = i // r_w
+        col = i % r_w
+        for n in range(r_n):
+            index = i*r_n + n
+            p_index = index * (classes + 5) + 4
+            scale = predictions[0][row][col][p_index]
+            box_index = index * (classes + 5)
 
-                #class_index = index * (classes * 5) + 5
-                class_index  = n * (classes + 5)
+            boxes[index] = get_region_box(predictions, region_biases, n, box_index, col, row, r_w, r_h)
+            boxes[index].x *= r_w
+            boxes[index].y *= r_h
+            boxes[index].w *= r_w
+            boxes[index].h *= r_h
 
-                for j in range(classes):
-                    prob = scale * predications[0][row][col][class_index + j]
-                    if prob > thresh:
-                        probs[row][col][n][j] = prob
-                    else:
-                        probs[row][col][n][j] = 0
+            class_index = index * (classes * 5) + 5
+
+            for j in range(classes):
+                prob = scale * predictions[0][row][col][class_index + j]
+                if prob > thresh:
+                    probs[index][j] = prob
+                else:
+                    probs[index][j] = 0
 
 
 def nms_comparator(a, b):

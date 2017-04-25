@@ -3,6 +3,7 @@ from keras.layers import Conv2D, BatchNormalization, MaxPooling2D
 from keras.layers.advanced_activations import LeakyReLU
 
 from keras import backend as K
+from keras.models import model_from_json
 from functools import cmp_to_key
 import numpy as np
 from PIL import Image
@@ -240,6 +241,10 @@ def draw_detections(im, num, thresh, boxes, probs, classes):
 
 # create tiny-yolo model
 tiny_yolo_model = tiny_yolo_model()
+#json_string = open('/home/natsutani/proj/YAD2K/model_data/tiny-yolo.json', 'r').read()
+#tiny_yolo_model = model_from_json(json_string)
+
+
 tiny_yolo_model.load_weights('weight/tiny-yolo.h5')
 
 with open('tiny-yolo.json', 'w') as fp:
@@ -260,6 +265,7 @@ boxes = [box()] * r_h * r_w * r_n
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.6
 
+np.save('output/preds.npy', preds)
 
 nms = 0.4
 get_region_boxes(preds)

@@ -120,13 +120,18 @@ def box_iou(a, b):
 
 def get_region_box(x, biases, n, index, i, j, w, h):
     b = box()
-    row = index // r_w
-    col = index % r_w
+    row = index // (r_h * 125)
+    col = (index // 125) % r_w
 
-    b.x = (i + logistic_activate(x[index + 0])) / w
-    b.y = (j + logistic_activate(x[index + 1])) / h
-    b.w = math.exp(x[index + 2]) * biases[2*n] / w
-    b.h = math.exp(x[index + 3]) * biases[2*n+1] / h
+#    b.x = (i + logistic_activate(x[0][row][col][index + 0])) / w
+#    b.y = (j + logistic_activate(x[0][row][col][index + 1])) / h
+#    b.w = math.exp(x[0][row][col][index + 2]) * biases[2*n] / w
+#    b.h = math.exp(x[0][row][col][index + 3]) * biases[2*n+1] / h
+    b.x = (i + logistic_activate(x[0][row][col][0])) / w
+    b.y = (j + logistic_activate(x[0][row][col][1])) / h
+    b.w = math.exp(x[0][row][col][2]) * biases[2*n] / w
+    b.h = math.exp(x[0][row][col][3]) * biases[2*n+1] / h
+
     return b
 
 
@@ -140,7 +145,8 @@ def get_region_boxes(predictions):
         col = i % r_w
         for n in range(r_n):
             index = i*r_n + n
-            p_index = index * (classes + 5) + 4
+            #p_index = index * (classes + 5) + 4
+            p_index = (classes + 5) + 4
             scale = predictions[0][row][col][p_index]
             box_index = index * (classes + 5)
 
@@ -150,7 +156,8 @@ def get_region_boxes(predictions):
             boxes[index].w *= r_w
             boxes[index].h *= r_h
 
-            class_index = index * (classes * 5) + 5
+            #class_index = index * (classes * 5) + 5
+            class_index = (classes * 5) + 5
 
             for j in range(classes):
                 prob = scale * predictions[0][row][col][class_index + j]
@@ -161,10 +168,8 @@ def get_region_boxes(predictions):
 
 
 def nms_comparator(a, b):
-    ar, ac, an = div_rcn(a.index)
-    br, bc, bn = div_rcn(b.index)
 
-    diff = a.probs[ar][ac][an][b.cls] - b.probs[br][bc][bn][b.cls]
+    diff = a.probs[a.index][b.cls] - b.probs[b.index][b.cls]
     if diff < 0:
         return 1
     elif diff > 0 :
@@ -185,19 +190,51 @@ def do_nms_sort(total, classes, thresh):
         s.sort(key=cmp_to_key(nms_comparator))
 
         for i in range(total):
-            r, c, n  =div_rcn(s[i].index)
-            if probs[r][c][n][k] == 0:
+            if probs[s[i].index][classes] == 0:
                 continue
             a = boxes[s[i].index]
             for j in range(i+1, total):
                 b = boxes[s[j].index]
                 if box_iou(a, b) > thresh:
-                    r2, c2, n2 = div_rcn(s[j].index)
-                    probs[r2][c2][n2][k] = 0
+                    probs[s[j].index][k] = 0
 
 
+def max_index(a, n):
+    if n <= 0:
+        return -1
+    max_i = 0
+    max = a[0]
+    for i in range(1, n):
+        if a[i] > max:
+            max = a[i]
+            max_i = i
+    return max_i
 
 
+def draw_detections(im, num, thresh, boxes, probs, classes):
+    for i in range(num):
+        cls = max_index(probs[i], classes)
+        prob = probs[i][cls]
+        if prob > thresh:
+            width_i = int(width * 0.12)
+            b = boxes[i]
+
+            left = (b.x - b.w / 2.) * width
+            right = (b.x + b.w / 2.) * width
+            top = (b.y - b.h / 2.) * height
+            bot = (b.y + b.h / 2.) * height
+
+            if left < 0:
+                left = 0
+            if right >= width:
+                right = width - 1
+            if top < 0:
+                top = 0
+            if bot >= height:
+                bot = height - 1
+
+            print("%d %f %d, %d -> %d %d" %
+                  (cls, prob*100, int(left), int(top), int(right), int(bot)))
 
 
 
@@ -220,15 +257,15 @@ x = np.expand_dims(image_data, axis=0)
 
 preds = tiny_yolo_model.predict(x)
 boxes = [box()] * r_h * r_w * r_n
-probs = np.zeros((r_h * r_w * r_n * classes), dtype=np.float)
+probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.6
 
-print('probs ', probs.shape)
 
 nms = 0.4
 get_region_boxes(preds)
 do_nms_sort(r_w*r_h*r_n, classes, nms)
 
+draw_detections(image_data, r_w*r_h*r_n, thresh, boxes, probs, classes)
 
 # nms_sort()
 

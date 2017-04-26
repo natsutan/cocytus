@@ -1,13 +1,13 @@
+import sys
+import math
+from functools import cmp_to_key
 from keras.models import Sequential
-from keras.layers import Conv2D, BatchNormalization, MaxPooling2D
+from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, InputLayer
 from keras.layers.advanced_activations import LeakyReLU
-
 from keras import backend as K
 from keras.models import model_from_json
-from functools import cmp_to_key
 import numpy as np
 from PIL import Image
-import math
 
 img_file = '../img/person.jpg'
 
@@ -38,7 +38,8 @@ class sortable_bbox():
 
 def tiny_yolo_model():
     model = Sequential()
-    model.add(Conv2D(16, input_shape=(width, height, 3), use_bias=False, data_format="channels_last",
+    model.add(InputLayer(input_shape=(width, height, 3)))
+    model.add(Conv2D(16, use_bias=False, data_format="channels_last",
                      padding='same', kernel_size=(3, 3), strides=(1, 1)))
     model.add(BatchNormalization())
     model.add(LeakyReLU(alpha=0.1))
@@ -72,16 +73,47 @@ def tiny_yolo_model():
     model.add(Conv2D(1024, use_bias=False, data_format="channels_last", padding='same', kernel_size=(3, 3), strides=(1, 1)))
     model.add(BatchNormalization())
     model.add(LeakyReLU(alpha=0.1))
-    model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
+#    model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
 
     model.add(Conv2D(1024, use_bias=False, data_format="channels_last", padding='same', kernel_size=(3, 3), strides=(1, 1)))
     model.add(BatchNormalization())
     model.add(LeakyReLU(alpha=0.1))
-    model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
+ #   model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
 
     model.add(Conv2D(125, use_bias=True, data_format="channels_last", padding='same', kernel_size=(1, 1), strides=(1, 1)))
 
     return model
+
+
+def layer_dump(model, x, l, postfix=''):
+    """
+    :param model: Keras model
+    :param x: input data
+    :param l: layer number
+    :param postfix: postfix for numpy file name
+    :return: None
+    """
+    get_layer_output = K.function([model.layers[0].input, K.learning_phase()],
+                                  [model.layers[l].output])
+
+    layer_output = get_layer_output([x, 0])[0]
+    last_dim = layer_output.shape[-1] - 1
+
+    if l == 0:
+        d0 = layer_output[:, :, 0]
+        d1 = layer_output[:, :, 1]
+        d2 = layer_output[:, :, 2]
+        np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
+        np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
+        np.save('output/l%02d%s_2.npy' % (l, postfix), d2, allow_pickle=False)
+    else:
+        d0 = layer_output[0,:, :, 0]
+        d1 = layer_output[0,:, :, 1]
+        d2 = layer_output[0,:, :, last_dim]
+        np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
+        np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
+        np.save('output/l%02d%s_%d.npy' % (l, postfix, last_dim), d2, allow_pickle=False)
+
 
 
 def overlap(x1, w1, x2, w2):
@@ -239,10 +271,18 @@ def draw_detections(im, num, thresh, boxes, probs, classes):
 
 
 
-# create tiny-yolo model
-tiny_yolo_model = tiny_yolo_model()
-#json_string = open('/home/natsutani/proj/YAD2K/model_data/tiny-yolo.json', 'r').read()
-#tiny_yolo_model = model_from_json(json_string)
+
+use_ya2k = False
+if use_ya2k:
+    file_post_fix = '_ya2k'
+else:
+    file_post_fix =''
+
+if use_ya2k:
+    json_string = open('/home/natsutani/proj/YAD2K/model_data/tiny-yolo.json', 'r').read()
+    tiny_yolo_model = model_from_json(json_string)
+else:
+    tiny_yolo_model = tiny_yolo_model()
 
 
 tiny_yolo_model.load_weights('weight/tiny-yolo.h5')
@@ -260,12 +300,17 @@ resized_image = image.resize((width, height), Image.BICUBIC)
 image_data = np.array(resized_image, dtype='float32') / 255.0
 x = np.expand_dims(image_data, axis=0)
 
+
 preds = tiny_yolo_model.predict(x)
 boxes = [box()] * r_h * r_w * r_n
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.6
 
-np.save('output/preds.npy', preds)
+np.save('output/preds%s.npy' % file_post_fix, preds)
+
+debug_layer = 28
+#layer_dump(tiny_yolo_model, x, debug_layer, file_post_fix)
+
 
 nms = 0.4
 get_region_boxes(preds)

@@ -32,26 +32,27 @@ class FunctionGenerator:
         model_config = self.get_config()
 
         func_list = []
+        layers = self.compiler.get_layers()
 
-        for i, l in enumerate(model_config['layers']):
-            class_name = l['class_name']
-            config = l['config']
-            name = config['name']
-            layer_detail = self.compiler.get_cqt_layer_obj(name)
+        for i, l in enumerate(layers):
+            name = l.name
+            config = l.get_config()
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
 
-            func_name = layer_detail.make_func_name()
+            func_name = layer_detal.make_func_name()
             if not func_name in func_list:
                 print('generating int %s(CQT_LAYER *lp, void *inp, void *outp);' % func_name)
                 if class_name == 'InputLayer':
-                    self.generate_input_layer(layer_detail)
+                    self.generate_input_layer(layer_detal)
                 elif class_name == 'Conv2D':
-                    self.generate_conv2d(layer_detail)
+                    self.generate_conv2d(layer_detal)
                 elif class_name == 'MaxPooling2D':
-                    self.generate_maxpooling2d(layer_detail)
+                    self.generate_maxpooling2d(layer_detal)
                 elif class_name == 'Flatten':
-                    self.generate_flatten(layer_detail)
+                    self.generate_flatten(layer_detal)
                 elif class_name == 'Dense':
-                    self.generate_dense(layer_detail)
+                    self.generate_dense(layer_detal)
 
                 func_list.append(func_name)
 

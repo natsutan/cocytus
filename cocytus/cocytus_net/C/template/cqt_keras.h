@@ -161,3 +161,14 @@ typedef struct {
 } LY_Dense;
 
 
+typedef struct {
+    int axis;
+    float momentum;
+    float epsilon;
+    bool center;
+    bool scale;
+} LY_BatchNormalization;
+
+typedef struct {
+    float alpha;
+} LY_LeakyReLU;

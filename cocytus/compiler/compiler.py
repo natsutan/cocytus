@@ -114,7 +114,7 @@ class CocytusLayerInfo:
             size = self.l.kernel_size
             fname += '_' + self.l.padding
             fname += '_%dx%d' % (size[0], size[1])
-            if size != (3, 3):
+            if size != (3, 3) and size != (1, 1):
                 raise ValueError('ERROR unsuported kernel size %s' % str(size))
 
         fname += self.mangling(self.input_dtypes, self.weight_dtypes, self.output_dtypes)

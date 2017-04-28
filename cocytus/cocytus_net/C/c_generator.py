@@ -350,6 +350,10 @@ class CqtGenC(CFile):
                 self.write_maxpooling2d(l)
             elif class_name == 'Dense':
                 self.write_dense(l)
+            elif class_name == 'BatchNormalization':
+                self.write_batchnormalization(l)
+            elif class_name == 'LeakyReLU':
+                self.write_leakyrelu(l)
             else:
                 raise ValueError("Error layer %s tpye is not supported" % class_name)
 
@@ -494,6 +498,32 @@ class CqtGenC(CFile):
         self.wr_assign("%s.bias_np_header_p" % name, '&'+ b_nph_name)
         self.wr_assign("%s.bias_p" % name, '&'+ b_name)
 
+    def write_batchnormalization(self, l):
+        """
+        BatchNormalizationの初期化を書き出す。
+        :param l:
+        :return:
+        """
+        name = l.name
+        config = l.get_config()
+        layer_detal = self.compiler.get_cqt_layer_obj(name)
+        self.wr_assign("%s.axis" % name, config['axis'])
+        self.wr_assign("%s.momentum" % name, config['momentum'])
+        self.wr_assign("%s.epsilon" % name, config['epsilon'])
+        self.wr_assign("%s.center" % name, config['center'])
+        self.wr_assign("%s.scale" % name, config['scale'])
+
+    def write_leakyrelu(self, l):
+        """
+        LeakyReLUの初期化を書き出す。
+        :param l:
+        :return:
+        """
+        name = l.name
+        config = l.get_config()
+        layer_detal = self.compiler.get_cqt_layer_obj(name)
+        self.wr_assign("%s.alpha" % name, config['alpha'])
+
 
     def write_cqt_load_weight_from_files(self):
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) {\n')
@@ -504,13 +534,14 @@ class CqtGenC(CFile):
         self.wr('\tint ret;\n')
         self.wr('\n')
 
-        model_config = self.get_config()
+        #model_config = self.get_config()
+        layers = self.compiler.get_layers()
 
-        for i, l in enumerate(model_config['layers']):
-            class_name = l['class_name']
-            config = l['config']
-            name = config['name']
+        for i, l in enumerate(layers):
+            name = l.name
+            config = l.get_config()
             layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
 
             if class_name in ['Conv2D', 'Dense']:
                 fname_w = name + '_W_1_z.npy'
@@ -564,12 +595,14 @@ class CqtGenC(CFile):
 
         model_config = self.get_config()
         cqt_net_name = self.compiler.get_model_name()
+        layers = self.compiler.get_layers()
 
-        for i, l in enumerate(model_config['layers']):
-            class_name = l['class_name']
-            config = l['config']
-            name = config['name']
+
+        for i, l in enumerate(layers):
+            name = l.name
+            config = l.get_config()
             layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
 
             inp = self.compiler.get_prev_layer_output_name(i)
             outp = layer_detal.get_output_variable_name()
@@ -602,12 +635,13 @@ class CqtLibH(CFile):
         cqt_net_name = self.compiler.get_model_name()
 
         func_list = []
+        layers = self.compiler.get_layers()
 
-        for i, l in enumerate(model_config['layers']):
-            class_name = l['class_name']
-            config = l['config']
-            name = config['name']
+        for i, l in enumerate(layers):
+            name = l.name
+            config = l.get_config()
             layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
 
             func_name = layer_detal.make_func_name()
             if not func_name in func_list:

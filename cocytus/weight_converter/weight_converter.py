@@ -53,7 +53,7 @@ class WeightConverter:
                 print(data2.shape)
                 print('')
 
-                filename = weight_name.replace(':0', '_z') + '.npy'
+                filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                 filepath = os.path.join(self.output_dir, filename)
                 np.save(filepath, data2, allow_pickle=False)
                 print("save %s to %s" % (weight_name, filepath))

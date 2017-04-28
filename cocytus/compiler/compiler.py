@@ -148,7 +148,6 @@ class CocytusCompiler:
         self.nn_prefix = nn_prefix
         self.cqt_layers = []
 
-    @property
     def compile(self):
         """
         self.modelから後工程に必要な情報を抜き出す。
@@ -240,6 +239,14 @@ class CocytusCompiler:
             return opt
         except (configparser.NoSectionError, configparser.NoOptionError):
             return ""
+
+    def get_layers(self):
+        """
+        KerasのLayerオブジェクトの配列を返す
+        :return:
+        """
+        return self.layers
+
 
 
 def conv_type_np_to_cqt(tf_type):

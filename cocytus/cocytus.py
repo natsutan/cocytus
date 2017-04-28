@@ -53,7 +53,7 @@ def main(argv):
 
     # jsonの読み込み
     compiler = CocytusCompiler(config)
-    if not compiler.compile:
+    if not compiler.compile():
         print("ERROR:compaile failed")
         sys.exit(1)
 

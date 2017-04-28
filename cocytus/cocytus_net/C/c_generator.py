@@ -155,10 +155,11 @@ class CFile:
         :return:
         """
         self.wr("//Layers\n")
-        model_config = self.get_config()
-        for l in model_config['layers']:
-            name = l['name']
-            class_name = l['class_name']
+        layers = self.compiler.get_layers()
+        for l in layers:
+            name = l.name
+            cqt_layer = self.compiler.get_cqt_layer_obj(name)
+            class_name = cqt_layer.keras_layer_type
             scope_s = add_space(scope)
             s = "%sLY_%s %s;\n" % (scope_s, class_name, name)
             self.wr(s)

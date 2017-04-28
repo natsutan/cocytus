@@ -240,6 +240,8 @@ class CFile:
             for i, v in enumerate(value):
                 self.wr('%s%s[%d] = %s;\n' % (tabs, variable_name, i, str(v)))
         else:
+            if str(value) == 'True':
+                value = 'true'
             self.wr('%s%s = %s;\n' % (tabs, variable_name, str(value)))
 
     def get_config(self):

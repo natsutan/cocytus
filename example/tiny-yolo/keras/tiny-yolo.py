@@ -23,7 +23,9 @@ classes = 20
 region_biases = (1.080000, 1.190000, 3.420000, 4.410000, 6.630000, 11.380000, 9.420000, 5.110000, 16.620001, 10.520000)
 voc_anchors = np.array(
     [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
-
+voc_label = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
+             'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person',
+             'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
 
 def tiny_yolo_model():
     model = Sequential()
@@ -120,7 +122,6 @@ def softmax(x):
     return arr
 
 
-
 def yolo_head(feats, anchors, num_classes):
     """Convert final layer features to bounding box parameters.
 
@@ -198,8 +199,8 @@ def yolo_head(feats, anchors, num_classes):
     box_xy = (box_xy + conv_index) / conv_dims
     box_wh = box_wh * anchors_tensor / conv_dims
 
-
     return box_xy, box_wh, box_confidence, box_class_probs
+
 
 def yolo_boxes_to_corners(box_xy, box_wh):
     """Convert YOLO box predictions to bounding box corners."""
@@ -210,7 +211,7 @@ def yolo_boxes_to_corners(box_xy, box_wh):
         box_mins[..., 0:1],  # x_min
         box_maxes[..., 1:2],  # y_max
         box_maxes[..., 0:1]  # x_max
-    ], axis = 4)
+    ], axis=4)
     return ret
 
 
@@ -223,6 +224,7 @@ def boolean_mask(xs, masks):
             if mask:
                 ret.append(x)
     return ret
+
 
 def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     """Filter YOLO boxes based on object and class confidence."""
@@ -242,15 +244,12 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
         for c in range(dim[2]):
             for n in range(dim[3]):
                 if prediction_mask[0][r][c][n]:
-                    # natu atode
-                    #pos = [boxes[0][r][c][n][0], boxes[1][r][c][n][0],boxes[2][r][c][n][0], boxes[3][r][c][n][0]]
                     pos = boxes[0][r][c][n]
                     boxes_f.append(pos)
                     scores_f.append(box_class_scores[0][r][c][n])
                     classes_f.append(box_classes[0][r][c][n])
 
     return boxes_f, scores_f, classes_f
-
 
 def non_max_surpression(boxes, scores, tresh):
     """
@@ -289,9 +288,6 @@ def non_max_surpression(boxes, scores, tresh):
     return pick
 
 
-
-
-
 def yolo_eval(yolo_outputs,
               image_shape,
               max_boxes=10,
@@ -299,8 +295,6 @@ def yolo_eval(yolo_outputs,
               iou_threshold=.5,
               classes=20):
     """Evaluate YOLO model on given input batch and return filtered boxes."""
-
-
     box_xy, box_wh, box_confidence, box_class_probs = yolo_head(yolo_outputs, voc_anchors, classes)
     boxes_t = yolo_boxes_to_corners(box_xy, box_wh)
     boxes, scores, classes = yolo_filter_boxes(
@@ -313,16 +307,6 @@ def yolo_eval(yolo_outputs,
     image_dims = np.reshape(image_dims, [1, 4])
     boxes = boxes * image_dims
 
-    """
-    # TODO: Something must be done about this ugly hack!
-    max_boxes_tensor = K.variable(max_boxes, dtype='int32')
-    K.get_session().run(tf.variables_initializer([max_boxes_tensor]))
-    nms_index = tf.image.non_max_suppression(
-        boxes, scores, max_boxes_tensor, iou_threshold=iou_threshold)
-    boxes = K.gather(boxes, nms_index)
-    scores = K.gather(scores, nms_index)
-    classes = K.gather(classes, nms_index)
-    """
     nms_index = non_max_surpression(boxes, scores, iou_threshold)
 
     boxes_last = []
@@ -333,21 +317,11 @@ def yolo_eval(yolo_outputs,
         scores_last.append(scores[i])
         classes_last.append(classes[i])
 
-
     return boxes_last, scores_last, classes_last
 
 
-use_ya2k = False
-if use_ya2k:
-    file_post_fix = '_ya2k'
-else:
-    file_post_fix =''
-
-if use_ya2k:
-    json_string = open('/home/natsutani/proj/YAD2K/model_data/tiny-yolo.json', 'r').read()
-    tiny_yolo_model = model_from_json(json_string)
-else:
-    tiny_yolo_model = tiny_yolo_model()
+file_post_fix = ''
+tiny_yolo_model = tiny_yolo_model()
 
 
 tiny_yolo_model.load_weights('weight/tyolo.h5')
@@ -357,7 +331,6 @@ with open('tiny-yolo.json', 'w') as fp:
     fp.write(json_string)
 
 tiny_yolo_model.summary()
-
 
 
 # run yolo
@@ -386,7 +359,7 @@ for i in range(len(out_classes)):
     left = max(0, np.floor(left + 0.5).astype('int32'))
     bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
     right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-    print(cls, score, (left, top), (right, bottom))
+    print(voc_label[cls], score, (left, top), (right, bottom))
 
 
 sys.exit(1)

@@ -4,7 +4,7 @@
 #include "cqt_net.h"
 
 
-int CQT_Conv2D_same_3x3_if_of (CQT_LAYER *lp, void *inp, void *outp)
+int CQT_Conv2D_same_3x3_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
 {
 	float filter3x3[3][3];
 	float data3x3[3][3];

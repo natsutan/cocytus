@@ -30,7 +30,7 @@ class CocytusLayerInfo:
         self.weight_dtypes = []
         self.l = l
         self.keras_layer_type = keras_layer_type
-        self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8'}
+        self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8', CQT_Dtype.NONE: 'none',}
 
     def get_Wshape(self):
         return self.l.weights[0]._keras_shape
@@ -117,7 +117,7 @@ class CocytusLayerInfo:
             if size != (3, 3):
                 raise ValueError('ERROR unsuported kernel size %s' % str(size))
 
-        fname += self.mangling(self.input_dtypes, [], self.output_dtypes)
+        fname += self.mangling(self.input_dtypes, self.weight_dtypes, self.output_dtypes)
         return fname
 
     def mangling(self, ilist, wlist, olist):
@@ -126,7 +126,9 @@ class CocytusLayerInfo:
             fname += '_i' + self.mangle_dic[intype]
 
         for weight in wlist:
-            fname += '_w' + self.mangle_dic[weight]
+            type = self.mangle_dic[weight]
+            if type != 'none':
+                fname += '_w' + self.mangle_dic[weight]
 
         for outtype in olist:
             fname += '_o' + self.mangle_dic[outtype]

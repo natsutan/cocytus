@@ -4,7 +4,7 @@
 #include "cqt.h"
 #include "cqt_net.h"
 
-int CQT_Dense_if_of (CQT_LAYER *lp, void *inp, void *outp)
+int CQT_Dense_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
 {
 	LY_Dense *dp = lp->param_p;
 

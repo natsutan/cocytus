@@ -277,8 +277,17 @@ def sigmoid(x):
 
 def softmax(x):
     """Compute softmax values for each sets of scores in x."""
-    e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum()
+    # shape (1, 13 , 13, 5, 20)
+    dim = x.shape
+    arr = np.copy(x)
+    for raw in range(dim[1]):
+        for col in range(dim[2]):
+            for cls in range(dim[3]):
+                a = x[0][raw][col][cls]
+                e_x = np.exp(a - np.max(a))
+                arr[0][raw][col][cls] = e_x / e_x.sum()
+    return arr
+
 
 
 def yolo_head(feats, anchors, num_classes):
@@ -348,6 +357,9 @@ def yolo_head(feats, anchors, num_classes):
     box_xy = sigmoid(feats[..., :2])
     box_wh = np.exp(feats[..., 2:4])
     box_confidence = sigmoid(feats[..., 4:5])
+
+    pb_deb = feats[..., 5:]
+
     box_class_probs = softmax(feats[..., 5:])
 
     # Adjust preditions to each spatial grid point and anchor size.
@@ -362,13 +374,13 @@ def yolo_boxes_to_corners(box_xy, box_wh):
     """Convert YOLO box predictions to bounding box corners."""
     box_mins = box_xy - (box_wh / 2.)
     box_maxes = box_xy + (box_wh / 2.)
-
-    return np.concatenate([
+    ret =  np.concatenate([
         box_mins[..., 1:2],  # y_min
         box_mins[..., 0:1],  # x_min
         box_maxes[..., 1:2],  # y_max
         box_maxes[..., 0:1]  # x_max
-    ])
+    ], axis = 4)
+    return ret
 
 
 def boolean_mask(xs, masks):
@@ -384,12 +396,12 @@ def boolean_mask(xs, masks):
 def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     """Filter YOLO boxes based on object and class confidence."""
 
-    threshold = 0.2
-
     box_scores = box_confidence * box_class_probs
     box_classes = np.argmax(box_scores, axis=-1)
     box_class_scores = np.max(box_scores, axis=-1)
     prediction_mask = box_class_scores >= threshold
+
+    np.save('keras.npy', prediction_mask)
 
     # TODO: Expose tf.boolean_mask to Keras backend?
     #boxes = boolean_mask(boxes, prediction_mask)
@@ -405,8 +417,9 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
         for c in range(dim[2]):
             for n in range(dim[3]):
                 if prediction_mask[0][r][c][n]:
-                    pos = [boxes[0][r][c][n],boxes[1][r][c][n],boxes[2][r][c][n],boxes[3][r][c][n]]
-
+                    # natu atode
+                    #pos = [boxes[0][r][c][n][0], boxes[1][r][c][n][0],boxes[2][r][c][n][0], boxes[3][r][c][n][0]]
+                    pos = boxes[0][r][c][n]
                     boxes_f.append(pos)
                     scores_f.append(box_class_scores[0][r][c][n])
                     classes_f.append(box_classes[0][r][c][n])
@@ -424,18 +437,18 @@ def yolo_eval(yolo_outputs,
 
 
     box_xy, box_wh, box_confidence, box_class_probs = yolo_head(yolo_outputs, voc_anchors, classes)
-    boxes = yolo_boxes_to_corners(box_xy, box_wh)
+    boxes_t = yolo_boxes_to_corners(box_xy, box_wh)
     boxes, scores, classes = yolo_filter_boxes(
-        boxes, box_confidence, box_class_probs, threshold=score_threshold)
+        boxes_t, box_confidence, box_class_probs, threshold=score_threshold)
 
-    """
     # Scale boxes back to original image shape.
     height = image_shape[0]
     width = image_shape[1]
-    image_dims = K.stack([height, width, height, width])
-    image_dims = K.reshape(image_dims, [1, 4])
+    image_dims = np.stack([height, width, height, width])
+    image_dims = np.reshape(image_dims, [1, 4])
     boxes = boxes * image_dims
 
+    """
     # TODO: Something must be done about this ugly hack!
     max_boxes_tensor = K.variable(max_boxes, dtype='int32')
     K.get_session().run(tf.variables_initializer([max_boxes_tensor]))
@@ -445,6 +458,7 @@ def yolo_eval(yolo_outputs,
     scores = K.gather(scores, nms_index)
     classes = K.gather(classes, nms_index)
     """
+
     return boxes, scores, classes
 
 
@@ -483,13 +497,18 @@ x = np.expand_dims(image_data, axis=0)
 preds = tiny_yolo_model.predict(x)
 boxes = [box()] * r_h * r_w * r_n
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
-thresh = 0.6
+thresh = 0.3
 
 np.save('output/preds%s.npy' % file_post_fix, preds)
 
-out_boxes, out_scores, out_classes = yolo_eval(preds, (width, height), thresh, 0.5, classes = classes)
+out_boxes, out_scores, out_classes = yolo_eval(preds, (width, height), score_threshold = thresh, iou_threshold = 0.5, classes = classes)
 
 
+for i in range(len(out_classes)):
+    cls = out_classes[i]
+    score = out_scores[i]
+    box = out_boxes[i]
+    print('%d %f %s' % (cls, score, str(box)))
 
 
 sys.exit(1)

@@ -10,6 +10,7 @@ import numpy as np
 from PIL import Image
 
 img_file = '../img/person.jpg'
+#img_file = '../img/dog.jpg'
 
 width = 416
 height = 416
@@ -23,19 +24,6 @@ region_biases = (1.080000, 1.190000, 3.420000, 4.410000, 6.630000, 11.380000, 9.
 voc_anchors = np.array(
     [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
 
-class box():
-    def __init__(self):
-        self.x = 0.0
-        self.y = 0.0
-        self.w = 0.0
-        self.h = 0.0
-
-
-class sortable_bbox():
-    def __init__(self):
-        self.index = 0
-        self.cls = 0
-        self.probs = None
 
 def tiny_yolo_model():
     model = Sequential()
@@ -74,12 +62,10 @@ def tiny_yolo_model():
     model.add(Conv2D(1024, use_bias=False, data_format="channels_last", padding='same', kernel_size=(3, 3), strides=(1, 1)))
     model.add(BatchNormalization())
     model.add(LeakyReLU(alpha=0.1))
-#    model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
 
     model.add(Conv2D(1024, use_bias=False, data_format="channels_last", padding='same', kernel_size=(3, 3), strides=(1, 1)))
     model.add(BatchNormalization())
     model.add(LeakyReLU(alpha=0.1))
- #   model.add(MaxPooling2D(pool_size=(2, 2), padding='same', strides=(1, 1)))
 
     model.add(Conv2D(125, use_bias=True, data_format="channels_last", padding='same', kernel_size=(1, 1), strides=(1, 1)))
 
@@ -114,161 +100,6 @@ def layer_dump(model, x, l, postfix=''):
         np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
         np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
         np.save('output/l%02d%s_%d.npy' % (l, postfix, last_dim), d2, allow_pickle=False)
-
-
-
-def overlap(x1, w1, x2, w2):
-    l1 = x1 - w1/2
-    l2 = x2 - w2/2
-    if l1 > l2:
-        left = l1
-    else:
-        left = l2
-    r1 = x1 + w1/2
-    r2 = x2 + w2/2
-    if r1 < r2:
-        right = r1
-    else:
-        right = r2
-    return right - left
-
-def box_intersection(a, b):
-    w = overlap(a.x, a.w, b.x, b.w)
-    h = overlap(a.y, a.h, b.y, b.h)
-    if w < 0 or h < 0:
-        return 0
-    area = w*h
-    return area
-
-
-def box_union(a, b):
-    i = box_intersection(a, b)
-    u = a.w*a.h + b.w*b.h - i
-    return u
-
-
-def box_iou(a, b):
-    return box_intersection(a, b)/box_union(a, b);
-
-
-
-def get_region_box(x, biases, n, index, i, j, w, h):
-    b = box()
-    row = index // (r_h * 125)
-    col = (index // 125) % r_w
-
-#    b.x = (i + logistic_activate(x[0][row][col][index + 0])) / w
-#    b.y = (j + logistic_activate(x[0][row][col][index + 1])) / h
-#    b.w = math.exp(x[0][row][col][index + 2]) * biases[2*n] / w
-#    b.h = math.exp(x[0][row][col][index + 3]) * biases[2*n+1] / h
-    b.x = (i + logistic_activate(x[0][row][col][0])) / w
-    b.y = (j + logistic_activate(x[0][row][col][1])) / h
-    b.w = math.exp(x[0][row][col][2]) * biases[2*n] / w
-    b.h = math.exp(x[0][row][col][3]) * biases[2*n+1] / h
-
-    return b
-
-
-def logistic_activate(x):
-    return 1./(1. + math.exp(-x))
-
-
-def get_region_boxes(predictions):
-    for i in range(r_w*r_h):
-        row = i // r_w
-        col = i % r_w
-        for n in range(r_n):
-            index = i*r_n + n
-            #p_index = index * (classes + 5) + 4
-            p_index = (classes + 5) + 4
-            scale = predictions[0][row][col][p_index]
-            box_index = index * (classes + 5)
-
-            boxes[index] = get_region_box(predictions, region_biases, n, box_index, col, row, r_w, r_h)
-            boxes[index].x *= r_w
-            boxes[index].y *= r_h
-            boxes[index].w *= r_w
-            boxes[index].h *= r_h
-
-            #class_index = index * (classes * 5) + 5
-            class_index = (classes * 5) + 5
-
-            for j in range(classes):
-                prob = scale * predictions[0][row][col][class_index + j]
-                if prob > thresh:
-                    probs[index][j] = prob
-                else:
-                    probs[index][j] = 0
-
-
-def nms_comparator(a, b):
-
-    diff = a.probs[a.index][b.cls] - b.probs[b.index][b.cls]
-    if diff < 0:
-        return 1
-    elif diff > 0 :
-        return -1
-    return 0
-
-
-def do_nms_sort(total, classes, thresh):
-    s = [sortable_bbox()] * r_h * r_w * r_n
-    for i, b in enumerate(s):
-        b.index = i
-        b.cls = 0
-        b.probs = probs
-
-    for k in range(classes):
-        for i in range(total):
-            s[i].cls = k
-        s.sort(key=cmp_to_key(nms_comparator))
-
-        for i in range(total):
-            if probs[s[i].index][classes] == 0:
-                continue
-            a = boxes[s[i].index]
-            for j in range(i+1, total):
-                b = boxes[s[j].index]
-                if box_iou(a, b) > thresh:
-                    probs[s[j].index][k] = 0
-
-
-def max_index(a, n):
-    if n <= 0:
-        return -1
-    max_i = 0
-    max = a[0]
-    for i in range(1, n):
-        if a[i] > max:
-            max = a[i]
-            max_i = i
-    return max_i
-
-
-def draw_detections(im, num, thresh, boxes, probs, classes):
-    for i in range(num):
-        cls = max_index(probs[i], classes)
-        prob = probs[i][cls]
-        if prob > thresh:
-            width_i = int(width * 0.12)
-            b = boxes[i]
-
-            left = (b.x - b.w / 2.) * width
-            right = (b.x + b.w / 2.) * width
-            top = (b.y - b.h / 2.) * height
-            bot = (b.y + b.h / 2.) * height
-
-            if left < 0:
-                left = 0
-            if right >= width:
-                right = width - 1
-            if top < 0:
-                top = 0
-            if bot >= height:
-                bot = height - 1
-
-            print("%d %f %d, %d -> %d %d" %
-                  (cls, prob*100, int(left), int(top), int(right), int(bot)))
 
 
 def sigmoid(x):
@@ -401,12 +232,6 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     box_class_scores = np.max(box_scores, axis=-1)
     prediction_mask = box_class_scores >= threshold
 
-    np.save('keras.npy', prediction_mask)
-
-    # TODO: Expose tf.boolean_mask to Keras backend?
-    #boxes = boolean_mask(boxes, prediction_mask)
-    #scores = boolean_mask(box_class_scores, prediction_mask)
-    #classes = boolean_mask(box_classes, prediction_mask)
     dim = boxes.shape
 
     boxes_f = []
@@ -427,6 +252,46 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     return boxes_f, scores_f, classes_f
 
 
+def non_max_surpression(boxes, scores, tresh):
+    """
+    see http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
+    :param boxes:
+    :param scores:
+    :param tresh:
+    :return:
+    """
+    pick = []
+    x1 = boxes[:,0]
+    y1 = boxes[:,1]
+    x2 = boxes[:,2]
+    y2 = boxes[:,3]
+    area = (x2 - x1 + 1) * (y2 - y1 + 1)
+    idxs = np.argsort(scores)
+
+    while len(idxs) > 0:
+        last = len(idxs) - 1
+        i = idxs[last]
+        pick.append(i)
+
+        xx1 = np.maximum(x1[i], x1[idxs[:last]])
+        yy1 = np.maximum(y1[i], y1[idxs[:last]])
+        xx2 = np.minimum(x2[i], x2[idxs[:last]])
+        yy2 = np.minimum(y2[i], y2[idxs[:last]])
+
+        w = np.maximum(0, xx2 - xx1 + 1)
+        h = np.maximum(0, yy2 - yy1 + 1)
+
+        overlap = (w * h) / area[idxs[:last]]
+
+        idxs = np.delete(idxs, np.concatenate(([last],
+                                               np.where(overlap > tresh)[0])))
+
+    return pick
+
+
+
+
+
 def yolo_eval(yolo_outputs,
               image_shape,
               max_boxes=10,
@@ -442,8 +307,8 @@ def yolo_eval(yolo_outputs,
         boxes_t, box_confidence, box_class_probs, threshold=score_threshold)
 
     # Scale boxes back to original image shape.
-    height = image_shape[0]
-    width = image_shape[1]
+    height = image_shape[1]
+    width = image_shape[0]
     image_dims = np.stack([height, width, height, width])
     image_dims = np.reshape(image_dims, [1, 4])
     boxes = boxes * image_dims
@@ -458,10 +323,18 @@ def yolo_eval(yolo_outputs,
     scores = K.gather(scores, nms_index)
     classes = K.gather(classes, nms_index)
     """
+    nms_index = non_max_surpression(boxes, scores, iou_threshold)
 
-    return boxes, scores, classes
+    boxes_last = []
+    scores_last = []
+    classes_last = []
+    for i in nms_index:
+        boxes_last.append(boxes[i])
+        scores_last.append(scores[i])
+        classes_last.append(classes[i])
 
 
+    return boxes_last, scores_last, classes_last
 
 
 use_ya2k = False
@@ -477,7 +350,6 @@ else:
     tiny_yolo_model = tiny_yolo_model()
 
 
-#tiny_yolo_model.load_weights('weight/tiny-yolo.h5')
 tiny_yolo_model.load_weights('weight/tyolo.h5')
 
 with open('tiny-yolo.json', 'w') as fp:
@@ -485,6 +357,7 @@ with open('tiny-yolo.json', 'w') as fp:
     fp.write(json_string)
 
 tiny_yolo_model.summary()
+
 
 
 # run yolo
@@ -495,35 +368,29 @@ x = np.expand_dims(image_data, axis=0)
 
 
 preds = tiny_yolo_model.predict(x)
-boxes = [box()] * r_h * r_w * r_n
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.3
 
 np.save('output/preds%s.npy' % file_post_fix, preds)
 
-out_boxes, out_scores, out_classes = yolo_eval(preds, (width, height), score_threshold = thresh, iou_threshold = 0.5, classes = classes)
+out_boxes, out_scores, out_classes = yolo_eval(preds, image.size, score_threshold = thresh, iou_threshold = 0.5, classes = classes)
 
 
 for i in range(len(out_classes)):
     cls = out_classes[i]
     score = out_scores[i]
     box = out_boxes[i]
-    print('%d %f %s' % (cls, score, str(box)))
+
+    top, left, bottom, right = box
+    top = max(0, np.floor(top + 0.5).astype('int32'))
+    left = max(0, np.floor(left + 0.5).astype('int32'))
+    bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+    right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+    print(cls, score, (left, top), (right, bottom))
 
 
 sys.exit(1)
 debug_layer = 28
 #layer_dump(tiny_yolo_model, x, debug_layer, file_post_fix)
-
-
-nms = 0.4
-get_region_boxes(preds)
-do_nms_sort(r_w*r_h*r_n, classes, nms)
-
-draw_detections(image_data, r_w*r_h*r_n, thresh, boxes, probs, classes)
-
-# nms_sort()
-
-print(preds.shape)
 
 

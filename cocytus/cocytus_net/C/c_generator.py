@@ -171,10 +171,11 @@ class CFile:
         :return:
         """
         self.wr("//weights\n")
-        model_config = self.get_config()
-        for l in model_config['layers']:
-            name = l['name']
-            class_name = l['class_name']
+        layers = self.compiler.get_layers()
+        for l in layers:
+            name = l.name
+            cqt_layer = self.compiler.get_cqt_layer_obj(name)
+            class_name = cqt_layer.keras_layer_type
             if class_name == 'Conv2D':
                 layer_detal = self.compiler.get_cqt_layer_obj(name)
                 w_shape = layer_detal.get_Wshape()
@@ -212,11 +213,11 @@ class CFile:
         :return:
         """
         self.wr("//outputs\n")
-        model_config = self.get_config()
-        for l in model_config['layers']:
-            name = l['name']
-            class_name = l['class_name']
+        layers = self.compiler.get_layers()
+        for l in layers:
+            name = l.name
             layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
             o_shape = layer_detal.get_output_shape()
             dim_s = dim_str_from_keras_4d_shape_output(o_shape)
 
@@ -325,15 +326,17 @@ class CqtGenC(CFile):
         self.wr('CQT_NET* cqt_init(void) {\n')
         model_config = self.get_config()
 
-        layer_num = len(model_config['layers'])
+        layers = self.compiler.get_layers()
+        layer_num = len(layers)
         cqt_net_name = self.compiler.get_model_name()
         self.wr('\t%s.layernum = %d;\n' % (cqt_net_name, layer_num))
         self.cr()
 
-        for (i, l) in enumerate(model_config['layers']):
-            name = l['name']
-            class_name = l['class_name']
+        for (i, l) in enumerate(layers):
+            name = l.name
             layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
+
             self.wr('\tstrcpy(%s.layer[%d].name, "%s");\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].type = LT_%s;\n' % (cqt_net_name, i, class_name))
 
@@ -435,10 +438,10 @@ class CqtGenC(CFile):
         :param l:
         :return:
         """
-        name = l['name']
-        config = l['config']
-        class_name = l['class_name']
+        name = l.name
+        config = l.get_config()
         layer_detal = self.compiler.get_cqt_layer_obj(name)
+        class_name = layer_detal.keras_layer_type
         w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
         self.wr_assign("%s.filters" % name, config['filters'])
@@ -461,10 +464,10 @@ class CqtGenC(CFile):
         :param l:
         :return:
         """
-        name = l['name']
-        config = l['config']
-        class_name = l['class_name']
+        name = l.name
+        config = l.get_config()
         layer_detal = self.compiler.get_cqt_layer_obj(name)
+        class_name = layer_detal.keras_layer_type
 
         self.wr_assign("%s.strides" % name, config['strides'])
         self.wr_assign("%s.padding" % name, self.pd_dic[config['padding']])
@@ -477,10 +480,10 @@ class CqtGenC(CFile):
         :param l:
         :return:
         """
-        name = l['name']
-        config = l['config']
-        class_name = l['class_name']
+        name = l.name
+        config = l.get_config()
         layer_detal = self.compiler.get_cqt_layer_obj(name)
+        class_name = layer_detal.keras_layer_type
         w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
         self.wr_assign("%s.units" % name, config['units'])

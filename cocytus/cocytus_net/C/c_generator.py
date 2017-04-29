@@ -447,7 +447,7 @@ class CqtGenC(CFile):
             self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))
             self.cr()
 
-        self.wr('\treturn NULL;\n')
+        self.wr('\treturn &%s;\n' % cqt_net_name)
         self.wr('}\n')
 
     def write_conv2d_init(self, l):
@@ -567,8 +567,13 @@ class CqtGenC(CFile):
             class_name = layer_detal.keras_layer_type
 
             if class_name in ['Conv2D', 'Dense']:
-                fname_w = name + '_W_1_z.npy'
-                fname_b = name + '_b_1_z.npy'
+                if l.use_bias:
+                    fname_w = name + '_W_1_z.npy'
+                    fname_b = name + '_b_1_z.npy'
+                else:
+                    fname_w = name + '_kernel_z.npy'
+                    fname_b = ''
+
                 [variable_name_w, variable_name_w_header, variable_name_b,
                  variable_name_b_header] = layer_detal.get_conv2d_weight_variable_name()
 
@@ -588,25 +593,51 @@ class CqtGenC(CFile):
                 self.wr('// %s\n' % name)
                 self.wr('\tpath_len = strlen(path);\n')
                 self.wr('\tfname_w_len = strlen("%s");\n' % fname_w)
-                self.wr('\tfname_b_len = strlen("%s");\n' % fname_b)
                 self.wr('\tassert(path_len+fname_w_len<CQT_MAX_PATH);\n')
-                self.wr('\tassert(path_len+fname_b_len<CQT_MAX_PATH);\n')
-                self.cr()
                 self.wr('\tstrcpy(buf, path);\n')
                 self.wr('\tstrcat(buf, "%s");\n' % fname_w)
-                self.wr(
-                    '\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_w, w_size, variable_name_w_header))
+                self.wr('\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_w, w_size, variable_name_w_header))
                 self.wr('\tif(ret != CQT_RET_OK){\n')
                 self.wr('\t\treturn ret;\n')
                 self.wr('\t}\n')
-                self.wr('\tstrcpy(buf, path);\n')
-                self.wr('\tstrcat(buf, "%s");\n' % fname_b)
-                self.wr('\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_b, b_size, variable_name_b_header))
-                self.wr('\tif(ret != CQT_RET_OK){\n')
-                self.wr('\t\treturn ret;\n')
-                self.wr('\t}\n')
+                self.cr()
+
+                if l.use_bias:
+                    self.wr('\tfname_b_len = strlen("%s");\n' % fname_b)
+                    self.wr('\tassert(path_len+fname_b_len<CQT_MAX_PATH);\n')
+                    self.wr('\tstrcpy(buf, path);\n')
+                    self.wr('\tstrcat(buf, "%s");\n' % fname_b)
+                    self.wr('\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (variable_name_b, b_size, variable_name_b_header))
+                    self.wr('\tif(ret != CQT_RET_OK){\n')
+                    self.wr('\t\treturn ret;\n')
+                    self.wr('\t}\n')
 
                 self.cr()
+            elif class_name == 'BatchNormalization':
+                # 重みのファイル名
+                fname_beta = name + '_beta_z.npy'
+                fname_gamma = name + '_gamma_z.npy'
+                fname_mm = name + '_moving_mean_z.npy'
+                fname_mv = name + '_moving_variance_z.npy'
+                # 変数名
+                beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
+
+                fnames = [fname_beta, fname_gamma, fname_mm, fname_mv]
+                variable_names = [beta_name, gamma_name, mm_name, mv_name]
+                nph_names = [beta_nph_name, gamma_nph_name, mm_nph_name, mv_nph_name]
+                dims = layer_detal.get_Wshape()
+
+                self.wr('// %s\n' % name)
+                for fn, vn, npn, dim in zip(fnames, variable_names, nph_names, dims):
+                    self.wr('\tfname_b_len = strlen("%s");\n' % fn)
+                    self.wr('\tassert(path_len+fname_b_len<CQT_MAX_PATH);\n')
+                    self.wr('\tstrcpy(buf, path);\n')
+                    self.wr('\tstrcat(buf, "%s");\n' % fn)
+                    self.wr('\tret = load_from_numpy(%s, buf, %d, &%s);\n' % (vn, dim, npn))
+                    self.wr('\tif(ret != CQT_RET_OK){\n')
+                    self.wr('\t\treturn ret;\n')
+                    self.wr('\t}\n')
+                    self.cr()
 
         self.wr('\treturn CQT_RET_OK;\n')
         self.wr('}\n')

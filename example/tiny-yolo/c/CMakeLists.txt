@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-#project (cqt_tyolo)
+project (cqt_tyolo)
 enable_language(C)
 
 add_definitions("-pg -Wall -g -Iinc -O3")

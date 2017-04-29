@@ -178,12 +178,17 @@ class CocytusCompiler:
         json_string = open(json_file, 'r').read()
         print("JSON:open %s" % json_file)
         self.model = model_from_json(json_string)
-#        self.model = model_from_json(json_string, custom_objects={"Normalize": Normalize, "PriorBox": PriorBox})
-        #conf = self.model.get_config()
-
         self.layers = self.model.layers
         self.nn_prefix = nn_prefix
         self.cqt_layers = []
+
+        try:
+            mode = config.get('Cocyuts', 'weight_filename_mode')
+            self.weight_filename_mode = int(mode)
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            # デフォルト
+            self.weight_filename_mode = 0
+
 
     def compile(self):
         """

@@ -196,15 +196,21 @@ class CFile:
                 input_dim = w_shape[0]
                 output_dim = w_shape[1]
                 scope_s = add_space(scope)
+                w_type = layer_detal.get_weight_type_str()
 
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
-                w_type = layer_detal.get_weight_type_str()
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
+                self.wr("%s%s %s[%d][%d];\n" % (scope_s, w_type, w_name, output_dim, input_dim))
+                self.wr("%s%s %s[%s];\n" % (scope_s, w_type, b_name, output_dim))
+
             elif class_name == 'BatchNormalization':
                 layer_detal = self.compiler.get_cqt_layer_obj(name)
                 b_dim, gm_dim, mm_dim, mv_dim = layer_detal.get_Wshape()
 
                 beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
+                w_type = layer_detal.get_weight_type_str()
 
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, beta_nph_name))
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, gamma_nph_name))
@@ -215,7 +221,6 @@ class CFile:
                 self.wr("%s%s %s[%d];\n" % (scope_s, w_type, gamma_name, gm_dim))
                 self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mm_name, mm_dim))
                 self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mv_name, mv_dim))
-
 
 
     def wr_output_defination(self, scope=None):
@@ -567,12 +572,14 @@ class CqtGenC(CFile):
             class_name = layer_detal.keras_layer_type
 
             if class_name in ['Conv2D', 'Dense']:
-                if l.use_bias:
+                if self.compiler.weight_filename_mode == 0:
                     fname_w = name + '_W_1_z.npy'
                     fname_b = name + '_b_1_z.npy'
-                else:
+                elif self.compiler.weight_filename_mode == 1:
                     fname_w = name + '_kernel_z.npy'
-                    fname_b = ''
+                    fname_b = name + '_bias_z.npy'
+                else:
+                    raise ValueError('Unkown weight_filename_mode %d' % self.compiler.weight_filename_mode)
 
                 [variable_name_w, variable_name_w_header, variable_name_b,
                  variable_name_b_header] = layer_detal.get_conv2d_weight_variable_name()

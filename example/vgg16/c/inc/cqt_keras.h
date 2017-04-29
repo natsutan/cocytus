@@ -167,6 +167,16 @@ typedef struct {
     float epsilon;
     bool center;
     bool scale;
+
+    NUMPY_HEADER *beta_np_header_p;
+    void *beta_p;
+    NUMPY_HEADER *gamma_np_header_p;
+    void *gamma_p;
+    NUMPY_HEADER *moving_mean_np_header_p;
+    void *moving_mean_p;
+    NUMPY_HEADER *moving_variance_np_header_p;
+    void *moving_variance_p;
+
 } LY_BatchNormalization;
 
 typedef struct {

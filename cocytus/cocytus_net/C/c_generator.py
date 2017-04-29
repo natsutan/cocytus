@@ -200,11 +200,23 @@ class CFile:
                 w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
 
                 w_type = layer_detal.get_weight_type_str()
+            elif class_name == 'BatchNormalization':
+                layer_detal = self.compiler.get_cqt_layer_obj(name)
+                b_dim, gm_dim, mm_dim, mv_dim = layer_detal.get_Wshape()
 
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
-                self.wr("%s%s %s[%d][%d];\n" % (scope_s, w_type, w_name, output_dim, input_dim))
-                self.wr("%s%s %s[%s];\n" % (scope_s, w_type, b_name, output_dim))
+                beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
+
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, beta_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, gamma_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mm_nph_name))
+                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mv_nph_name))
+
+                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, beta_name, b_dim))
+                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, gamma_name, gm_dim))
+                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mm_name, mm_dim))
+                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mv_name, mv_dim))
+
+
 
     def wr_output_defination(self, scope=None):
         """
@@ -514,6 +526,15 @@ class CqtGenC(CFile):
         self.wr_assign("%s.epsilon" % name, config['epsilon'])
         self.wr_assign("%s.center" % name, config['center'])
         self.wr_assign("%s.scale" % name, config['scale'])
+        beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
+        self.wr_assign("%s.beta_np_header_p" % name, '&' + beta_nph_name)
+        self.wr_assign("%s.beta_p" % name, '&' + beta_name)
+        self.wr_assign("%s.gamma_np_header_p" % name, '&' + gamma_nph_name)
+        self.wr_assign("%s.gamma_p" % name, '&' + gamma_name)
+        self.wr_assign("%s.moving_mean_np_header_p" % name, '&' + mm_nph_name)
+        self.wr_assign("%s.moving_mean_p" % name, '&' + mm_name)
+        self.wr_assign("%s.moving_variance_np_header_p" % name, '&' + mv_nph_name)
+        self.wr_assign("%s.moving_variance_p" % name, '&' + mv_name)
 
     def write_leakyrelu(self, l):
         """

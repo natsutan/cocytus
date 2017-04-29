@@ -33,7 +33,19 @@ class CocytusLayerInfo:
         self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8', CQT_Dtype.NONE: 'none',}
 
     def get_Wshape(self):
-        return self.l.weights[0]._keras_shape
+        """
+        重みの次元を返す。
+        BatchNormalizationの場合は、beta, gammma, moving_mean, moving_varianceの順に返す
+        :return:
+        """
+        if self.keras_layer_type == 'BatchNormalization':
+            b = self.l.beta._keras_shape
+            gm = self.l.gamma._keras_shape
+            mm = self.l.moving_mean._keras_shape
+            mv = self.l.moving_variance._keras_shape
+            return b[0], gm[0], mm[0], mv[0]
+        else:
+            return self.l.weights[0]._keras_shape
 
     def get_conv2d_weight_variable_name(self):
         """
@@ -48,7 +60,30 @@ class CocytusLayerInfo:
         w_nph_name = "nph_%s_W" % name
         b_name = "w_%s_b" % name
         b_nph_name = "nph_%s_b" % name
+
         return w_name, w_nph_name, b_name, b_nph_name
+
+    def get_batchnormalization_weight_variable_name(self):
+        """
+        重みの変数名
+        重みのnumpyヘッダー変数名
+        biasの変数名
+        biasのnumpyヘッダー変数名
+        :return: str
+        """
+        name = self.l.name
+
+        beta_name = "beta_%s_W" % name
+        beta_nph_name = "nph_beta_%s_W" % name
+        gamma_name = "gamma_%s_W" % name
+        gamma_nph_name = "nph_gamma_%s_W" % name
+        mm_name = "moving_mean_%s_W" % name
+        mm_nph_name = "nph_moving_mean_%s_W" % name
+        mv_name = "moving_variance_%s_W" % name
+        mv_nph_name = "nph_moving_variance_%s_W" % name
+        return beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name
+
+
 
     def get_output_variable_name(self):
         """

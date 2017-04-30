@@ -16,6 +16,7 @@ NUMPY_HEADER np;
 
 extern void layer0_output(void);
 extern void layer1_output(void);
+extern void layer2_output(void);
 
 int main(void)
 {
@@ -43,7 +44,7 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-    layer1_output();
+    layer2_output();
 
     return 0;
 }

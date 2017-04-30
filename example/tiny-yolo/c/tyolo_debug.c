@@ -60,9 +60,32 @@ void layer1_output(void)
     ret = save_to_numpy(conv2d_1_output[15], "output/l01_15.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer_output %d\n", ret);
-
     }
-
-
 }
 
+
+void layer2_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = IMG_SIZE * IMG_SIZE;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(batch_normalization_1_output[0], "output/l02_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(batch_normalization_1_output[1], "output/l02_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(batch_normalization_1_output[15], "output/l02_15.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}

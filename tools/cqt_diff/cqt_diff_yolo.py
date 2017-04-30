@@ -37,8 +37,8 @@ def layer1_comp():
     plt.show()
 
 def layer2_comp():
-    keras = np.load(keras_dir+'l02_0.npy')
-    cqt = np.load(cqt_dir+'l02_0.npy')
+    keras = np.load(keras_dir+'l02_15.npy')
+    cqt = np.load(cqt_dir+'l02_15.npy')
 
     c_f = cqt.flatten()
     k_f = keras.flatten()

@@ -50,7 +50,21 @@ def layer2_comp():
 
     plt.show()
 
+def layer3_comp():
+    keras = np.load(keras_dir+'l03_15.npy')
+    cqt = np.load(cqt_dir+'l03_15.npy')
 
-layer2_comp()
+    c_f = cqt.flatten()
+    k_f = keras.flatten()
+
+    x = np.arange(len(k_f))
+
+    plt.plot(x, c_f, color='r')
+    plt.plot(x, k_f, color='b')
+
+    plt.show()
+
+
+layer3_comp()
 
 print('finish')

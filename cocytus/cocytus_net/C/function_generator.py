@@ -18,7 +18,8 @@ class FunctionGenerator:
         self.maxpoolong2d_first = True
         self.flatten_first = True
         self.dense_first = True
-
+        self.batchnormalization_first = True
+        self.leakyrelu_first = True
 
     def get_config(self):
         """
@@ -54,7 +55,9 @@ class FunctionGenerator:
                 elif class_name == 'Dense':
                     self.generate_dense(layer_detal)
                 elif class_name == 'BatchNormalization':
-                    self.generate_batchNormalization(layer_detal)
+                    self.generate_batchnormalization(layer_detal)
+                elif class_name == 'LeakyReLU':
+                    self.generate_leakyrelu(layer_detal)
 
                 func_list.append(func_name)
 
@@ -181,7 +184,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.dense_first = False
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a') as fpoutbatchnormalization:
             t = string.Template(open(template_file).read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
@@ -189,7 +192,7 @@ class FunctionGenerator:
                                     output_type=ctype_dic[output_type])
             fpout.write(func_str)
 
-    def generate_batchNormalization(self, layer_detail):
+    def generate_batchnormalization(self, layer_detail):
 
         func_name = layer_detail.make_func_name()
         input_type = layer_detail.input_dtypes[0]
@@ -199,7 +202,7 @@ class FunctionGenerator:
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
         template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
 
-        if self.dense_first:
+        if self.batchnormalization_first:
             with open(output_file, 'w') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
@@ -207,7 +210,7 @@ class FunctionGenerator:
                 fp.write('#include "cqt.h"\n')
                 fp.write('#include "cqt_net.h"\n')
                 fp.write('\n')
-            self.dense_first = False
+            self.batchnormalization_first = False
 
         with open(output_file, 'a') as fpout:
             t = string.Template(open(template_file).read())
@@ -216,4 +219,31 @@ class FunctionGenerator:
                                     weight_type=ctype_dic[weight_type],
                                     output_type=ctype_dic[output_type])
             fpout.write(func_str)
+
+
+    def generate_leakyrelu(self, layer_detail):
+        func_name = layer_detail.make_func_name()
+        input_type = layer_detail.input_dtypes[0]
+        output_type = layer_detail.output_dtypes[0]
+
+        output_file = os.path.join(self.target_dir, 'cqt_lib', 'LeakyReLU.c')
+        template_file = os.path.join(self.template_dir, 'LeakyReLU', 'LeakyReLU.c')
+
+        if self.leakyrelu_first:
+            with open(output_file, 'w') as fp:
+                fp.write('#include <string.h>\n')
+                fp.write('#include <assert.h>\n')
+                fp.write('#include <math.h>\n')
+                fp.write('#include "cqt.h"\n')
+                fp.write('#include "cqt_net.h"\n')
+                fp.write('\n')
+            self.leakyrelu_first = False
+
+        with open(output_file, 'a') as fpout:
+            t = string.Template(open(template_file).read())
+            func_str = t.substitute(func_name=func_name,
+                                    input_type=ctype_dic[input_type],
+                                    output_type=ctype_dic[output_type])
+            fpout.write(func_str)
+
 

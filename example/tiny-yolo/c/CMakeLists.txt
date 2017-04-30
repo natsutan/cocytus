@@ -15,6 +15,7 @@ add_executable(cqt_tyolo
         cqt_lib/InputLayer.c
         cqt_lib/Conv2d_same_3x3.c
         cqt_lib/MaxPooling2D.c
+        cqt_lib/BatchNormalization.c
         )
 
 target_link_libraries(cqt_tyolo m)

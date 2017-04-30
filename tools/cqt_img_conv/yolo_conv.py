@@ -12,21 +12,16 @@ def main():
     args = parser.parse_args()
 
     img_file = args.img
-    img = Image.open(img_file)
     width = 416
     height = 416
 
-    if img.size != (width, height):
-        img = img.resize((width, height))
+    image = Image.open(img_file)
+    resized_image = image.resize((width, height), Image.BICUBIC)
+    image_data = np.array(resized_image, dtype='float32') / 255.0
 
-    # 次元の反転
-    arr = np.asarray(img, dtype=np.float32)
+    arr = np.asarray(image_data, dtype=np.float32)
 
     ori_shape = arr.shape
-
-    if len(ori_shape) == 1:
-        np.save(img_file + '.npy', arr, allow_pickle=False)
-        sys.exit(0)
 
     new_shape = list(ori_shape)
     new_shape.reverse()
@@ -37,22 +32,15 @@ def main():
 
     if len(ori_shape) == 3:
         for i, j, k in itertools.product(i_r, j_r, range(new_shape[2])):
-            # RGB -> BGR
             if i == 0:
-                id = 2
-            elif i == 2:
                 id = 0
-            else:
+            elif i == 1:
                 id = 1
+            else:
+                id = 2
 
             new_data[id][k][j] = arr[k][j][i]
-    else:
-        print("error")
-        sys.exit(1)
 
-    new_data[0,:,:] = new_data[0,:,:] / 255.0
-    new_data[1,:,:] = new_data[1,:,:] / 255.0
-    new_data[2,:,:] = new_data[2,:,:] / 255.0
 
     np.save(img_file+'.npy', new_data, allow_pickle=False)
 

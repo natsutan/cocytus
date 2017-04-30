@@ -89,9 +89,9 @@ def layer_dump(model, x, l, postfix=''):
     last_dim = layer_output.shape[-1] - 1
 
     if l == 0:
-        d0 = layer_output[:, :, 0]
-        d1 = layer_output[:, :, 1]
-        d2 = layer_output[:, :, 2]
+        d0 = layer_output[0,:, :, 0]
+        d1 = layer_output[0,:, :, 1]
+        d2 = layer_output[0,:, :, 2]
         np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
         np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
         np.save('output/l%02d%s_2.npy' % (l, postfix), d2, allow_pickle=False)
@@ -252,7 +252,8 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
     return boxes_f, scores_f, classes_f
 
 def non_max_surpression(boxes, scores, tresh):
-    """
+    """    img = Image.open(img_file)
+
     see http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
     :param boxes:
     :param scores:
@@ -306,6 +307,7 @@ def yolo_eval(yolo_outputs,
     image_dims = np.stack([height, width, height, width])
     image_dims = np.reshape(image_dims, [1, 4])
     boxes = boxes * image_dims
+    img = Image.open(img_file)
 
     nms_index = non_max_surpression(boxes, scores, iou_threshold)
 
@@ -344,7 +346,11 @@ preds = tiny_yolo_model.predict(x)
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.3
 
+layer_dump(tiny_yolo_model, x, 0)
+
 np.save('output/preds%s.npy' % file_post_fix, preds)
+
+
 
 out_boxes, out_scores, out_classes = yolo_eval(preds, image.size, score_threshold = thresh, iou_threshold = 0.5, classes = classes)
 
@@ -363,7 +369,5 @@ for i in range(len(out_classes)):
 
 
 sys.exit(1)
-debug_layer = 28
-#layer_dump(tiny_yolo_model, x, debug_layer, file_post_fix)
 
 

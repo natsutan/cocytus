@@ -14,6 +14,9 @@ NUMPY_HEADER np;
 
 #define IMG_SIZE 416
 
+extern void layer0_output(void);
+extern void layer1_output(void);
+
 int main(void)
 {
     CQT_NET *tyolo_p;
@@ -34,6 +37,8 @@ int main(void)
     if (ret != CQT_RET_OK) {
         printf("ERROR in cqt_load_weight_from_files %d\n", ret);
     }
+
+    layer0_output();
 
     printf("start run\n");
     ret = cqt_run(tyolo_p, NULL);

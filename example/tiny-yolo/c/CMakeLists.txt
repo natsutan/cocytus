@@ -8,6 +8,7 @@ SET(CMAKE_EXE_LINKER_FLAGS  "-pg")
 
 add_executable(cqt_tyolo
         cqt_tyolo.c
+        tyolo_debug.c
         cqt_gen/cqt_gen.c
         cqt_lib/numpy.c
         cqt_lib/cqt_lib.c

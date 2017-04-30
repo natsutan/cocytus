@@ -69,10 +69,16 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
   switch (hp->descr) {
   case CQT_FLOAT32:
       assert(sizeof(float)==4);
-      fread(dp, 4, size, fp);
+      ret = fread(dp, 4, size, fp);
+      if (ret != size) {
+        return CQT_FREAD_ERR;
+      }
       break;
   case CQT_UINT8:
-      fread(dp, 1, size, fp);
+      ret =  fread(dp, 1, size, fp);
+      if (ret != size) {
+        return CQT_FREAD_ERR;
+      }
       break;
   default:
       printf("ERROR:numpy header error dscr = %d\n", hp->descr);
@@ -104,23 +110,38 @@ int np_check_header(FILE *fp, NUMPY_HEADER *hp)
   int ret;
 
   //check magic number
-  fread(&buf, 1, 6, fp);
+  ret = fread(&buf, 1, 6, fp);
+  if (ret != 6) {
+    return CQT_FREAD_ERR;
+  }
+
   for(i=0;i<6;i++) {
     if(buf[i]!=np_magic[i]) {
       return CQT_NP_HEADER_ERR;
     }
   }
   //version
-  fread(&buf, 1, 2, fp);
+  ret = fread(&buf, 1, 2, fp);
+  if (ret != 2) {
+    return CQT_FREAD_ERR;
+  }
   hp->major_version = buf[0];
   hp->minor_version = buf[1];
   
   //header_size 
-  fread(&size, 2, 1, fp);
+  ret = fread(&size, 2, 1, fp);
+  if (ret != 1) {
+    return CQT_FREAD_ERR;
+  }
   hp->header_len = size;
   assert(hp->header_len < CQT_NP_BUF_SIZE-1);
 
-  fread(&buf, 1, hp->header_len, fp);
+  ret = fread(&buf, 1, hp->header_len, fp);
+  if (ret != hp->header_len) {
+    return CQT_FREAD_ERR;
+  }
+
+
   buf[hp->header_len] = '\0';
 
   ret = np_parse_header_dic((char *)buf, hp);

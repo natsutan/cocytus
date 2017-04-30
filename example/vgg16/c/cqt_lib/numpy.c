@@ -34,15 +34,15 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
 
   fp = fopen(numpy_fname, "rb");
   if(fp==NULL) {
-	printf("ERROR:cant'open %s\n", numpy_fname);
-	return CQT_ERR_NO_FILE;
+    printf("ERROR:cant'open %s\n", numpy_fname);
+    return CQT_ERR_NO_FILE;
 
   }
   
   ret = np_check_header(fp, hp);
   if(ret != CQT_RET_OK) {
-	printf("ERROR:numpy header error %s\n", numpy_fname);
-	return ret;
+    printf("ERROR:numpy header error %s\n", numpy_fname);
+    return ret;
   }
 
   printf("load from %s\n", numpy_fname);
@@ -50,33 +50,33 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
 
   //引数のサイズと、numpyヘッダーのサイズを比較
   if(hp->shape[1] == 0) {
-	  size_from_shape = hp->shape[0];
+      size_from_shape = hp->shape[0];
   } else if (hp->shape[2] == 0) {
-	  size_from_shape = hp->shape[0] * hp->shape[1];
+      size_from_shape = hp->shape[0] * hp->shape[1];
   } else if  (hp->shape[3] == 0) {
-	  size_from_shape = hp->shape[0] * hp->shape[1] * hp->shape[2];
+      size_from_shape = hp->shape[0] * hp->shape[1] * hp->shape[2];
   } else {
-	  size_from_shape = hp->shape[0] * hp->shape[1] *  hp->shape[2] *  hp->shape[3];
+      size_from_shape = hp->shape[0] * hp->shape[1] *  hp->shape[2] *  hp->shape[3];
   }
 
   printf("size = %d, size_from_shape = %d\n", size, size_from_shape);
 
   if(size != size_from_shape) {
-	printf("ERROR:numpy header error %s\n", numpy_fname);
-	return CQT_NP_HEADER_ERR;
+    printf("ERROR:numpy header error %s\n", numpy_fname);
+    return CQT_NP_HEADER_ERR;
   }
 
   switch (hp->descr) {
   case CQT_FLOAT32:
-	  assert(sizeof(float)==4);
-	  fread(dp, 4, size, fp);
-	  break;
+      assert(sizeof(float)==4);
+      fread(dp, 4, size, fp);
+      break;
   case CQT_UINT8:
-	  fread(dp, 1, size, fp);
-	  break;
+      fread(dp, 1, size, fp);
+      break;
   default:
-	  printf("ERROR:numpy header error dscr = %d\n", hp->descr);
-	  return CQT_NP_HEADER_ERR;
+      printf("ERROR:numpy header error dscr = %d\n", hp->descr);
+      return CQT_NP_HEADER_ERR;
   }
 
   fclose(fp);
@@ -106,9 +106,9 @@ int np_check_header(FILE *fp, NUMPY_HEADER *hp)
   //check magic number
   fread(&buf, 1, 6, fp);
   for(i=0;i<6;i++) {
-	if(buf[i]!=np_magic[i]) {
-	  return CQT_NP_HEADER_ERR;
-	}
+    if(buf[i]!=np_magic[i]) {
+      return CQT_NP_HEADER_ERR;
+    }
   }
   //version
   fread(&buf, 1, 2, fp);
@@ -125,9 +125,9 @@ int np_check_header(FILE *fp, NUMPY_HEADER *hp)
 
   ret = np_parse_header_dic((char *)buf, hp);
   if(ret != CQT_RET_OK) {
-	return ret;
+    return ret;
   }
-	
+    
   fseek(fp, 8+2+(hp->header_len), 0);
 
   return CQT_RET_OK;
@@ -161,54 +161,54 @@ int np_parse_header_dic(char *buf, NUMPY_HEADER *hp)
 
   cp = strtok((char *)buf, delimiter);
   while(cp!=NULL) {
-	if ((*cp == ' ') || *cp == '{') {
-	  cp = strtok(NULL, delimiter);
-	  continue;
-	} 
+    if ((*cp == ' ') || *cp == '{') {
+      cp = strtok(NULL, delimiter);
+      continue;
+    } 
 
-	if(strstr(cp, "'descr':")!=NULL) {
-	  cp = strtok(NULL, delimiter);
-	  if(strstr(cp, "'<f4'")!=NULL) {
-		hp->descr = CQT_FLOAT32;
-	  } else if(strstr(cp, "'|u1'")!=NULL) {
-		hp->descr = CQT_UINT8;
-	  } else {
-		printf("ERROR unkown descr %s\n", cp);
-		return CQT_NP_HEADER_ERR;
-	  }
-	} else if(strstr(cp, "'fortran_order'")!=NULL) {
-	  cp = strtok(NULL, delimiter);
-	  //一文字目で判断
-	  if(*cp=='F') {
-		hp->fortran_order = false;
-	  } else {
-		printf("ERROR unsupported fortran_order %s\n", cp);
-		return CQT_NP_HEADER_ERR;
-	  }
-	} else if(strstr(cp, "'shape':")!=NULL) {
-	  do {
-		cp = strtok(NULL, delimiter);
-		//要素数が1の時は終了
-		if(*cp==')') break;
-		//(はスペースでつぶす
-		if(*cp=='(') *cp = ' ';
-		ret = sscanf(cp, "%d", &size);
-		if(ret!=1) {
-		  printf("ERROR unsupported shape %s\n", cp);
-		  return CQT_NP_HEADER_ERR;
-		}
+    if(strstr(cp, "'descr':")!=NULL) {
+      cp = strtok(NULL, delimiter);
+      if(strstr(cp, "'<f4'")!=NULL) {
+        hp->descr = CQT_FLOAT32;
+      } else if(strstr(cp, "'|u1'")!=NULL) {
+        hp->descr = CQT_UINT8;
+      } else {
+        printf("ERROR unkown descr %s\n", cp);
+        return CQT_NP_HEADER_ERR;
+      }
+    } else if(strstr(cp, "'fortran_order'")!=NULL) {
+      cp = strtok(NULL, delimiter);
+      //一文字目で判断
+      if(*cp=='F') {
+        hp->fortran_order = false;
+      } else {
+        printf("ERROR unsupported fortran_order %s\n", cp);
+        return CQT_NP_HEADER_ERR;
+      }
+    } else if(strstr(cp, "'shape':")!=NULL) {
+      do {
+        cp = strtok(NULL, delimiter);
+        //要素数が1の時は終了
+        if(*cp==')') break;
+        //(はスペースでつぶす
+        if(*cp=='(') *cp = ' ';
+        ret = sscanf(cp, "%d", &size);
+        if(ret!=1) {
+          printf("ERROR unsupported shape %s\n", cp);
+          return CQT_NP_HEADER_ERR;
+        }
 
-		//hp->shapeがサイズ4の配列だから。
-		if(dim>4) {
-		  printf("ERROR unsupported shape %s\n", cp);
-		  return CQT_NP_HEADER_ERR;
-		}
-		hp->shape[dim] = size;
-		dim++;
-	  } while(strstr(cp, ")")==NULL);
+        //hp->shapeがサイズ4の配列だから。
+        if(dim>4) {
+          printf("ERROR unsupported shape %s\n", cp);
+          return CQT_NP_HEADER_ERR;
+        }
+        hp->shape[dim] = size;
+        dim++;
+      } while(strstr(cp, ")")==NULL);
 
-	}
-	cp = strtok(NULL, delimiter);
+    }
+    cp = strtok(NULL, delimiter);
   }
 
 
@@ -224,26 +224,26 @@ void np_print_heaer_info(const NUMPY_HEADER *hp)
   printf("descr=");
   switch(hp->descr) {
   case CQT_INT32:
-	printf("int32");
-	break;
+    printf("int32");
+    break;
   case  CQT_FLOAT32:
-	printf("float32");
-	break;
+    printf("float32");
+    break;
   case  CQT_QINT8:
-	printf("qint8");
-	break;
+    printf("qint8");
+    break;
   case CQT_DTYPE_NONE:
-	printf("none");
-	break;
+    printf("none");
+    break;
   default:
-	printf("\nERROR unkown descr = %d", hp->descr);
+    printf("\nERROR unkown descr = %d", hp->descr);
   }
   printf("\n");
 
   if(hp->fortran_order) {
-	printf("fortran_order=True\n");
+    printf("fortran_order=True\n");
   } else {
-	printf("fortran_order=False\n");
+    printf("fortran_order=False\n");
   }
 
   printf("shape = (%d, %d, %d, %d)\n", hp->shape[0], hp->shape[1], hp->shape[2], hp->shape[3]);
@@ -266,23 +266,23 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
   assert(hp!=NULL);
   assert(hp->shape[0] != 0);
   assert(hp->fortran_order == false);
-	
-	
+    
+    
   //引数のサイズと、numpyヘッダーのサイズを比較
   if(hp->shape[1] == 0) {
-	  size_from_shape = hp->shape[0];
+      size_from_shape = hp->shape[0];
   } else if (hp->shape[2] == 0) {
-	  size_from_shape = hp->shape[0] * hp->shape[1];
+      size_from_shape = hp->shape[0] * hp->shape[1];
   } else if  (hp->shape[3] == 0) {
-	  size_from_shape = hp->shape[0] * hp->shape[1] * hp->shape[2];
+      size_from_shape = hp->shape[0] * hp->shape[1] * hp->shape[2];
   } else {
-	  size_from_shape = hp->shape[0] * hp->shape[1] *  hp->shape[2] *  hp->shape[3];
+      size_from_shape = hp->shape[0] * hp->shape[1] *  hp->shape[2] *  hp->shape[3];
   }
 
   fp = fopen(numpy_fname, "wb");
   if(fp==NULL) {
-	printf("ERROR:cant'open %s\n", numpy_fname);
-	return CQT_ERR_NO_FILE;
+    printf("ERROR:cant'open %s\n", numpy_fname);
+    return CQT_ERR_NO_FILE;
   }
 
   //write magic number
@@ -299,25 +299,25 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
   //dictionary
   //padding
   for(i=0;i<CQT_NP_BUF_SIZE;i++) {
-	buf[i] = ' ';
+    buf[i] = ' ';
   }
 
   if(hp->descr == CQT_FLOAT32) {
-	descr = type_float;
+    descr = type_float;
   } else {
-	printf("ERROR unkown descr %d\n", hp->descr);
-	return CQT_NP_HEADER_ERR;
+    printf("ERROR unkown descr %d\n", hp->descr);
+    return CQT_NP_HEADER_ERR;
   }
   
   //{'descr': '<f4', 'fortran_order': False, 'shape': (32,), }
   if(hp->shape[1] == 0) {
-	len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d,), }", descr, hp->shape[0]);
+    len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d,), }", descr, hp->shape[0]);
   } else if(hp->shape[2] == 0) {
-	len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d), }", descr, hp->shape[0], hp->shape[1]);
+    len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d), }", descr, hp->shape[0], hp->shape[1]);
   } else if(hp->shape[3] == 0) {
-	len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d, %d), }", descr, hp->shape[0], hp->shape[1], hp->shape[2]);
+    len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d, %d), }", descr, hp->shape[0], hp->shape[1], hp->shape[2]);
   } else {
-	len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d, %d, %d), }", descr, hp->shape[0], hp->shape[1], hp->shape[2], hp->shape[3]);
+    len = sprintf((char *)buf, "{'descr': '%s', 'fortran_order': False, 'shape': (%d, %d, %d, %d), }", descr, hp->shape[0], hp->shape[1], hp->shape[2], hp->shape[3]);
   }
   assert(len!=0);
   buf[len] = ' ';

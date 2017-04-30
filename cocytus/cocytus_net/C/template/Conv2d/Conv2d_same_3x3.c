@@ -31,7 +31,6 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 	assert(cnvp->kernel_size[0]==3);
 	assert(cnvp->kernel_size[1]==3);
 	assert(cnvp->padding==PD_SAME);
-	assert(cnvp->activation==ACT_RELU);
 	assert(cnvp->strides[0]==1);
 	assert(cnvp->strides[1]==1);
 	assert(fill_num==lp->cqt_output_shape[3]);
@@ -106,17 +105,18 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 					o_data += filter3x3[2][1] * data3x3[2][1];
 					o_data += filter3x3[2][2] * data3x3[2][2];
 
+                    if(n==(input_size_num-1)) {
+                        //bais
+                        if(cnvp->use_bias) {
+                                o_data += bias;
+                        }
 
-					//bais
-					if(n==(input_size_num-1)) {
-    					o_data += bias;
-                    }
-
-                    //activattion
-					if(n==(input_size_num-1)) {
-					    if(o_data < 0) {
-					        o_data = 0.0;
-					    }
+                        //activattion
+                        if(cnvp->activation == ACT_RELU) {
+                            if(o_data < 0) {
+                                o_data = 0.0;
+                            }
+                        }
                     }
 
 					*(op + idx_o) = o_data;

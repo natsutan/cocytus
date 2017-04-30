@@ -37,6 +37,6 @@ def layer1_comp():
     plt.show()
 
 
-layer0_comp()
+layer1_comp()
 
 print('finish')

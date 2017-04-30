@@ -38,13 +38,12 @@ int main(void)
         printf("ERROR in cqt_load_weight_from_files %d\n", ret);
     }
 
-    layer0_output();
-
     printf("start run\n");
     ret = cqt_run(tyolo_p, NULL);
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+    layer1_output();
 
     return 0;
 }

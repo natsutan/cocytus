@@ -8,8 +8,6 @@
 // cocytus network
 CQT_NET g_cqt_sequential_1;
 
-void     layer23_output();
-
 //Layers
 LY_InputLayer input_1;
 LY_Conv2D conv2d_1;
@@ -1834,7 +1832,6 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//leaky_re_lu_6
 	ret = CQT_LeakyReLU_if_of(&(g_cqt_sequential_1.layer[23]), batch_normalization_6_output, leaky_re_lu_6_output);
-    ret = 255;
 	if(ret != CQT_RET_OK){
 		return ret;
 	}

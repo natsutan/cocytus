@@ -80,7 +80,20 @@ def layer23_comp():
 
     plt.show()
 
+def layer24_comp():
+    keras = np.load(keras_dir+'l24_1.npy')
+    cqt = np.load(cqt_dir+'l24_1.npy')
 
-layer23_comp()
+    c_f = cqt.flatten()
+    k_f = keras.flatten()
+
+    x = np.arange(len(k_f))
+
+    plt.plot(x, c_f, color='r')
+    plt.plot(x, k_f, color='b')
+
+    plt.show()
+
+layer24_comp()
 
 print('finish')

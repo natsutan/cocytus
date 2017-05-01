@@ -16,7 +16,6 @@ int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
     assert(mpp->pool_size[1]==2);
     assert(mpp->strides[0]==2);
     assert(mpp->strides[1]==2);
-    assert(mpp->padding==PD_VALID);
 
     int input_size_x = lp->cqt_input_shape[1];  //入力　x size
     int input_size_y = lp->cqt_input_shape[2];  //入力　y size
@@ -26,6 +25,15 @@ int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
     int idx_i,idx_o;
     float data[4]; //2x2
     float max;
+
+    //パラメータチェック
+    if(mpp->padding!=PD_VALID) {
+        //領域が2x2のプーピングで、サイズが偶数であれば、パディングが発生せず、
+        //PD_SAMEでも同じ処理を実行する。
+        assert(mpp->padding==PD_SAME);
+        assert(input_size_x%2==0);
+        assert(input_size_y%2==0);
+    }
 
     for(n=0;n<input_size_num;n++) {
         for(y=0;y<input_size_y;y+=2) {
@@ -53,8 +61,7 @@ int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
                 *(op + idx_o) = max;
             }
         }
-    }
-
+     }
 
     return CQT_RET_OK;
 }

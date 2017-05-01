@@ -164,3 +164,51 @@ void layer24_output(void)
         printf("ERROR in layer_output %d\n", ret);
     }
 }
+
+void layer30_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 13 * 13;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(leaky_re_lu_8_output[0], "output/l30_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+    ret = save_to_numpy(leaky_re_lu_8_output[1], "output/l30_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+    ret = save_to_numpy(leaky_re_lu_8_output[1023], "output/l30_1023.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}
+
+void layer31_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 13 * 13;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(conv2d_9_output[0], "output/l31_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+    ret = save_to_numpy(conv2d_9_output[1], "output/l31_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+    ret = save_to_numpy(conv2d_9_output[1023], "output/l31_1023.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}

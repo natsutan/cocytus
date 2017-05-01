@@ -20,6 +20,8 @@ extern void layer2_output(void);
 extern void layer3_output(void);
 extern void layer23_output(void);
 extern void layer24_output(void);
+extern void layer30_output(void);
+extern void layer31_output(void);
 
 
 int main(void)
@@ -48,8 +50,8 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-    layer23_output();
-    layer24_output();
+    layer30_output();
+    layer31_output();
 
     return 0;
 }

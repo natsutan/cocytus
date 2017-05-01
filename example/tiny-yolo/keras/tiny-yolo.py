@@ -348,7 +348,7 @@ preds = tiny_yolo_model.predict(x)
 probs = np.zeros((r_h * r_w * r_n, classes+1), dtype=np.float)
 thresh = 0.3
 
-layer_dump(tiny_yolo_model, x, 24)
+layer_dump(tiny_yolo_model, x, 31)
 
 np.save('output/preds%s.npy' % file_post_fix, preds)
 

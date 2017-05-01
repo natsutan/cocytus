@@ -98,13 +98,14 @@ def yolo_head(feats, anchors, num_classes):
     #     conv_index.reshape(1, conv_height, conv_width, 1, 2))
     # feats = Reshape(
     #     (conv_dims[0], conv_dims[1], num_anchors, num_classes + 5))(feats)
+    box_xy_dash = feats[..., :2]
+    box_wh_dash = feats[..., 2:4]
+    box_confidence_dash = feats[..., 4:5]
+    box_class_probs_dash = feats[..., 5:]
 
     box_xy = sigmoid(feats[..., :2])
     box_wh = np.exp(feats[..., 2:4])
     box_confidence = sigmoid(feats[..., 4:5])
-
-    pb_deb = feats[..., 5:]
-
     box_class_probs = softmax(feats[..., 5:])
 
     # Adjust preditions to each spatial grid point and anchor size.
@@ -164,6 +165,7 @@ def yolo_filter_boxes(boxes, box_confidence, box_class_probs, threshold=.6):
                     classes_f.append(box_classes[0][r][c][n])
 
     return boxes_f, scores_f, classes_f
+
 
 def non_max_surpression(boxes, scores, tresh):
     """    img = Image.open(img_file)

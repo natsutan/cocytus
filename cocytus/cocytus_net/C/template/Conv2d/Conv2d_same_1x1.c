@@ -20,7 +20,6 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int f, x, y, n;
     int idx_i,idx_o, idx_w;
-    $weight_type w_data;
     $output_type o_data;
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ

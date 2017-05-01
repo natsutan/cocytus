@@ -19,6 +19,6 @@ add_executable(cqt_tyolo
         cqt_lib/MaxPooling2D.c
         cqt_lib/BatchNormalization.c
         cqt_lib/LeakyReLU.c
-        )
+        ya2k_yolo.h)
 
 target_link_libraries(cqt_tyolo m)

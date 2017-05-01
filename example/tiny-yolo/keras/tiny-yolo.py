@@ -9,7 +9,7 @@ from keras.models import model_from_json
 import numpy as np
 from PIL import Image
 
-from yad2k.yad2k_yolo import yolo_eval
+from yad2k.yad2k_yolo import yolo_eval, voc_label
 
 img_file = '../img/person.jpg'
 #img_file = '../img/dog.jpg'
@@ -22,11 +22,6 @@ r_h = 13
 r_n = 5
 classes = 20
 
-
-
-voc_label = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
-             'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person',
-             'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
 
 def tiny_yolo_model():
     model = Sequential()

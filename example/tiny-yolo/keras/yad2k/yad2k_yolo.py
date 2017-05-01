@@ -10,6 +10,13 @@ region_biases = (1.080000, 1.190000, 3.420000, 4.410000, 6.630000, 11.380000, 9.
 voc_anchors = np.array(
     [[1.08, 1.19], [3.42, 4.41], [6.63, 11.38], [9.42, 5.11], [16.62, 10.52]])
 
+
+voc_label = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
+             'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person',
+             'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
+
+
+
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
@@ -228,6 +235,25 @@ def yolo_eval(yolo_outputs,
     return boxes_last, scores_last, classes_last
 
 
+# デバッグ用エントリー
+if __name__ == '__main__':
+    classes = 20
+    preds = np.load('output/preds.npy')
 
+    thresh = 0.3
+    size = (620, 424)
 
+    out_boxes, out_scores, out_classes = yolo_eval(preds, size, score_threshold = thresh, iou_threshold = 0.5, classes = classes)
+
+    for i in range(len(out_classes)):
+        cls = out_classes[i]
+        score = out_scores[i]
+        box = out_boxes[i]
+
+        top, left, bottom, right = box
+        top = max(0, np.floor(top + 0.5).astype('int32'))
+        left = max(0, np.floor(left + 0.5).astype('int32'))
+        bottom = min(size[1], np.floor(bottom + 0.5).astype('int32'))
+        right = min(size[0], np.floor(right + 0.5).astype('int32'))
+        print(voc_label[cls], score, (left, top), (right, bottom))
 

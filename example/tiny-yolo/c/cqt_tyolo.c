@@ -50,7 +50,7 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-    layer30_output();
+//    layer30_output();
     layer31_output();
 
     return 0;

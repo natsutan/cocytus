@@ -13,6 +13,7 @@ add_executable(cqt_tyolo
         cqt_lib/numpy.c
         cqt_lib/cqt_lib.c
         cqt_lib/InputLayer.c
+        cqt_lib/Conv2d_same_1x1.c
         cqt_lib/Conv2d_same_3x3.c
         cqt_lib/MaxPooling2D.c
         cqt_lib/BatchNormalization.c

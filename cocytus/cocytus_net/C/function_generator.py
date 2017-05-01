@@ -15,6 +15,7 @@ class FunctionGenerator:
         self.template_dir = template_dir
 
         self.conv2d_same_3x3_first = True
+        self.conv2d_same_1x1_first = True
         self.maxpoolong2d_first = True
         self.flatten_first = True
         self.dense_first = True
@@ -80,20 +81,30 @@ class FunctionGenerator:
         weight_type = layer_detail.weight_dtypes[0]
         output_type = layer_detail.output_dtypes[0]
 
-        if kernel_size == (3, 3) and padding == 'same':
-            output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_3x3.c')
+        if (kernel_size == (3, 3) or kernel_size == (1, 1)) and padding == 'same':
+            if kernel_size == (3, 3):
+                output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_3x3.c')
+            else:
+                output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_1x1.c')
 
+
+            # templete fileの選択
+            conv2d_template_fname = ''
             opt_level = self.compiler.get_conv2d_optlevel()
-            if opt_level == 'dash':
+            if opt_level == 'dash' and kernel_size == (3, 3):
                 conv2d_template_fname = 'Conv2d_same_3x3_dash.c'
             else:
                 if opt_level != '':
                     print("WARNING unkown Conv2d optimze level %s, use dafalut(no optimize)." % opt_level)
-                conv2d_template_fname = 'Conv2d_same_3x3.c'
+
+                if kernel_size == (3, 3):
+                    conv2d_template_fname = 'Conv2d_same_3x3.c'
+                elif kernel_size == (1, 1):
+                    conv2d_template_fname = 'Conv2d_same_1x1.c'
 
             template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 
-            if self.conv2d_same_3x3_first:
+            if kernel_size == (3, 3) and self.conv2d_same_3x3_first:
                 with open(output_file, 'w') as fp:
                     fp.write('#include <string.h>\n')
                     fp.write('#include <assert.h>\n')
@@ -101,6 +112,15 @@ class FunctionGenerator:
                     fp.write('#include "cqt_net.h"\n')
                     fp.write('\n')
                 self.conv2d_same_3x3_first = False
+
+            if kernel_size == (1, 1) and self.conv2d_same_1x1_first:
+                with open(output_file, 'w') as fp:
+                    fp.write('#include <string.h>\n')
+                    fp.write('#include <assert.h>\n')
+                    fp.write('#include "cqt.h"\n')
+                    fp.write('#include "cqt_net.h"\n')
+                    fp.write('\n')
+                self.conv2d_same_1x1_first = False
         else:
             name = layer_detail.l.name
             print('ERROR unsupported Conv2d %s kernel = %s padding = %s' % (name, str(kernel_size), padding))

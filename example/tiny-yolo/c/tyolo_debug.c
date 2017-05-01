@@ -207,7 +207,7 @@ void layer31_output(void)
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer_output %d\n", ret);
     }
-    ret = save_to_numpy(conv2d_9_output[1023], "output/l31_1023.npy", &np_0);
+    ret = save_to_numpy(conv2d_9_output[124], "output/l31_124.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer_output %d\n", ret);
     }

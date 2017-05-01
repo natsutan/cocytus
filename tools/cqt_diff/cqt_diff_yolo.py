@@ -110,8 +110,8 @@ def layer30_comp():
     plt.show()
 
 def layer31_comp():
-    keras = np.load(keras_dir+'l31_0.npy')
-    cqt = np.load(cqt_dir+'l31_0.npy')
+    keras = np.load(keras_dir+'l31_124.npy')
+    cqt = np.load(cqt_dir+'l31_124.npy')
 
     c_f = cqt.flatten()
     k_f = keras.flatten()

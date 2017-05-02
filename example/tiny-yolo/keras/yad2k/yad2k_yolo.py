@@ -110,6 +110,9 @@ def yolo_head(feats, anchors, num_classes):
 
     # Adjust preditions to each spatial grid point and anchor size.
     # Note: YOLO iterates over height index before width index.
+    box_xy_dash2 = box_xy + conv_index
+    box_wh_dash2 = box_wh * anchors_tensor
+
     box_xy = (box_xy + conv_index) / conv_dims
     box_wh = box_wh * anchors_tensor / conv_dims
 
@@ -189,6 +192,10 @@ def non_max_surpression(boxes, scores, tresh):
         i = idxs[last]
         pick.append(i)
 
+        idx_last = idxs[:last]
+        xx1_tmp = x1[idx_last] #  x1[idxs[:last]]
+        x1_tmp = x1[i]  # x1[i]
+
         xx1 = np.maximum(x1[i], x1[idxs[:last]])
         yy1 = np.maximum(y1[i], y1[idxs[:last]])
         xx2 = np.minimum(x2[i], x2[idxs[:last]])
@@ -199,6 +206,7 @@ def non_max_surpression(boxes, scores, tresh):
 
         overlap = (w * h) / area[idxs[:last]]
 
+        tmp = np.concatenate(([last], np.where(overlap > tresh)[0]))
         idxs = np.delete(idxs, np.concatenate(([last],
                                                np.where(overlap > tresh)[0])))
 

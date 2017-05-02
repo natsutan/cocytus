@@ -23,11 +23,19 @@ float box_wh[13][13][5][2];
 float box_confidence[13][13][5];
 float box_class_probs[13][13][5][20];
 
+//for debug
+float box_xy_dash[13][13][5][2];
+float box_wh_dash[13][13][5][2];
+
+
+
 //yolo_boxes_to_cornersの出力
 BOX boxes_t [13][13][5];
 
 //yolo_filter_boxesの出力
 YOLO_RESULT filtered_boxes[YOLO_MAX_RESULT];
+
+//non_max_surpressionの出力
 
 
 //最終出力
@@ -47,6 +55,112 @@ void yolo_head(void *predp);
 float sigmoid(float x);
 void yolo_boxes_to_corners(void);
 int yolo_filter_boxes(float thresh);
+int non_max_surpression(int num, float iou_thresh);
+
+
+int non_max_surpression(int num, float iou_thresh)
+{
+    float area[YOLO_MAX_RESULT];
+    bool remove_flg[YOLO_MAX_RESULT];
+    int idxs_len = num;
+
+    int i, j;
+    int tmp;
+    float a, b;
+    int x1, y1, x2, y2;
+    int last;
+    int idxs[YOLO_MAX_RESULT];
+    float xx1, yy1, xx2, yy2;
+    float w, h, overlap;
+
+
+    int ret_idx = 0;
+
+    //エリアの計算
+    for(i=0;i<num;i++) {
+        x1 = (int) filtered_boxes[i].box.left;
+        y1 = (int) filtered_boxes[i].box.top;
+        x2 = (int) filtered_boxes[i].box.right;
+        y2 = (int) filtered_boxes[i].box.bottom;
+        area[i] = (x2 - x1 + 1) * (y2 - y1 + 1);
+    }
+
+    //とりえあず、バブルソート
+    for(i=0;i<idxs_len;i++) {
+        idxs[i] = i;
+    }
+
+    for(i=0;i<idxs_len;i++) {
+        for(j=0;j<i;j++) {
+            a = filtered_boxes[idxs[i]].score;
+            b = filtered_boxes[idxs[j]].score;
+            if(a < b) {
+                //swap index
+                tmp = idxs[i];
+                idxs[i] = idxs[j];
+                idxs[j] = tmp;
+            }
+        }
+    }
+
+    while(0 < idxs_len) {
+        last = idxs_len - 1;
+        i = idxs[last];
+        //結果の追加
+        yolo_result[ret_idx] = filtered_boxes[idxs[last]];
+        printf("add %d\n", idxs[last]);
+        ret_idx++;
+
+        for(j=0;j<last;j++) {
+            printf("idxs[last] = %d, idxs[j] = %d\n", idxs[last], idxs[j]);
+
+            if(filtered_boxes[idxs[last]].box.left > filtered_boxes[idxs[j]].box.left) {
+                xx1 = filtered_boxes[idxs[last]].box.left;
+            } else {
+                xx1 = filtered_boxes[idxs[j]].box.left;
+            }
+            if(filtered_boxes[idxs[last]].box.top > filtered_boxes[idxs[j]].box.top) {
+                yy1 = filtered_boxes[idxs[last]].box.top;
+            } else {
+                yy1 = filtered_boxes[idxs[j]].box.top;
+            }
+            if(filtered_boxes[idxs[last]].box.right > filtered_boxes[idxs[j]].box.right) {
+                xx2 = filtered_boxes[idxs[last]].box.right;
+            } else {
+                xx2 = filtered_boxes[idxs[j]].box.right;
+            }
+            if(filtered_boxes[idxs[last]].box.bottom > filtered_boxes[idxs[j]].box.bottom) {
+                yy2 = filtered_boxes[idxs[last]].box.bottom;
+            } else {
+                yy2 = filtered_boxes[idxs[j]].box.bottom;
+            }
+
+            w = xx2 - xx1 + 1;
+            if(w < 0) {
+                w = 0;
+            }
+            h = yy2 - yy1 + 1;
+            if(h < 0) {
+                h = 0;
+            }
+            overlap = (w * h) / area[idxs[last]];
+            printf("ov = %f, area = %f, xx1 = %f, yy1 = %f, xx2 = %f, yy2 = %f\n",
+                   overlap, area[idxs[last]], xx1, yy1, xx2, yy2);
+
+
+            if(overlap > iou_thresh) {
+                remove_flg[j] = false;
+            } else {
+                remove_flg[j] = true;
+            }
+        }
+        printf("loop");
+        return ret_idx;
+    }
+
+
+    return ret_idx;
+}
 
 int yolo_filter_boxes(float thresh)
 {
@@ -82,7 +196,6 @@ int yolo_filter_boxes(float thresh)
 
                     //数のチェック
                     idx_r++;
-
                     if(idx_r>=YOLO_MAX_RESULT) {
                         return RET_YOLO_MAX_RESULT_OVER;
                     }
@@ -135,8 +248,6 @@ void yolo_head(void *predp)
     //配列の並びをKerasに合わせる。
     for(row=0;row<YOLO_REGION_SIZE;row++) {
         for(col=0;col<YOLO_REGION_SIZE;col++) {
-
-
             for(k=0;k<YOLO_CLUSTERS;k++) {
                 //yoloの出力結果にアクセスするときは、idx_kを使う。
                 idx_k = k * (YOLO_CLASSES + 5);
@@ -146,12 +257,20 @@ void yolo_head(void *predp)
                 //box_xy = sigmoid(feats[..., :2])
                 data0 = conv2d_9_output[idx_k+0][row][col];
                 data1 = conv2d_9_output[idx_k+1][row][col];
-                box_xy[row][col][k][0] = (sigmoid(data0) + row) / YOLO_REGION_SIZE;
-                box_xy[row][col][k][1] = (sigmoid(data1) + col) / YOLO_REGION_SIZE;
+
+                box_xy_dash[row][col][k][0] = data0;
+                box_xy_dash[row][col][k][1] = data1;
+
+                box_xy[row][col][k][0] = (sigmoid(data0) + col) / YOLO_REGION_SIZE;
+                box_xy[row][col][k][1] = (sigmoid(data1) + row) / YOLO_REGION_SIZE;
 
                 //box_wh = np.exp(feats[..., 2:4])
                 data0 = conv2d_9_output[idx_k+2][row][col];
                 data1 = conv2d_9_output[idx_k+3][row][col];
+
+                box_wh_dash[row][col][k][0] = data0;
+                box_wh_dash[row][col][k][1] = data1;
+
                 box_wh[row][col][k][0] = (float) ((exp(data0) * voc_anchors[k][0]) / YOLO_REGION_SIZE);
                 box_wh[row][col][k][1] = (float) ((exp(data1) * voc_anchors[k][1]) / YOLO_REGION_SIZE);
 
@@ -188,17 +307,22 @@ void yolo_head(void *predp)
 int yolo_eval(void *predp, YOLO_PARAM *pp)
 {
     int ret;
+    int yolo_filter_boxes_ret; //領域のの数
+    int nms_ret;
 
     assert(predp!=NULL);
     assert(pp!=NULL);
     assert(pp->classes==YOLO_CLASSES);
     yolo_head(predp);
     yolo_boxes_to_corners();
-    ret = yolo_filter_boxes(pp->score_threshold);
-    if(ret <= 0) {
-        return ret;
+    yolo_filter_boxes_ret = yolo_filter_boxes(pp->score_threshold);
+    if(yolo_filter_boxes_ret <= 0) {
+        return yolo_filter_boxes_ret;
     }
-
+    nms_ret = non_max_surpression(yolo_filter_boxes_ret, pp->iou_threshold);
+    if(nms_ret) {
+        return nms_ret;
+    }
 
     return -1;
 }

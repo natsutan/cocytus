@@ -23,11 +23,6 @@ float box_wh[13][13][5][2];
 float box_confidence[13][13][5];
 float box_class_probs[13][13][5][20];
 
-//for debug
-float box_xy_dash[13][13][5][2];
-float box_wh_dash[13][13][5][2];
-
-
 
 //yolo_boxes_to_cornersの出力
 BOX boxes_t [13][13][5];
@@ -67,21 +62,22 @@ int non_max_surpression(int num, float iou_thresh)
     int i, j;
     int tmp;
     float a, b;
-    int x1, y1, x2, y2;
+    float x1, y1, x2, y2;
     int last;
     int idxs[YOLO_MAX_RESULT];
+    int idxs_work[YOLO_MAX_RESULT];
     float xx1, yy1, xx2, yy2;
     float w, h, overlap;
 
-
+    int idwork_idx;
     int ret_idx = 0;
 
     //エリアの計算
     for(i=0;i<num;i++) {
-        x1 = (int) filtered_boxes[i].box.left;
-        y1 = (int) filtered_boxes[i].box.top;
-        x2 = (int) filtered_boxes[i].box.right;
-        y2 = (int) filtered_boxes[i].box.bottom;
+        x1 = filtered_boxes[i].box.left;
+        y1 = filtered_boxes[i].box.top;
+        x2 = filtered_boxes[i].box.right;
+        y2 = filtered_boxes[i].box.bottom;
         area[i] = (x2 - x1 + 1) * (y2 - y1 + 1);
     }
 
@@ -114,25 +110,26 @@ int non_max_surpression(int num, float iou_thresh)
         for(j=0;j<last;j++) {
             printf("idxs[last] = %d, idxs[j] = %d\n", idxs[last], idxs[j]);
 
+            //xx1, yy1 xx2, yy2が入れ替わっている。(Keras版のバグ？)
             if(filtered_boxes[idxs[last]].box.left > filtered_boxes[idxs[j]].box.left) {
-                xx1 = filtered_boxes[idxs[last]].box.left;
+                yy1 = filtered_boxes[idxs[last]].box.left;
             } else {
-                xx1 = filtered_boxes[idxs[j]].box.left;
+                yy1 = filtered_boxes[idxs[j]].box.left;
             }
             if(filtered_boxes[idxs[last]].box.top > filtered_boxes[idxs[j]].box.top) {
-                yy1 = filtered_boxes[idxs[last]].box.top;
+                xx1 = filtered_boxes[idxs[last]].box.top;
             } else {
-                yy1 = filtered_boxes[idxs[j]].box.top;
+                xx1 = filtered_boxes[idxs[j]].box.top;
             }
-            if(filtered_boxes[idxs[last]].box.right > filtered_boxes[idxs[j]].box.right) {
-                xx2 = filtered_boxes[idxs[last]].box.right;
+            if(filtered_boxes[idxs[last]].box.right < filtered_boxes[idxs[j]].box.right) {
+                yy2 = filtered_boxes[idxs[last]].box.right;
             } else {
-                xx2 = filtered_boxes[idxs[j]].box.right;
+                yy2 = filtered_boxes[idxs[j]].box.right;
             }
-            if(filtered_boxes[idxs[last]].box.bottom > filtered_boxes[idxs[j]].box.bottom) {
-                yy2 = filtered_boxes[idxs[last]].box.bottom;
+            if(filtered_boxes[idxs[last]].box.bottom < filtered_boxes[idxs[j]].box.bottom) {
+                xx2 = filtered_boxes[idxs[last]].box.bottom;
             } else {
-                yy2 = filtered_boxes[idxs[j]].box.bottom;
+                xx2 = filtered_boxes[idxs[j]].box.bottom;
             }
 
             w = xx2 - xx1 + 1;
@@ -143,21 +140,32 @@ int non_max_surpression(int num, float iou_thresh)
             if(h < 0) {
                 h = 0;
             }
-            overlap = (w * h) / area[idxs[last]];
+            overlap = (w * h) / area[idxs[j]];
             printf("ov = %f, area = %f, xx1 = %f, yy1 = %f, xx2 = %f, yy2 = %f\n",
-                   overlap, area[idxs[last]], xx1, yy1, xx2, yy2);
+                   overlap, area[idxs[j]], xx1, yy1, xx2, yy2);
 
-
-            if(overlap > iou_thresh) {
+            //スレッショルド以下は削除
+            if(overlap < iou_thresh) {
                 remove_flg[j] = false;
             } else {
                 remove_flg[j] = true;
             }
         }
-        printf("loop");
-        return ret_idx;
-    }
 
+        //要素の削除
+        idwork_idx = 0;
+        for(j=0;j<last;j++) {
+            if(remove_flg[j]) {
+                continue;
+            }
+            idxs_work[idwork_idx] = idxs[j];
+            idwork_idx++;
+        }
+        for(j=0;j<idwork_idx;j++) {
+            idxs[j] = idxs_work[j];
+        }
+        idxs_len = idwork_idx;
+    }
 
     return ret_idx;
 }
@@ -258,18 +266,12 @@ void yolo_head(void *predp)
                 data0 = conv2d_9_output[idx_k+0][row][col];
                 data1 = conv2d_9_output[idx_k+1][row][col];
 
-                box_xy_dash[row][col][k][0] = data0;
-                box_xy_dash[row][col][k][1] = data1;
-
                 box_xy[row][col][k][0] = (sigmoid(data0) + col) / YOLO_REGION_SIZE;
                 box_xy[row][col][k][1] = (sigmoid(data1) + row) / YOLO_REGION_SIZE;
 
                 //box_wh = np.exp(feats[..., 2:4])
                 data0 = conv2d_9_output[idx_k+2][row][col];
                 data1 = conv2d_9_output[idx_k+3][row][col];
-
-                box_wh_dash[row][col][k][0] = data0;
-                box_wh_dash[row][col][k][1] = data1;
 
                 box_wh[row][col][k][0] = (float) ((exp(data0) * voc_anchors[k][0]) / YOLO_REGION_SIZE);
                 box_wh[row][col][k][1] = (float) ((exp(data1) * voc_anchors[k][1]) / YOLO_REGION_SIZE);
@@ -309,6 +311,7 @@ int yolo_eval(void *predp, YOLO_PARAM *pp)
     int ret;
     int yolo_filter_boxes_ret; //領域のの数
     int nms_ret;
+    int i;
 
     assert(predp!=NULL);
     assert(pp!=NULL);
@@ -319,6 +322,14 @@ int yolo_eval(void *predp, YOLO_PARAM *pp)
     if(yolo_filter_boxes_ret <= 0) {
         return yolo_filter_boxes_ret;
     }
+
+    for(i=0;i<yolo_filter_boxes_ret;i++) {
+        filtered_boxes[i].box.left   *= pp->width;
+        filtered_boxes[i].box.right  *= pp->width;
+        filtered_boxes[i].box.top    *= pp->height;
+        filtered_boxes[i].box.bottom *= pp->height;
+    }
+
     nms_ret = non_max_surpression(yolo_filter_boxes_ret, pp->iou_threshold);
     if(nms_ret) {
         return nms_ret;

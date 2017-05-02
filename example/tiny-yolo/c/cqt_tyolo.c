@@ -51,14 +51,6 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-//    layer30_output();
-//    layer31_output();
-//    ret = load_from_numpy(conv2d_9_output, "../keras/output/preds.npy", 125 * 13 * 13 , &np);
-//    if(ret != CQT_RET_OK) {
- //       printf("error in load_from_numpy %d\n", ret);
- //       exit(1);
- //   }
-
 
     // ここから領域の計算
     yolo_parameter.width = 620;

@@ -104,11 +104,9 @@ int non_max_surpression(int num, float iou_thresh)
         i = idxs[last];
         //結果の追加
         yolo_result[ret_idx] = filtered_boxes[idxs[last]];
-        printf("add %d\n", idxs[last]);
         ret_idx++;
 
         for(j=0;j<last;j++) {
-            printf("idxs[last] = %d, idxs[j] = %d\n", idxs[last], idxs[j]);
 
             //xx1, yy1 xx2, yy2が入れ替わっている。(Keras版のバグ？)
             if(filtered_boxes[idxs[last]].box.left > filtered_boxes[idxs[j]].box.left) {
@@ -141,8 +139,6 @@ int non_max_surpression(int num, float iou_thresh)
                 h = 0;
             }
             overlap = (w * h) / area[idxs[j]];
-            printf("ov = %f, area = %f, xx1 = %f, yy1 = %f, xx2 = %f, yy2 = %f\n",
-                   overlap, area[idxs[j]], xx1, yy1, xx2, yy2);
 
             //スレッショルド以下は削除
             if(overlap < iou_thresh) {
@@ -259,8 +255,6 @@ void yolo_head(void *predp)
             for(k=0;k<YOLO_CLUSTERS;k++) {
                 //yoloの出力結果にアクセスするときは、idx_kを使う。
                 idx_k = k * (YOLO_CLASSES + 5);
-                printf("idx_k = %d\n", idx_k);
-                fflush(stdout);
 
                 //box_xy = sigmoid(feats[..., :2])
                 data0 = conv2d_9_output[idx_k+0][row][col];
@@ -308,7 +302,6 @@ void yolo_head(void *predp)
 
 int yolo_eval(void *predp, YOLO_PARAM *pp)
 {
-    int ret;
     int yolo_filter_boxes_ret; //領域のの数
     int nms_ret;
     int i;

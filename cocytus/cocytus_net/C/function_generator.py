@@ -204,7 +204,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.dense_first = False
 
-        with open(output_file, 'a') as fpoutbatchnormalization:
+        with open(output_file, 'a') as fpout:
             t = string.Template(open(template_file).read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],

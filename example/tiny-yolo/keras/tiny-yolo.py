@@ -7,7 +7,7 @@ from keras.layers.advanced_activations import LeakyReLU
 from keras import backend as K
 from keras.models import model_from_json
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from yad2k.yad2k_yolo import yolo_eval, voc_label
 
@@ -131,6 +131,8 @@ np.save('output/preds%s.npy' % file_post_fix, preds)
 
 out_boxes, out_scores, out_classes = yolo_eval(preds, image.size, score_threshold = thresh, iou_threshold = 0.5, classes = classes)
 
+dr = ImageDraw.Draw(image)
+
 for i in range(len(out_classes)):
     cls = out_classes[i]
     score = out_scores[i]
@@ -142,6 +144,17 @@ for i in range(len(out_classes)):
     bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
     right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
     print(voc_label[cls], score, (left, top), (right, bottom))
+    lt = (left, top)
+    rt = (right, top)
+    lb = (left, bottom)
+    rb = (right, bottom)
+    red = (255, 0, 0)
+    dr.line((lt, rt), red, 2)
+    dr.line((lt, lb), red, 2)
+    dr.line((rt, rb), red, 2)
+    dr.line((lb, rb), red, 2)
+
+image.save(img_file+'out.png')
 
 
 print("finish")

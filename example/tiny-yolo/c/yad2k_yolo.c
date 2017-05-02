@@ -26,7 +26,13 @@ float box_class_probs[13][13][5][20];
 //yolo_boxes_to_cornersの出力
 BOX boxes_t [13][13][5];
 
-//boxes, scores, classes
+//yolo_filter_boxesの出力
+YOLO_RESULT filtered_boxes[YOLO_MAX_RESULT];
+
+
+//最終出力
+YOLO_RESULT yolo_result[YOLO_MAX_RESULT];
+
 
 const char voc_class[YOLO_CLASSES][YOLO_BUFSIZE] = {
         "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
@@ -40,6 +46,53 @@ const float voc_anchors[YOLO_CLUSTERS][2] = {{1.08, 1.19}, {3.42, 4.41}, {6.63, 
 void yolo_head(void *predp);
 float sigmoid(float x);
 void yolo_boxes_to_corners(void);
+int yolo_filter_boxes(float thresh);
+
+int yolo_filter_boxes(float thresh)
+{
+    int row, col, k, i;
+    int idx_r = 0;
+    float max_prob;
+    int max_class;
+    float prob;
+    float box_class_scores;
+
+    for(row=0;row<YOLO_REGION_SIZE;row++) {
+        for(col=0;col<YOLO_REGION_SIZE;col++) {
+            for(k=0;k<YOLO_CLUSTERS;k++) {
+                //最大のクラスを選択する。
+                max_prob = 0.0;
+                max_class = 0;
+                for (i = 0; i < YOLO_CLASSES; i++) {
+                    prob = box_class_probs[row][col][k][i];
+                    if (prob > max_prob) {
+                        max_prob = prob;
+                        max_class = i;
+                    }
+                }
+                box_class_scores = max_prob * box_confidence[row][col][k];
+                if (box_class_scores > thresh) {
+                    //結果の追加
+                    filtered_boxes[idx_r].class = max_class;
+                    filtered_boxes[idx_r].score = box_class_scores;
+                    filtered_boxes[idx_r].box.top = boxes_t[row][col][k].top;
+                    filtered_boxes[idx_r].box.left = boxes_t[row][col][k].left;
+                    filtered_boxes[idx_r].box.bottom = boxes_t[row][col][k].bottom;
+                    filtered_boxes[idx_r].box.right = boxes_t[row][col][k].right;
+
+                    //数のチェック
+                    idx_r++;
+
+                    if(idx_r>=YOLO_MAX_RESULT) {
+                        return RET_YOLO_MAX_RESULT_OVER;
+                    }
+                }
+            }
+        }
+    }
+    return idx_r;
+}
+
 
 void yolo_boxes_to_corners(void)
 {
@@ -134,11 +187,18 @@ void yolo_head(void *predp)
 
 int yolo_eval(void *predp, YOLO_PARAM *pp)
 {
+    int ret;
+
     assert(predp!=NULL);
     assert(pp!=NULL);
     assert(pp->classes==YOLO_CLASSES);
     yolo_head(predp);
     yolo_boxes_to_corners();
+    ret = yolo_filter_boxes(pp->score_threshold);
+    if(ret <= 0) {
+        return ret;
+    }
+
 
     return -1;
 }

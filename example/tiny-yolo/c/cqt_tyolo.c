@@ -76,9 +76,9 @@ int main(void)
     }
 
     for(int i=0;i<ret;i++) {
-        int class = out_classes[i];
-        float score = out_scores[i];
-        BOX b = out_boxes[i];
+        int class = yolo_result[i].class;
+        float score = yolo_result[i].score;
+        BOX b = yolo_result[i].box;
 
         int top, left, bottom, right;
 

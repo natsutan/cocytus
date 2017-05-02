@@ -25,14 +25,14 @@ typedef struct yolo_param_t {
 typedef struct box_t {
     float top;
     float left;
-    float right;
     float bottom;
+    float right;
 } BOX;
 
 extern BOX out_boxes[YOLO_MAX_RESULT];
 extern float out_scores[YOLO_MAX_RESULT];
 extern int out_classes[YOLO_MAX_RESULT];
-extern char voc_class[YOLO_CLASSES][YOLO_BUFSIZE];
+extern const char voc_class[YOLO_CLASSES][YOLO_BUFSIZE];
 
 // yolo_eval
 // CNNの出力から、領域提案を行う。

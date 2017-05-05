@@ -20,6 +20,11 @@
 #define CQT_MAX_PATH 256
 #define CQT_NP_BUF_SIZE 256  //numpyで使うバッファサイズ
 
+//---------------------------
+//型の宣言
+typedef short FIXP16;
+typedef signed char FIXP8;
+
 //#include "nnnet_def.h"
 //#include "numpy.h"
 //#include "nnn_func.h"

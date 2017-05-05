@@ -45,6 +45,9 @@ Table: オプション一覧
 | 重み指定|  [Cocyuts] | keras_weight | ~/foo/baa.h5 | 変換する重み(hdf5ファイル)を指定する。（必須)|
 | 出力ディレクトリ |  [Cocyuts] | output_dir | ~/proj/ | ファイルの出力先（必須)|
 | Ｃライブラリディレクトリ |  [Cocyuts] | c_lib_dir | ./../../cocytus/cocytus_net/C/template | Cライブラリ指定（必須)|
+| 入力画像の型指定 | [Cocyuts] | input_dtype | fix16 | 各レイヤの入出力のデータ幅を変更する。未指定時はKerasの型に従う。設定できる値はfix16(固定小数点１６bit)　|
+| 入出力データの型指定 | [Cocyuts] | layerout_dtype | fix16 | 各レイヤの入出力のデータ幅を変更する。未指定時はKerasの型に従う。設定できる値はfix16(固定小数点１６bit) |
+| 重みデータの型指定 | [Cocyuts] | weight_dtype | fix8 | 各レイヤの重みのデータ幅を変更する。未指定時はKerasの型に従う。設定できる値はfix8(固定小数点8bit) |
 | 重み出力ディレクトリ|  [Cocyuts] | weight_output_dir | ~/proj/weight/ | コキュートス重みファイルの出力先。省略されるとコキュートス重みファイルを生成しません。|
 | 重みファイル名モード |[Cocyuts] | weight_filename_mode | 1 |Kerasから生成される重みファイル名のmodeを指定する。0:VGG16モード（デフォルト）。Conv2dの重みファイル末尾が_W_1_z.npyの時 1:YOLOモード　Conv2dの重みファイル末尾が_kernel_z.npyの時 |
 | Conv2d最適化レベル |  [CGEN] | Conv2d_OPTLEVEL | dash | CONV2dレイヤの最適化レベルを指定します。dashで最適化をONにします。デフォルト値は最適化無しです。|

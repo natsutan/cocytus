@@ -776,6 +776,9 @@ def conv_type_cqt_to_c(cqt_type):
     :return:  str
     """
     dic = {CQT_Dtype.INT8: 'CQT_INT8', CQT_Dtype.UINT8: 'CQT_UINT8',
-           CQT_Dtype.FLOAT32: 'CQT_FLOAT32', CQT_Dtype.NONE: 'CQT_DTYPE_NONE'}
+           CQT_Dtype.FLOAT32: 'CQT_FLOAT32', CQT_Dtype.NONE: 'CQT_DTYPE_NONE',
+           CQT_Dtype.FIX16: 'CQT_FIX16', CQT_Dtype.FIX8: 'CQT_FIX8',
+
+           }
     return dic[cqt_type]
 

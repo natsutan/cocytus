@@ -13,6 +13,8 @@ class CQT_Dtype(Enum):
     UINT8 = 2
     INT32 = 3
     FLOAT32 = 4
+    FIX8 = 5
+    FIX16 = 6
 
 class CocytusLayerInfo:
     """
@@ -30,7 +32,9 @@ class CocytusLayerInfo:
         self.weight_dtypes = []
         self.l = l
         self.keras_layer_type = keras_layer_type
-        self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8', CQT_Dtype.NONE: 'none',}
+        self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8',
+                           CQT_Dtype.FIX16: 'fx16', CQT_Dtype.FIX8: 'fx8',
+                           CQT_Dtype.NONE: 'none'}
 
     def get_Wshape(self):
         """
@@ -78,7 +82,7 @@ class CocytusLayerInfo:
         gamma_name = "gamma_%s_W" % name
         gamma_nph_name = "nph_gamma_%s_W" % name
         mm_name = "moving_mean_%s_W" % name
-        mm_nph_name = "nph_moving_mean_%s_W" % name
+        mm_nph_name = "nph_moving_mean_%s_W"    % name
         mv_name = "moving_variance_%s_W" % name
         mv_nph_name = "nph_moving_variance_%s_W" % name
         return beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name
@@ -102,6 +106,10 @@ class CocytusLayerInfo:
             return 'int'
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
+        elif type == CQT_Dtype.FIX16:
+            return 'short'
+        elif type == CQT_Dtype.FIX8:
+            return 'signed char'
 
         raise ValueError("Error layer %s type is not supported" % type)
 
@@ -121,6 +129,10 @@ class CocytusLayerInfo:
             return 'int'
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
+        elif type == CQT_Dtype.FIX16:
+            return 'short'
+        elif type == CQT_Dtype.FIX8:
+            return 'signed char'
 
         raise ValueError("Error layer %s tpye is not supported" % type)
 
@@ -204,17 +216,40 @@ class CocytusCompiler:
             cl = CocytusLayerInfo(l, keras_layer_type)
 
             # 型のチェック
-            # 将来的には各層を任意の型に買えられるようにする。
-            input_type = l.input.dtype
+            if 'input_dtype' in self.config['Cocyuts']:
+                # iniファイルの設定を優先
+                type = self.config.get('Cocyuts', 'input_dtype')
+                print("INFO input dtype conv to %s", type)
+                input_type = type
+            else:
+                # iniファイルに設定が無いときはKerasの型を使う。
+                input_type = l.input.dtype
             cl.input_dtypes.append(conv_type_np_to_cqt(input_type))
-            output_type = l.output.dtype
+
+            if 'layerout_dtype' in self.config['Cocyuts']:
+                # iniファイルの設定を優先
+                type = self.config.get('Cocyuts', 'layerout_dtype')
+                print("INFO layer output dtype conv to %s", type)
+                output_type = type
+            else:
+                # iniファイルに設定が無いときはKerasの型を使う。
+                output_type = l.output.dtype
+
             cl.output_dtypes.append(conv_type_np_to_cqt(output_type))
 
             if not l.weights:
                 cl.weight_dtypes.append(CQT_Dtype.NONE)
             else:
                 for w in l.weights:
-                    wtype = w.dtype
+                    if 'weight_dtype' in self.config['Cocyuts']:
+                        # iniファイルの設定を優先
+                        type = self.config.get('Cocyuts', 'weight_dtype')
+                        print("INFO weight dtype conv to %s", type)
+                        wtype = type
+                    else:
+                    # iniファイルに設定が無いときはKerasの型を使う。
+                        wtype = w.dtype
+
                     cl.weight_dtypes.append(conv_type_np_to_cqt(wtype))
 
             self.cqt_layers.append(cl)
@@ -291,6 +326,7 @@ class CocytusCompiler:
 
 
 
+
 def conv_type_np_to_cqt(tf_type):
     """
     numpyの型を、cqtの型情報に変換する。
@@ -299,6 +335,7 @@ def conv_type_np_to_cqt(tf_type):
     """
     dtype = str(tf_type)
 
-    conv_dic = {"<dtype: 'float32'>": CQT_Dtype.FLOAT32, "<dtype: 'float32_ref'>": CQT_Dtype.FLOAT32}
+    conv_dic = {"<dtype: 'float32'>": CQT_Dtype.FLOAT32, "<dtype: 'float32_ref'>": CQT_Dtype.FLOAT32,
+                "fix8" : CQT_Dtype.FIX8, "fix16": CQT_Dtype.FIX16 }
 
     return conv_dic[dtype]

@@ -65,7 +65,14 @@ def main(argv):
     try:
         w_out_dir = config.get('Cocyuts', 'weight_output_dir')
         hdf_file = config.get('Cocyuts', 'keras_weight')
-        w_converter = WeightConverter(w_out_dir, hdf_file)
+
+        if 'weight_dtype' in config['Cocyuts']:
+            # iniファイルの設定を優先
+            type = config.get('Cocyuts', 'weight_dtype')
+        else:
+            type = ""
+
+        w_converter = WeightConverter(w_out_dir, hdf_file, type)
         w_converter.convert()
 
     except (configparser.NoSectionError, configparser.NoOptionError):

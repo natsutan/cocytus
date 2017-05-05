@@ -6,9 +6,10 @@ import os
 
 
 class WeightConverter:
-    def __init__(self, output_dir, h5file):
+    def __init__(self, output_dir, h5file, dtype=""):
         self.output_dir = output_dir
         self.h5file = os.path.expanduser(h5file)
+        self.dtype = dtype
 
     def convert(self):
         """
@@ -53,10 +54,24 @@ class WeightConverter:
                 print(data2.shape)
                 print('')
 
-                filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
-                filepath = os.path.join(self.output_dir, filename)
-                np.save(filepath, data2, allow_pickle=False)
-                print("save %s to %s" % (weight_name, filepath))
+                if self.dtype == '':
+                    # Kerasの重みをそのまま使う
+                    filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
+                    filepath = os.path.join(self.output_dir, filename)
+                    np.save(filepath, data2, allow_pickle=False)
+                    print("save %s to %s" % (weight_name, filepath))
+                elif self.dtype == 'fix8':
+                    # 重みの型を変換する。
+                    filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
+                    filepath = os.path.join(self.output_dir, filename)
+
+                    #int8の範囲にクリップする。
+                    cliped = data2.clip(-128, 127)
+                    fix8_data = cliped.astype(np.int8)
+                    np.save(filepath, fix8_data, allow_pickle=False)
+                    print("save %s to %s(fix8)" % (weight_name, filepath))
+                else:
+                    print("ERROR unkown weight dtype = %s", self.dtype)
 
 
     def tf_reshape(self, data):

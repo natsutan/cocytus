@@ -16,6 +16,7 @@ class CQT_Dtype(Enum):
     FIX8 = 5
     FIX16 = 6
 
+
 class CocytusLayerInfo:
     """
     コキュートス用の追加レイヤー情報。
@@ -107,9 +108,9 @@ class CocytusLayerInfo:
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
         elif type == CQT_Dtype.FIX16:
-            return 'short'
+            return 'FXIP16'
         elif type == CQT_Dtype.FIX8:
-            return 'signed char'
+            return 'FIXP8'
 
         raise ValueError("Error layer %s type is not supported" % type)
 
@@ -130,9 +131,9 @@ class CocytusLayerInfo:
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
         elif type == CQT_Dtype.FIX16:
-            return 'short'
+            return 'FIXP16'
         elif type == CQT_Dtype.FIX8:
-            return 'signed char'
+            return 'FIXP8'
 
         raise ValueError("Error layer %s tpye is not supported" % type)
 

@@ -74,12 +74,21 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
         return CQT_FREAD_ERR;
       }
       break;
-  case CQT_UINT8:
+  case CQT_UINT8: //fall through
+  case CQT_FIX8:
       ret =  fread(dp, 1, size, fp);
       if (ret != size) {
         return CQT_FREAD_ERR;
       }
       break;
+
+  case CQT_FIX16:
+      ret = fread(dp, 2, size, fp);
+      if (ret != size) {
+        return CQT_FREAD_ERR;
+      }
+      break;
+
   default:
       printf("ERROR:numpy header error dscr = %d\n", hp->descr);
       return CQT_NP_HEADER_ERR;
@@ -193,6 +202,10 @@ int np_parse_header_dic(char *buf, NUMPY_HEADER *hp)
         hp->descr = CQT_FLOAT32;
       } else if(strstr(cp, "'|u1'")!=NULL) {
         hp->descr = CQT_UINT8;
+      } else if(strstr(cp, "'<i2'")!=NULL) {
+        hp->descr = CQT_FIX16;
+      } else if(strstr(cp, "'|i1'")!=NULL) {
+        hp->descr = CQT_FIX8;
       } else {
         printf("ERROR unkown descr %s\n", cp);
         return CQT_NP_HEADER_ERR;
@@ -253,6 +266,12 @@ void np_print_heaer_info(const NUMPY_HEADER *hp)
   case  CQT_QINT8:
     printf("qint8");
     break;
+  case  CQT_FIX16:
+    printf("fix16");
+    break;
+  case  CQT_FIX8:
+    printf("fix8");
+    break;
   case CQT_DTYPE_NONE:
     printf("none");
     break;
@@ -280,8 +299,11 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
   int len;
   char *descr;
   char *type_float = "<f4";
+  char *type_fix16 = "<i2";
+  char *type_fix8 = "|i1";
   int size_from_shape;
-  
+  int data_size;
+
   assert(dp!=NULL);
   assert(numpy_fname!=NULL);
   assert(hp!=NULL);
@@ -325,6 +347,13 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
 
   if(hp->descr == CQT_FLOAT32) {
     descr = type_float;
+    data_size = 4;
+  } else if(hp->descr == CQT_FIX16) {
+    descr = type_fix16;
+    data_size = 2;
+  } else if(hp->descr == CQT_FIX8) {
+    descr = type_fix8;
+    data_size = 1;
   } else {
     printf("ERROR unkown descr %d\n", hp->descr);
     return CQT_NP_HEADER_ERR;
@@ -346,7 +375,9 @@ int save_to_numpy(void *dp, const char *numpy_fname, NUMPY_HEADER *hp)
   
   fwrite(buf,1, hp->header_len, fp);
 
-  fwrite(dp, 4, size_from_shape, fp);
+
+
+  fwrite(dp, data_size, size_from_shape, fp);
 
   fclose(fp);
   

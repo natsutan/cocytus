@@ -228,7 +228,10 @@ class FunctionGenerator:
         weight_type = layer_detail.weight_dtypes[0]
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
-        template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
+        if self.compiler.is_fix16_mode():
+            template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_fixed.c')
+        else:
+            template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
 
         if self.batchnormalization_first:
             with open(output_file, 'w') as fp:

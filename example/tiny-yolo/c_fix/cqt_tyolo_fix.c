@@ -55,6 +55,7 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+    layer2_output();
 
     // ここから領域の計算
     yolo_parameter.width = 620;
@@ -98,7 +99,6 @@ int main(void)
                voc_class[class], score, left, top, right, bottom);
     }
 
-    layer1_output();
     return 0;
 }
 

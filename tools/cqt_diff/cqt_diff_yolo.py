@@ -44,11 +44,14 @@ def layer1_comp():
     plt.show()
 
 def layer2_comp():
-    keras = np.load(keras_dir+'l02_15.npy')
-    cqt = np.load(cqt_dir+'l02_15.npy')
+    keras = np.load(keras_dir+'l02_0.npy')
+    cqt = np.load(cqt_dir+'l02_0.npy')
 
     c_f = cqt.flatten()
     k_f = keras.flatten()
+
+    if fix16mode:
+        c_f = c_f.astype(np.float32) / 256.0
 
     x = np.arange(len(k_f))
 
@@ -131,6 +134,6 @@ def layer31_comp():
     plt.show()
 
 
-layer1_comp()
+layer2_comp()
 
 print('finish')

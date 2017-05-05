@@ -62,6 +62,7 @@ class WeightConverter:
                     np.save(filepath, data2, allow_pickle=False)
                     print("save %s to %s" % (weight_name, filepath))
                 elif self.dtype == 'fix8':
+                    print("WARNING fix8 is not tested")
                     if weight_name.find('conv2d') == 0:
                         zerop = 5
                         print("convert conv2d zeropos = %d", zerop)
@@ -92,10 +93,48 @@ class WeightConverter:
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
 
-                        cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
+                        #cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
+                        cliped = data2.clip(int_min, int_max) * (2 ** zerop)
                         fix8_data = cliped.astype(np.int8)
                         np.save(filepath, fix8_data, allow_pickle=False)
                         print("save %s to %s(fix8) min = %f, max = %f" % (weight_name, filepath, data2.min(), data2.max()))
+                elif self.dtype == 'fix16':
+                    if weight_name.find('conv2d') == 0:
+                        # 1を表すbit位置
+                        onep = 8
+                        print("convert conv2d zeropos = %d" % onep)
+                        # 重みの型を変換する。
+                        filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
+                        filepath = os.path.join(self.output_dir, filename)
+
+                        #int8の範囲にクリップする。
+                        int_bit = 16 - onep
+                        int_min = -(2 ** (int_bit - 1))
+                        int_max = (2 ** (int_bit - 1)) - 1
+
+                        cliped = data2.clip(int_min, int_max) * (2 ** onep) - (1.0 / (2**onep))
+                        fix16_data = cliped.astype(np.int16)
+                        np.save(filepath, fix16_data, allow_pickle=False)
+                        print("save %s to %s(fix16)" % (weight_name, filepath))
+                    elif weight_name.find('batch_') == 0:
+                        onep = 8
+
+                        filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
+                        filepath = os.path.join(self.output_dir, filename)
+
+                        if weight_name.find('moving_variance')!=-1:
+                            # BatchNormalization のvarianceの重みは、重みデータではなく、 1.0 / sqrt(var + epsilon)の値を保存する。
+                            onep, data2 = self.calc_bach_invvar(data2)
+
+                        int_bit = 16 - onep
+                        int_min = -(2 ** (int_bit - 1))
+                        int_max = (2 ** (int_bit - 1)) - 1
+
+                        #cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
+                        cliped = data2.clip(int_min, int_max) * (2 ** onep) - (1.0 / (2 ** onep))
+                        fix16_data = cliped.astype(np.int16)
+                        np.save(filepath, fix16_data, allow_pickle=False)
+                        print("save %s to %s(fix16) min = %f, max = %f" % (weight_name, filepath, data2.min(), data2.max()))
                 else:
                     print("ERROR unkown weight dtype = %s" % self.dtype)
 
@@ -103,7 +142,7 @@ class WeightConverter:
         epsilon = 0.001
         outdata = 1.0 / np.sqrt(data + epsilon)
         print("calc_var min = %f, max = %f" % ( outdata.min(), outdata.max()))
-        return 4, outdata
+        return 8, outdata
 
 
     def tf_reshape(self, data):

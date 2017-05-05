@@ -108,7 +108,7 @@ class CocytusLayerInfo:
         elif type == CQT_Dtype.FLOAT32:
             return 'float'
         elif type == CQT_Dtype.FIX16:
-            return 'FXIP16'
+            return 'FIXP16'
         elif type == CQT_Dtype.FIX8:
             return 'FIXP8'
 
@@ -326,7 +326,7 @@ class CocytusCompiler:
         return self.layers
 
 
-    def is_fix16_mode(self):
+    def is_fix8_mode(self):
         """
         入出力16bit, 重み8の時にTrue,　それ以外はFalseを返す。
         :return:
@@ -341,6 +341,20 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_fix16_mode(self):
+        """
+        入出力16bit, 重み8の時にTrue,　それ以外はFalseを返す。
+        :return:
+        """
+        try:
+            itype = self.config.get('Cocyuts', 'input_dtype')
+            wtype = self.config.get('Cocyuts', 'weight_dtype')
+            otype = self.config.get('Cocyuts', 'layerout_dtype')
+
+            return itype == 'fix16' and wtype == 'fix16' and otype == 'fix16'
+
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
 
 
 

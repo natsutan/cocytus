@@ -75,7 +75,7 @@ void layer2_output(void)
 
     ret = save_to_numpy(batch_normalization_1_output[0], "output/l02_0.npy", &np_0);
     if(ret != CQT_RET_OK) {
-        printf("ERROR in layer_output %d\n", ret);
+        printf("ERROR in layer_foutput %d\n", ret);
 
     }
     ret = save_to_numpy(batch_normalization_1_output[1], "output/l02_1.npy", &np_0);
@@ -110,6 +110,111 @@ void layer3_output(void)
 
     }
     ret = save_to_numpy(leaky_re_lu_1_output[15], "output/l03_15.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}
+
+void layer4_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = (IMG_SIZE / 2) * (IMG_SIZE / 2);
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(max_pooling2d_1_output[0], "output/l04_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(max_pooling2d_1_output[1], "output/l04_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(max_pooling2d_1_output[15], "output/l04_15.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}
+
+void layer5_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = (IMG_SIZE / 2) * (IMG_SIZE / 2);
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(conv2d_2_output[0], "output/l05_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(conv2d_2_output[1], "output/l05_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(conv2d_2_output[31], "output/l05_31.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}
+
+void layer10_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 104 * 104;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(batch_normalization_3_output[0], "output/l10_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(batch_normalization_3_output[1], "output/l10_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(batch_normalization_3_output[63], "output/l10_63.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+    }
+}
+
+
+void layer15_output(void)
+{
+    NUMPY_HEADER np_0 = np;
+    int ret;
+
+    np_0.shape[0] = 52 * 52;
+    np_0.shape[1] = 0;
+    np_0.shape[2] = 0;
+    np_0.shape[3] = 0;
+
+    ret = save_to_numpy(leaky_re_lu_4_output[0], "output/l15_0.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(leaky_re_lu_4_output[1], "output/l15_1.npy", &np_0);
+    if(ret != CQT_RET_OK) {
+        printf("ERROR in layer_output %d\n", ret);
+
+    }
+    ret = save_to_numpy(leaky_re_lu_4_output[15], "output/l15_127.npy", &np_0);
     if(ret != CQT_RET_OK) {
         printf("ERROR in layer_output %d\n", ret);
     }

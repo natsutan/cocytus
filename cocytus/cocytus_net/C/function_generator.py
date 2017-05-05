@@ -99,6 +99,7 @@ class FunctionGenerator:
                     print("WARNING unkown Conv2d optimze level %s, use dafalut(no optimize)." % opt_level)
 
                 if self.compiler.is_fix16_mode():
+                    shift_val = 8
                     if kernel_size == (3, 3):
                         conv2d_template_fname = 'Conv2d_same_3x3_fixed.c'
                     elif kernel_size == (1, 1):
@@ -108,7 +109,6 @@ class FunctionGenerator:
                         conv2d_template_fname = 'Conv2d_same_3x3.c'
                     elif kernel_size == (1, 1):
                         conv2d_template_fname = 'Conv2d_same_1x1.c'
-
 
             template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 
@@ -139,7 +139,8 @@ class FunctionGenerator:
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
-                                    output_type=ctype_dic[output_type])
+                                    output_type=ctype_dic[output_type],
+                                    shift_val=shift_val)
             fpout.write(func_str)
 
     def generate_maxpooling2d(self, layer_detail):
@@ -229,6 +230,7 @@ class FunctionGenerator:
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
         if self.compiler.is_fix16_mode():
+            shift_val = 8;
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_fixed.c')
         else:
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
@@ -248,7 +250,8 @@ class FunctionGenerator:
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
-                                    output_type=ctype_dic[output_type])
+                                    output_type=ctype_dic[output_type],
+                                    shift_val=shift_val)
             fpout.write(func_str)
 
 

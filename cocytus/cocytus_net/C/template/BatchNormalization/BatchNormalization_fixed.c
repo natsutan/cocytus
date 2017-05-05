@@ -53,16 +53,14 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
                 //もともとの計算式
                 //normalized_data = (i_data - mean) * inv_denomin;
                 //o_data = normalized_data * gamma + beta;
-                //8は、レイヤーの出力がfix16, 重みがfix8なので8bitズレを調整
-                //重みデータの１のビット位置が５bit目なので、4のbitシフトがでてくる。
-                mean_adj = mean << 4;
+                mean_adj = mean;
                 data_sub_mean = (i_data - mean_adj);
 
                 normalized_data_pre = data_sub_mean * inv_denomin;
-                normalized_data  = normalized_data_pre >> 4;
+                normalized_data  = normalized_data_pre >> $shift_val;
 
-                mul_gamma = (normalized_data * gamma) >> 4;
-                beta_adj = beta << 4;
+                mul_gamma = (normalized_data * gamma) >> $shift_val;
+                beta_adj = beta;
                 o_data = mul_gamma + beta_adj;
                 *(op + idx_o) = o_data;
             }

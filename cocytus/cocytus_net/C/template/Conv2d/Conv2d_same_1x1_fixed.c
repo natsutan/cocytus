@@ -13,6 +13,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     $weight_type *wp = cnvp->weight_p;
     $weight_type *bp = cnvp->bias_p;
 
+    int o_data_acc;
     int fill_num = cnvp->filters;
     int input_size_x;
     int input_size_y;
@@ -49,15 +50,18 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     idx_i = n * (input_size_y * input_size_x) + (y * input_size_y) + x;
                     idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
 
-                    o_data = *(op + idx_o);
-                    data = *(ip + idx_i);
 
-                    o_data += filter * data;
+                    o_data = *(op + idx_o);
+                    o_data_acc = (int)o_data << $shift_val;;
+
+                    data = *(ip + idx_i);
+                    o_data_acc += filter * data;
+                    o_data = o_data_acc >> $shift_val;
 
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
-                                o_data += bias << 4;  //fixed 8 bit
+                                o_data += bias;
                         }
 
                         //activattion

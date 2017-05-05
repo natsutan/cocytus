@@ -3,6 +3,7 @@
 #include "cqt.h"
 #include "cqt_net.h"
 
+#include <stdio.h>
 
 int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
 {
@@ -109,6 +110,11 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                     o_data += filter3x3[2][0] * data3x3[2][0];
                     o_data += filter3x3[2][1] * data3x3[2][1];
                     o_data += filter3x3[2][2] * data3x3[2][2];
+
+
+                    if((x==0)&&(y==0)) {
+                        printf("o_data = %f\n", o_data);
+                    }
 
                     if(n==(input_size_num-1)) {
                         //bais

@@ -257,28 +257,28 @@ void yolo_head(void *predp)
                 idx_k = k * (YOLO_CLASSES + 5);
 
                 //box_xy = sigmoid(feats[..., :2])
-                data0 = conv2d_9_output[idx_k+0][row][col];
-                data1 = conv2d_9_output[idx_k+1][row][col];
+                data0 = conv2d_9_output[idx_k+0][row][col] / 255.0;
+                data1 = conv2d_9_output[idx_k+1][row][col] / 255.0;
 
                 box_xy[row][col][k][0] = (sigmoid(data0) + col) / YOLO_REGION_SIZE;
                 box_xy[row][col][k][1] = (sigmoid(data1) + row) / YOLO_REGION_SIZE;
 
                 //box_wh = np.exp(feats[..., 2:4])
-                data0 = conv2d_9_output[idx_k+2][row][col];
-                data1 = conv2d_9_output[idx_k+3][row][col];
+                data0 = conv2d_9_output[idx_k+2][row][col] / 255.0;
+                data1 = conv2d_9_output[idx_k+3][row][col] / 255.0;
 
                 box_wh[row][col][k][0] = (float) ((exp(data0) * voc_anchors[k][0]) / YOLO_REGION_SIZE);
                 box_wh[row][col][k][1] = (float) ((exp(data1) * voc_anchors[k][1]) / YOLO_REGION_SIZE);
 
                 //box_confidence = sigmoid(feats[..., 4:5])
-                data0 = conv2d_9_output[idx_k+4][row][col];
+                data0 = conv2d_9_output[idx_k+4][row][col]  / 255.0;
                 box_confidence[row][col][k] = sigmoid(data0);
 
                 //box_class_probs = softmax(feats[..., 5:])
                 softmax_max = 0.0;
                 //一回目のループでmaxを求める。
                 for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    data0 = conv2d_9_output[idx_k + 5 + i][row][col]  / 255.0;
                     if (softmax_max < data0) {
                         softmax_max = data0;
                     }
@@ -286,7 +286,7 @@ void yolo_head(void *predp)
                 //２回目のループでexpとsumを求める。
                 softmax_sum = 0.0;
                 for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    data0 = conv2d_9_output[idx_k + 5 + i][row][col]  / 255.0;
                     softmax_work[i] = (float) exp(data0 - softmax_max);
                     softmax_sum += softmax_work[i];
                 }

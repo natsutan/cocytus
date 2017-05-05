@@ -18,6 +18,10 @@ extern void layer0_output(void);
 extern void layer1_output(void);
 extern void layer2_output(void);
 extern void layer3_output(void);
+extern void layer4_output(void);
+extern void layer5_output(void);
+extern void layer10_output(void);
+extern void layer15_output(void);
 extern void layer23_output(void);
 extern void layer24_output(void);
 extern void layer30_output(void);
@@ -55,12 +59,20 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+    layer1_output();
     layer2_output();
+    layer3_output();
+    layer4_output();
+    layer5_output();
+    layer10_output();
+    layer15_output();
+    layer23_output();
 
     // ここから領域の計算
     yolo_parameter.width = 620;
     yolo_parameter.height = 424;
     yolo_parameter.score_threshold = 0.3;
+//    yolo_parameter.score_threshold = 0.1;
     yolo_parameter.iou_threshold = 0.5;
     yolo_parameter.classes = 20;
 

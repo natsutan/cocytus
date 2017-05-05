@@ -57,7 +57,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
                     idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
                     o_data = *(op + idx_o);
-                    o_data_acc = (int)o_data << 5;
+                    o_data_acc = o_data << $shift_val;
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
@@ -106,12 +106,12 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     o_data_acc += filter3x3[2][0] * data3x3[2][0];
                     o_data_acc += filter3x3[2][1] * data3x3[2][1];
                     o_data_acc += filter3x3[2][2] * data3x3[2][2];
-                    o_data = o_data_acc >> 5; //fixed 8 bit
+                    o_data = o_data_acc >> $shift_val;
 
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
-                                o_data += bias << 5;  //fixed 8 bit
+                                o_data += bias;  //fixed 8 bit
                         }
 
                         //activattion

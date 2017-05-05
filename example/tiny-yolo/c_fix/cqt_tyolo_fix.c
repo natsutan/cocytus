@@ -98,6 +98,7 @@ int main(void)
                voc_class[class], score, left, top, right, bottom);
     }
 
+    layer1_output();
     return 0;
 }
 

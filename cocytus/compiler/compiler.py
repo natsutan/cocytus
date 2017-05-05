@@ -326,6 +326,22 @@ class CocytusCompiler:
         return self.layers
 
 
+    def is_fix16_mode(self):
+        """
+        入出力16bit, 重み8の時にTrue,　それ以外はFalseを返す。
+        :return:
+        """
+        try:
+            itype = self.config.get('Cocyuts', 'input_dtype')
+            wtype = self.config.get('Cocyuts', 'weight_dtype')
+            otype = self.config.get('Cocyuts', 'layerout_dtype')
+
+            return itype == 'fix16' and wtype == 'fix8' and otype == 'fix16'
+
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
+
+
 
 
 def conv_type_np_to_cqt(tf_type):

@@ -98,10 +98,17 @@ class FunctionGenerator:
                 if opt_level != '':
                     print("WARNING unkown Conv2d optimze level %s, use dafalut(no optimize)." % opt_level)
 
-                if kernel_size == (3, 3):
-                    conv2d_template_fname = 'Conv2d_same_3x3.c'
-                elif kernel_size == (1, 1):
-                    conv2d_template_fname = 'Conv2d_same_1x1.c'
+                if self.compiler.is_fix16_mode():
+                    if kernel_size == (3, 3):
+                        conv2d_template_fname = 'Conv2d_same_3x3_fixed.c'
+                    elif kernel_size == (1, 1):
+                        conv2d_template_fname = 'Conv2d_same_1x1_fixed.c'
+                else:
+                    if kernel_size == (3, 3):
+                        conv2d_template_fname = 'Conv2d_same_3x3.c'
+                    elif kernel_size == (1, 1):
+                        conv2d_template_fname = 'Conv2d_same_1x1.c'
+
 
             template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 

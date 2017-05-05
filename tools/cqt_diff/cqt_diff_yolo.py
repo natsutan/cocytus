@@ -5,8 +5,9 @@ import seaborn
 import sys
 
 keras_dir = '../../example/tiny-yolo/keras/output/'
-cqt_dir = '../../example/tiny-yolo/c/output/'
+cqt_dir = '../../example/tiny-yolo/c_fix/output/'
 
+fix16mode = True
 
 def layer0_comp():
     keras = np.load(keras_dir+'l00_2.npy')
@@ -14,6 +15,9 @@ def layer0_comp():
 
     c_f = cqt.flatten()
     k_f = keras.flatten()
+
+    if fix16mode:
+        c_f = c_f.astype(np.float32) / 256.0
 
     x = np.arange(len(k_f))
 
@@ -23,11 +27,14 @@ def layer0_comp():
     plt.show()
 
 def layer1_comp():
-    keras = np.load(keras_dir+'l01_15.npy')
-    cqt = np.load(cqt_dir+'l01_15.npy')
+    keras = np.load(keras_dir+'l01_0.npy')
+    cqt = np.load(cqt_dir+'l01_0.npy')
 
     c_f = cqt.flatten()
     k_f = keras.flatten()
+
+    if fix16mode:
+        c_f = c_f.astype(np.float32) / 256.0
 
     x = np.arange(len(k_f))
 
@@ -124,6 +131,6 @@ def layer31_comp():
     plt.show()
 
 
-layer31_comp()
+layer1_comp()
 
 print('finish')

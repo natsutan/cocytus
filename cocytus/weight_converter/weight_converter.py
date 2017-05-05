@@ -66,9 +66,7 @@ class WeightConverter:
                     filepath = os.path.join(self.output_dir, filename)
 
                     #int8の範囲にクリップする。
-
-
-                    cliped = data2.clip(-4, 3) * (2 ** 5)
+                    cliped = data2.clip(-4, 3) * (2 ** 5) - (1.0 / (2**5))
                     fix8_data = cliped.astype(np.int8)
                     np.save(filepath, fix8_data, allow_pickle=False)
                     print("save %s to %s(fix8)" % (weight_name, filepath))

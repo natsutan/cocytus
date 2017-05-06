@@ -8,7 +8,7 @@ keras_dir = '../../example/tiny-yolo/keras/output/'
 cqt_dir = '../../example/tiny-yolo/c_fix/output/'
 
 fix16mode = True
-q = 10
+q = 9
 layer_num = 32
 
 

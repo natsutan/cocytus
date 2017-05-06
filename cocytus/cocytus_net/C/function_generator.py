@@ -227,10 +227,16 @@ class FunctionGenerator:
         input_type = layer_detail.input_dtypes[0]
         output_type = layer_detail.output_dtypes[0]
         weight_type = layer_detail.weight_dtypes[0]
+        int_max = 0
+        int_min = 0
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
         if self.compiler.is_fix16_mode():
             shift_val = layer_detail.weight_q
+            int_bit = 16 - shift_val
+            int_min = -(2 ** (int_bit - 1))
+            int_max = (2 ** (int_bit - 1)) - 1
+
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_fixed.c')
         else:
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
@@ -251,7 +257,8 @@ class FunctionGenerator:
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
                                     output_type=ctype_dic[output_type],
-                                    shift_val=shift_val)
+                                    shift_val=shift_val,
+                                    max=int_max, min=int_min)
             fpout.write(func_str)
 
 

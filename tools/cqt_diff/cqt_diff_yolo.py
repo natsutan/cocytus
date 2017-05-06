@@ -8,7 +8,7 @@ keras_dir = '../../example/tiny-yolo/keras/output/'
 cqt_dir = '../../example/tiny-yolo/c_fix/output/'
 
 fix16mode = True
-q = 10
+q = 9
 
 def layer0_comp():
     keras = np.load(keras_dir+'l00_2.npy')
@@ -241,6 +241,11 @@ def layer30_comp():
     plt.plot(x, k_f, color='b')
 
     plt.show()
+        if(strcmp(lp->name,"batch_normalization_1")==0) {
+            printf("%d %f %f %f %f\n", n, beta, gamma, mean, inv_denomin);
+        }
+
+
 
 def layer31_comp():
     keras = np.load(keras_dir+'l31_0.npy')
@@ -260,6 +265,6 @@ def layer31_comp():
     plt.show()
 
 
-layer2_comp()
+layer4_comp()
 
 print('finish')

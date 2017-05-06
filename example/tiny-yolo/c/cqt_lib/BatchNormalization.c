@@ -45,11 +45,6 @@ int CQT_BatchNormalization_if_wf_wf_wf_wf_of(CQT_LAYER *lp, void *inp, void *out
         inv_denomin = 1.0 / sqrt(var + bnp->epsilon);
 
 
-        if(strcmp(lp->name,"batch_normalization_1")==0) {
-            printf("%d %f %f %f %f\n", n, beta, gamma, mean, inv_denomin);
-        }
-
-
         for(y=0;y<input_size_y;y++) {
             for(x=0;x<input_size_x;x++) {
                 idx_i = (n * input_size_y * input_size_x) + (y * input_size_x) + x;

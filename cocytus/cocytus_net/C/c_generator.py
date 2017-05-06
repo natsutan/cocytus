@@ -811,10 +811,25 @@ class CqtDebugC(CFile):
             self.wr('\tif (ret != CQT_RET_OK) {\n')
             self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
             self.wr('\t}\n')
+            if i != 0:
+                self.wr('\tret = save_to_numpy(%s[2], "output/l%02d_2.npy", & np_0);\n' % (output_variable_name, i))
+                self.wr('\tif (ret != CQT_RET_OK) {\n')
+                self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+                self.wr('\t}\n')
+                self.wr('\tret = save_to_numpy(%s[3], "output/l%02d_3.npy", & np_0);\n' % (output_variable_name, i))
+                self.wr('\tif (ret != CQT_RET_OK) {\n')
+                self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+                self.wr('\t}\n')
+                self.wr('\tret = save_to_numpy(%s[4], "output/l%02d_4.npy", & np_0);\n' % (output_variable_name, i))
+                self.wr('\tif (ret != CQT_RET_OK) {\n')
+                self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+                self.wr('\t}\n')
+
             self.wr('\tret = save_to_numpy(%s[%d], "output/l%02d_%d.npy", & np_0);\n' % (output_variable_name, num -1, i, num - 1))
             self.wr('\tif (ret != CQT_RET_OK) {\n')
             self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
             self.wr('\t}\n')
+
 
             self.wr("}\n")
 

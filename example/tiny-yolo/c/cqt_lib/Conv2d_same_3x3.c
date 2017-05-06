@@ -62,6 +62,7 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                     idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
                     idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
                     o_data = *(op + idx_o);
+                    float o_data_first = o_data;
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
@@ -112,15 +113,14 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                     o_data += filter3x3[2][2] * data3x3[2][2];
 
 
-                    if((x==1)&&(y==1)) {
-                        printf("o_data = %f\n", o_data);
-                    }
-
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
                                 o_data += bias;
+                        }                        if(strcmp(lp->name,"conv2d_2")==0) {
+                            bias++;
                         }
+
 
                         //activattion
                         if(cnvp->activation == ACT_RELU) {
@@ -131,6 +131,8 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                     }
 
                     *(op + idx_o) = o_data;
+
+
                 }
             }
         }

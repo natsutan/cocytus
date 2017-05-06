@@ -51,9 +51,10 @@ int main(void)
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    cqt_layer1_dump();
-    cqt_layerdump(2);
-
+    //cqt_layer1_dump();
+    for(int i=0;i<32;i++) {
+        cqt_layerdump(i);
+    }
 
     // ここから領域の計算
     yolo_parameter.width = 620;

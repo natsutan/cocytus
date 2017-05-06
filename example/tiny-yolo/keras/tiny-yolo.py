@@ -94,11 +94,18 @@ def layer_dump(model, x, l, postfix=''):
     else:
         d0 = layer_output[0,:, :, 0]
         d1 = layer_output[0,:, :, 1]
-        d2 = layer_output[0,:, :, last_dim]
+        d2 = layer_output[0,:, :, 2]
+        d3 = layer_output[0,:, :, 3]
+        d4 = layer_output[0,:, :, 4]
+        dl = layer_output[0,:, :, last_dim]
         np.save('output/l%02d%s_all.npy' % (l, postfix), layer_output, allow_pickle=False)
         np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
         np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
-        np.save('output/l%02d%s_%d.npy' % (l, postfix, last_dim), d2, allow_pickle=False)
+        np.save('output/l%02d%s_2.npy' % (l, postfix), d2, allow_pickle=False)
+        np.save('output/l%02d%s_3.npy' % (l, postfix), d3, allow_pickle=False)
+        np.save('output/l%02d%s_4.npy' % (l, postfix), d4, allow_pickle=False)
+
+        np.save('output/l%02d%s_%d.npy' % (l, postfix, last_dim), dl, allow_pickle=False)
 
 
 

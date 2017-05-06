@@ -23,6 +23,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     $weight_type w_data;
     $output_type o_data;
     int o_data_acc;
+    int o_data_first;
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
@@ -57,7 +58,8 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
                     idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
                     o_data = *(op + idx_o);
-                    o_data_acc = o_data << $shift_val;
+                    o_data_first = o_data;
+                    o_data_acc = 0;
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
@@ -106,7 +108,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     o_data_acc += filter3x3[2][0] * data3x3[2][0];
                     o_data_acc += filter3x3[2][1] * data3x3[2][1];
                     o_data_acc += filter3x3[2][2] * data3x3[2][2];
-                    o_data = o_data_acc >> $shift_val;
+                    o_data = o_data_first + (o_data_acc >> $shift_val);
 
                     if(n==(input_size_num-1)) {
                         //bais

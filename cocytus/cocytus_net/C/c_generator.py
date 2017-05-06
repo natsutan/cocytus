@@ -26,8 +26,13 @@ class CGenerator:
         target_dir = self.config['Cocyuts']['output_dir']
         self.generate_cqt_gen(target_dir, template_dir)
 
+        target_dir = self.config['Cocyuts']['output_dir']
+        self.generate_cqt_debug(target_dir, template_dir)
+
         # ライブラリの作成
         self.generate_cqt_lib(target_dir, template_dir)
+
+
 
     def generate_hedarfiles(self, target_dir, template_dir):
         """
@@ -61,6 +66,22 @@ class CGenerator:
         for f in files:
             shutil.copy(os.path.join(template_dir, f),
                         os.path.join(target_dir, 'cqt_lib'))
+
+    def generate_cqt_debug(self, target_dir, template_dir):
+        """
+        target_dirで指定されたディレクトリ/cqt_gen以下にcqt_debug.hとcqt_debug.cのファイルを作成する。
+        :param target_dir: str
+        :return:
+        """
+        cqt_gen_h_path = os.path.join(target_dir, 'cqt_gen', 'cqt_debug.h')
+        print("making %s" % cqt_gen_h_path)
+        cqt_gen_h = CqtDebugH(cqt_gen_h_path, self.compiler)
+        cqt_gen_h.generate()
+
+        cqt_gen_c_path = os.path.join(target_dir, 'cqt_gen', 'cqt_debug.c')
+        print("making %s" % cqt_gen_c_path)
+        cqt_gen_c = CqtDebugC(cqt_gen_c_path, self.compiler)
+        cqt_gen_c.generate()
 
     def generate_cqt_lib(self, target_dir, template_dir):
         """
@@ -710,6 +731,116 @@ class CqtLibH(CFile):
                 func_list.append(func_name)
 
         self.cr()
+
+
+class CqtDebugH(CFile):
+    def __init__(self, file, compiler):
+        super().__init__(file, compiler)
+
+    def __del__(self):
+        super().__del__()
+
+    def generate(self):
+        self.wr_file_header()
+        self.wr_include('stdio.h', stdlib=True)
+        self.wr_include('stdlib.h', stdlib=True)
+        self.wr_include('string.h', stdlib=True)
+        self.wr_include('assert.h', stdlib=True)
+        self.wr_include('cqt.h')
+        self.wr_include('cqt_net.h')
+        self.cr()
+
+        self.wr('void cqt_layerdump(int l);\n')
+
+        layers = self.compiler.get_layers()
+
+        for i in range(len(layers)):
+            self.wr('void cqt_layer%d_dump(void);\n' % i)
+
+        self.fp.write('\n')
+
+
+class CqtDebugC(CFile):
+    def __init__(self, file, compiler):
+        super().__init__(file, compiler)
+
+    def __del__(self):
+        super().__del__()
+
+    def generate(self):
+        self.wr_file_header()
+        self.wr_include('cqt_debug.h')
+        self.cr()
+
+        self.wr_output_defination(scope='extern')
+        self.cr()
+        self.wr('extern NUMPY_HEADER np;\n')
+        self.cr()
+
+        layers = self.compiler.get_layers()
+        self.write_cqt_layerdump(len(layers))
+
+
+        for i, l in enumerate(layers):
+            name = l.name
+            config = l.get_config()
+            layer_detal = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detal.keras_layer_type
+
+            odim = layer_detal.get_output_shape()
+            output_variable_name = layer_detal.get_output_variable_name()
+            size1 = odim[1]
+            size2 = odim[2]
+            num = odim[3]
+
+            self.wr("void cqt_layer%d_dump(void)\n" % i)
+            self.wr("{\n")
+            self.wr("\tNUMPY_HEADER np_0 = np;\n")
+            self.wr("\tint ret;\n")
+            self.cr()
+            self.wr("\tnp_0.shape[0] = %d * %d;\n" % (size1, size2))
+            self.wr("\tnp_0.shape[1] = 0;\n")
+            self.wr("\tnp_0.shape[2] = 0;\n")
+            self.wr("\tnp_0.shape[3] = 0;\n")
+            self.cr()
+            self.wr('\tret = save_to_numpy(%s[0], "output/l%02d_0.npy", & np_0);\n' % (output_variable_name, i))
+            self.wr('\tif (ret != CQT_RET_OK) {\n')
+            self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+            self.wr('\t}\n')
+            self.wr('\tret = save_to_numpy(%s[1], "output/l%02d_1.npy", & np_0);\n' % (output_variable_name, i))
+            self.wr('\tif (ret != CQT_RET_OK) {\n')
+            self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+            self.wr('\t}\n')
+            self.wr('\tret = save_to_numpy(%s[%d], "output/l%02d_%d.npy", & np_0);\n' % (output_variable_name, num -1, i, num - 1))
+            self.wr('\tif (ret != CQT_RET_OK) {\n')
+            self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
+            self.wr('\t}\n')
+
+            self.wr("}\n")
+
+            self.cr()
+
+        self.cr()
+
+    def write_cqt_layerdump(self, num):
+        self.wr('void cqt_layerdump(int l)\n')
+        self.wr('{\n')
+        self.wr('\tswitch(l) {\n')
+
+        for i in range(num):
+            self.wr('\tcase %d:\n' % i)
+            self.wr('\t\tcqt_layer%d_dump();\n' % i)
+            self.wr('\t\tbreak;\n')
+        self.wr('\tdefault:\n')
+        self.wr('\t\tprintf("ERROR:invalid layer number %d\\n", l);\n')
+        self.wr('\t\texit(1);\n')
+
+        self.wr('\t}\n')
+
+        self.wr('}\n')
+        self.cr()
+
+
 
 
 def create_c_dir(tdir):

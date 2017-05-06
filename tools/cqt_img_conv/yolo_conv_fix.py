@@ -42,7 +42,12 @@ def main():
             new_data[id][k][j] = arr[k][j][i]
 
 
-    np.save(img_file+'_fix.npy', new_data, allow_pickle=False)
+    np.save(img_file+'_fix_q8.npy', new_data, allow_pickle=False)
+    np.save(img_file+'_fix_q9.npy', new_data * 2, allow_pickle=False)
+    np.save(img_file+'_fix_q10.npy', new_data * 4, allow_pickle=False)
+    np.save(img_file+'_fix_q11.npy', new_data * 8, allow_pickle=False)
+    np.save(img_file+'_fix_q12.npy', new_data * 16, allow_pickle=False)
+    np.save(img_file+'_fix_q13.npy', new_data * 32, allow_pickle=False)
 
 if __name__ == '__main__':
     main()

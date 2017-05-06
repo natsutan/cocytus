@@ -8,6 +8,7 @@ keras_dir = '../../example/tiny-yolo/keras/output/'
 cqt_dir = '../../example/tiny-yolo/c_fix/output/'
 
 fix16mode = True
+q = 10
 
 def layer0_comp():
     keras = np.load(keras_dir+'l00_2.npy')
@@ -17,7 +18,7 @@ def layer0_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -27,14 +28,14 @@ def layer0_comp():
     plt.show()
 
 def layer1_comp():
-    keras = np.load(keras_dir+'l01_0.npy')
-    cqt = np.load(cqt_dir+'l01_0.npy')
+    keras = np.load(keras_dir+'l01_1.npy')
+    cqt = np.load(cqt_dir+'l01_1.npy')
 
     c_f = cqt.flatten()[:1024]
     k_f = keras.flatten()[:1024]
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -51,7 +52,7 @@ def layer2_comp():
     k_f = keras.flatten()[:512]
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -71,7 +72,7 @@ def layer3_comp():
     x = np.arange(len(k_f))
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     plt.plot(x, c_f, color='r')
     plt.plot(x, k_f, color='b')
@@ -79,8 +80,8 @@ def layer3_comp():
     plt.show()
 
 def layer4_comp():
-    keras = np.load(keras_dir+'l04_0.npy')
-    cqt = np.load(cqt_dir+'l04_0.npy')
+    keras = np.load(keras_dir+'l04_1.npy')
+    cqt = np.load(cqt_dir+'l04_1.npy')
 
     c_f = cqt.flatten()[:512]
     k_f = keras.flatten()[:512]
@@ -88,7 +89,7 @@ def layer4_comp():
     x = np.arange(len(k_f))
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     plt.plot(x, c_f, color='r')
     plt.plot(x, k_f, color='b')
@@ -99,13 +100,13 @@ def layer5_comp():
     keras = np.load(keras_dir+'l05_1.npy')
     cqt = np.load(cqt_dir+'l05_1.npy')
 
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
+    c_f = cqt.flatten()[:512]
+    k_f = keras.flatten()[:512]
 
     x = np.arange(len(k_f))
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     plt.plot(x, c_f, color='r')
     plt.plot(x, k_f, color='b')
@@ -122,7 +123,7 @@ def layer10_comp():
     x = np.arange(len(k_f))
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     plt.plot(x, c_f, color='r')
     plt.plot(x, k_f, color='b')
@@ -140,7 +141,7 @@ def layer15_comp():
     x = np.arange(len(k_f))
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     plt.plot(x, c_f, color='r')
     plt.plot(x, k_f, color='b')
@@ -156,7 +157,7 @@ def layer23_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -174,7 +175,7 @@ def layer24_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
 
     x = np.arange(len(k_f))
@@ -193,7 +194,7 @@ def layer26_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
 
     x = np.arange(len(k_f))
@@ -214,7 +215,7 @@ def layer30_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -231,7 +232,7 @@ def layer31_comp():
     k_f = keras.flatten()
 
     if fix16mode:
-        c_f = c_f.astype(np.float32) / 256.0
+        c_f = c_f.astype(np.float32) / (2 ** q)
 
     x = np.arange(len(k_f))
 
@@ -241,6 +242,6 @@ def layer31_comp():
     plt.show()
 
 
-layer3_comp()
+layer2_comp()
 
 print('finish')

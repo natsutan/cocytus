@@ -87,7 +87,7 @@ class WeightConverter:
 
                         if weight_name.find('moving_variance')!=-1:
                             # BatchNormalization のvarianceの重みは、重みデータではなく、 1.0 / sqrt(var + epsilon)の値を保存する。
-                            fix_q, data2 = self.calc_bach_invvar(data2)
+                            data2 = self.calc_bach_invvar(data2)
 
                         int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
@@ -105,7 +105,7 @@ class WeightConverter:
         epsilon = 0.001
         outdata = 1.0 / np.sqrt(data + epsilon)
         print("calc_var min = %f, max = %f" % ( outdata.min(), outdata.max()))
-        return 8, outdata
+        return outdata
 
 
     def tf_reshape(self, data):

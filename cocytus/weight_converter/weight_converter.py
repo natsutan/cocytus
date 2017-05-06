@@ -7,10 +7,11 @@ import math
 
 
 class WeightConverter:
-    def __init__(self, output_dir, h5file, dtype=""):
+    def __init__(self, output_dir, h5file, dtype="", weight_q=8):
         self.output_dir = output_dir
         self.h5file = os.path.expanduser(h5file)
         self.dtype = dtype
+        self.weight_q = int(weight_q)
 
     def convert(self):
         """
@@ -61,77 +62,39 @@ class WeightConverter:
                     filepath = os.path.join(self.output_dir, filename)
                     np.save(filepath, data2, allow_pickle=False)
                     print("save %s to %s" % (weight_name, filepath))
-                elif self.dtype == 'fix8':
-                    print("WARNING fix8 is not tested")
-                    if weight_name.find('conv2d') == 0:
-                        zerop = 5
-                        print("convert conv2d zeropos = %d", zerop)
-                        # 重みの型を変換する。
-                        filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
-                        filepath = os.path.join(self.output_dir, filename)
-
-                        #int8の範囲にクリップする。
-                        int_bit = 8 - zerop
-                        int_min = -(2 ** (int_bit - 1))
-                        int_max = (2 ** (int_bit - 1)) - 1
-
-                        cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2**zerop))
-                        fix8_data = cliped.astype(np.int8)
-                        np.save(filepath, fix8_data, allow_pickle=False)
-                        print("save %s to %s(fix8)" % (weight_name, filepath))
-                    elif weight_name.find('batch_') == 0:
-                        zerop = 4
-
-                        filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
-                        filepath = os.path.join(self.output_dir, filename)
-
-                        if weight_name.find('moving_variance')!=-1:
-                            # BatchNormalization のvarianceの重みは、重みデータではなく、 1.0 / sqrt(var + epsilon)の値を保存する。
-                            zerop, data2 = self.calc_bach_invvar(data2)
-
-                        int_bit = 8 - zerop
-                        int_min = -(2 ** (int_bit - 1))
-                        int_max = (2 ** (int_bit - 1)) - 1
-
-                        #cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
-                        cliped = data2.clip(int_min, int_max) * (2 ** zerop)
-                        fix8_data = cliped.astype(np.int8)
-                        np.save(filepath, fix8_data, allow_pickle=False)
-                        print("save %s to %s(fix8) min = %f, max = %f" % (weight_name, filepath, data2.min(), data2.max()))
                 elif self.dtype == 'fix16':
                     if weight_name.find('conv2d') == 0:
-                        # 1を表すbit位置
-                        onep = 8
-                        print("convert conv2d zeropos = %d" % onep)
+                        fix_q = self.weight_q
+                        print("convert conv2d Q = %d" % fix_q)
                         # 重みの型を変換する。
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)
 
                         #int8の範囲にクリップする。
-                        int_bit = 16 - onep
+                        int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
 
-                        cliped = data2.clip(int_min, int_max) * (2 ** onep) - (1.0 / (2**onep))
+                        cliped = data2.clip(int_min, int_max) * (2 ** fix_q) - (1.0 / (2**fix_q))
                         fix16_data = cliped.astype(np.int16)
                         np.save(filepath, fix16_data, allow_pickle=False)
                         print("save %s to %s(fix16)" % (weight_name, filepath))
                     elif weight_name.find('batch_') == 0:
-                        onep = 8
+                        fix_q = self.weight_q
 
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)
 
                         if weight_name.find('moving_variance')!=-1:
                             # BatchNormalization のvarianceの重みは、重みデータではなく、 1.0 / sqrt(var + epsilon)の値を保存する。
-                            onep, data2 = self.calc_bach_invvar(data2)
+                            fix_q, data2 = self.calc_bach_invvar(data2)
 
-                        int_bit = 16 - onep
+                        int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
 
                         #cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
-                        cliped = data2.clip(int_min, int_max) * (2 ** onep) - (1.0 / (2 ** onep))
+                        cliped = data2.clip(int_min, int_max) * (2 ** fix_q) - (1.0 / (2 ** fix_q))
                         fix16_data = cliped.astype(np.int16)
                         np.save(filepath, fix16_data, allow_pickle=False)
                         print("save %s to %s(fix16) min = %f, max = %f" % (weight_name, filepath, data2.min(), data2.max()))

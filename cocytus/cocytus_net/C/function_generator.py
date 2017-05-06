@@ -99,7 +99,7 @@ class FunctionGenerator:
                     print("WARNING unkown Conv2d optimze level %s, use dafalut(no optimize)." % opt_level)
 
                 if self.compiler.is_fix16_mode():
-                    shift_val = 8
+                    shift_val = layer_detail.weight_q
                     if kernel_size == (3, 3):
                         conv2d_template_fname = 'Conv2d_same_3x3_fixed.c'
                     elif kernel_size == (1, 1):
@@ -230,7 +230,7 @@ class FunctionGenerator:
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
         if self.compiler.is_fix16_mode():
-            shift_val = 8;
+            shift_val = layer_detail.weight_q
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_fixed.c')
         else:
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')

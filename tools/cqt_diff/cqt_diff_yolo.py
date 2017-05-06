@@ -241,6 +241,6 @@ def layer31_comp():
     plt.show()
 
 
-layer24_comp()
+layer3_comp()
 
 print('finish')

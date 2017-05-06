@@ -36,6 +36,8 @@ class CocytusLayerInfo:
         self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8',
                            CQT_Dtype.FIX16: 'fx16', CQT_Dtype.FIX8: 'fx8',
                            CQT_Dtype.NONE: 'none'}
+        self.output_q = 8
+        self.weight_q = 8
 
     def get_Wshape(self):
         """
@@ -87,7 +89,6 @@ class CocytusLayerInfo:
         mv_name = "moving_variance_%s_W" % name
         mv_nph_name = "nph_moving_variance_%s_W" % name
         return beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name
-
 
 
     def get_output_variable_name(self):
@@ -232,6 +233,10 @@ class CocytusCompiler:
                 type = self.config.get('Cocyuts', 'layerout_dtype')
                 print("INFO layer output dtype conv to %s", type)
                 output_type = type
+
+                if 'layerout_q' in self.config['Cocyuts']:
+                    cl.output_q = int(self.config.get('Cocyuts', 'layerout_q'))
+
             else:
                 # iniファイルに設定が無いときはKerasの型を使う。
                 output_type = l.output.dtype
@@ -247,6 +252,10 @@ class CocytusCompiler:
                         type = self.config.get('Cocyuts', 'weight_dtype')
                         print("INFO weight dtype conv to %s", type)
                         wtype = type
+
+                        if 'weight_q' in  self.config['Cocyuts']:
+                            cl.weight_q = int(self.config.get('Cocyuts', 'weight_q'))
+
                     else:
                     # iniファイルに設定が無いときはKerasの型を使う。
                         wtype = w.dtype

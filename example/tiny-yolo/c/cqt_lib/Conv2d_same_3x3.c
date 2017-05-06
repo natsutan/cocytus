@@ -112,7 +112,7 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                     o_data += filter3x3[2][2] * data3x3[2][2];
 
 
-                    if((x==0)&&(y==0)) {
+                    if((x==1)&&(y==1)) {
                         printf("o_data = %f\n", o_data);
                     }
 

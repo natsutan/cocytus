@@ -24,6 +24,7 @@ extern void layer10_output(void);
 extern void layer15_output(void);
 extern void layer23_output(void);
 extern void layer24_output(void);
+extern void layer26_output(void);
 extern void layer30_output(void);
 extern void layer31_output(void);
 
@@ -67,6 +68,11 @@ int main(void)
     layer10_output();
     layer15_output();
     layer23_output();
+    layer24_output();
+    layer26_output();
+
+    layer30_output();
+    layer31_output();
 
     // ここから領域の計算
     yolo_parameter.width = 620;

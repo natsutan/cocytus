@@ -81,6 +81,7 @@ class FunctionGenerator:
         input_type = layer_detail.input_dtypes[0]
         weight_type = layer_detail.weight_dtypes[0]
         output_type = layer_detail.output_dtypes[0]
+        shift_val = 0
 
         if (kernel_size == (3, 3) or kernel_size == (1, 1)) and padding == 'same':
             if kernel_size == (3, 3):
@@ -229,6 +230,7 @@ class FunctionGenerator:
         weight_type = layer_detail.weight_dtypes[0]
         int_max = 0
         int_min = 0
+        shift_val = 0
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'BatchNormalization.c')
         if self.compiler.is_fix16_mode():

@@ -4,7 +4,6 @@
 #include "cqt.h"
 #include "cqt_net.h"
 
-#include <stdio.h>
 
 int CQT_BatchNormalization_if_wf_wf_wf_wf_of(CQT_LAYER *lp, void *inp, void *outp)
 {
@@ -43,7 +42,6 @@ int CQT_BatchNormalization_if_wf_wf_wf_wf_of(CQT_LAYER *lp, void *inp, void *out
         var = *((float *)bnp->moving_variance_p + n);
 
         inv_denomin = 1.0 / sqrt(var + bnp->epsilon);
-
 
         for(y=0;y<input_size_y;y++) {
             for(x=0;x<input_size_x;x++) {

@@ -61,6 +61,7 @@ def main(argv):
     # Cソースの生成
     c_generator = CGenerator(compiler)
     c_generator.generate()
+    weight_q = 8
 
     # 重みの変換
     try:

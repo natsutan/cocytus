@@ -71,15 +71,10 @@ def main(argv):
         if 'weight_dtype' in config['Cocyuts']:
             # iniファイルの設定を優先
             type = config.get('Cocyuts', 'weight_dtype')
-            if 'weight_q' in config['Cocyuts']:
-                weight_q = config.get('Cocyuts', 'weight_q')
-            else:
-                weight_q = 8
-
         else:
             type = ""
 
-        w_converter = WeightConverter(w_out_dir, hdf_file, type, weight_q=weight_q)
+        w_converter = WeightConverter(w_out_dir, hdf_file, type, compiler)
         w_converter.convert()
 
     except (configparser.NoSectionError, configparser.NoOptionError):

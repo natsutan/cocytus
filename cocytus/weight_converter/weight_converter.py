@@ -7,11 +7,11 @@ import math
 
 
 class WeightConverter:
-    def __init__(self, output_dir, h5file, dtype="", weight_q=8):
+    def __init__(self, output_dir, h5file, dtype, compiler):
         self.output_dir = output_dir
         self.h5file = os.path.expanduser(h5file)
         self.dtype = dtype
-        self.weight_q = int(weight_q)
+        self.compiler = compiler
 
     def convert(self):
         """
@@ -64,7 +64,11 @@ class WeightConverter:
                     print("save %s to %s" % (weight_name, filepath))
                 elif self.dtype == 'fix16':
                     if weight_name.find('conv2d') == 0:
-                        fix_q = self.weight_q
+                        name = weight_name.split('/')[0]
+
+                        cl = self.compiler.get_cqt_layer_obj(name)
+                        fix_q = cl.weight_q
+
                         print("convert conv2d Q = %d" % fix_q)
                         # 重みの型を変換する。
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
@@ -80,7 +84,10 @@ class WeightConverter:
                         np.save(filepath, fix16_data, allow_pickle=False)
                         print("save %s to %s(fix16)" % (weight_name, filepath))
                     elif weight_name.find('batch_') == 0:
-                        fix_q = self.weight_q
+                        name = weight_name.split('/')[0]
+
+                        cl = self.compiler.get_cqt_layer_obj(name)
+                        fix_q = cl.weight_q
 
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)

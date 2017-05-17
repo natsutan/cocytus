@@ -474,6 +474,14 @@ class CqtGenC(CFile):
             else:
                 raise ValueError("ERROR unsupported shape %s %s", (name, str(o_shape)))
 
+            input_q = layer_detal.input_q
+            weight_q = layer_detal.weight_q
+            output_q = layer_detal.output_q
+
+            self.wr('\t%s.layer[%d].input_q = %d;\n' % (cqt_net_name, i, input_q))
+            self.wr('\t%s.layer[%d].weight_q = %d;\n' % (cqt_net_name, i, weight_q))
+            self.wr('\t%s.layer[%d].output_q = %d;\n' % (cqt_net_name, i, output_q))
+
             o_name = layer_detal.get_output_variable_name()
             self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))

@@ -27,6 +27,9 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
     input_size_num = lp->cqt_input_shape[3]; //入力の数
 
+    int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
+    int add_shift = lp->weight_q - lp->output_q;
+
     //parameter check o_data
     assert(cnvp->kernel_size[0]==1);
     assert(cnvp->kernel_size[1]==1);
@@ -56,12 +59,12 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
                     data = *(ip + idx_i);
                     o_data_acc += filter * data;
-                    o_data = o_data_acc >> $shift_val;
+                    o_data = o_data_acc >> mul_shift;
 
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
-                                o_data += bias;
+                                o_data += (bias << add_shift);
                         }
 
                         //activattion

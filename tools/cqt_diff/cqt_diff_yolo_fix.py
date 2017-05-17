@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import seaborn
 import sys
 
-keras_dir = '../../example/tiny-yolo/keras/output/'
-cqt_dir = '../../example/tiny-yolo/c_fix/output/'
+keras_dir = '../../example/yolo-pico/keras/output/'
+cqt_dir = '../../example/yolo-pico/c_fix/output/'
 
 fix16mode = True
-q = 9
+q = 10
 layer_num = 32
 
 

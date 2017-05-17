@@ -35,7 +35,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
-    memset(op, 0.0, fill_num * input_size_y * input_size_x);
+    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(outp[0]));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){

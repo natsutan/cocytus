@@ -4,6 +4,7 @@ import configparser
 import tensorflow as tf
 from keras.models import model_from_json
 
+
 class CQT_Dtype(Enum):
     """
     型の定義
@@ -25,7 +26,7 @@ class CocytusLayerInfo:
     def __init__(self, l, keras_layer_type):
         """
         :param l:  keras layer
-        :param config: keras config
+        :param keras_layer_type: keras config
         """
         self.input_size = []
         self.input_dtypes = []
@@ -36,6 +37,7 @@ class CocytusLayerInfo:
         self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8',
                            CQT_Dtype.FIX16: 'fx16', CQT_Dtype.FIX8: 'fx8',
                            CQT_Dtype.NONE: 'none'}
+        self.input_q = 8
         self.output_q = 8
         self.weight_q = 8
 
@@ -90,7 +92,6 @@ class CocytusLayerInfo:
         mv_nph_name = "nph_moving_variance_%s_W" % name
         return beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name
 
-
     def get_output_variable_name(self):
         """
         出力用変数の文字列を返す。
@@ -136,7 +137,7 @@ class CocytusLayerInfo:
         elif type == CQT_Dtype.FIX8:
             return 'FIXP8'
 
-        raise ValueError("Error layer %s tpye is not supported" % type)
+        raise ValueError("Error layer %s type is not supported" % type)
 
     def get_prev_layer_output_dimension(self, i):
         """
@@ -164,7 +165,7 @@ class CocytusLayerInfo:
             fname += '_' + self.l.padding
             fname += '_%dx%d' % (size[0], size[1])
             if size != (3, 3) and size != (1, 1):
-                raise ValueError('ERROR unsuported kernel size %s' % str(size))
+                raise ValueError('ERROR unsupported kernel size %s' % str(size))
 
         fname += self.mangling(self.input_dtypes, self.weight_dtypes, self.output_dtypes)
         return fname
@@ -216,6 +217,7 @@ class CocytusCompiler:
             print("%s:%s" % (keras_layer_type, l.name))
 
             cl = CocytusLayerInfo(l, keras_layer_type)
+            name = l.name
 
             # 型のチェック
             if 'input_dtype' in self.config['Cocyuts']:
@@ -236,6 +238,16 @@ class CocytusCompiler:
 
                 if 'layerout_q' in self.config['Cocyuts']:
                     cl.output_q = int(self.config.get('Cocyuts', 'layerout_q'))
+                    cl.input_q = cl.output_q
+
+
+                # 各レイヤー固有の指定
+                if name in self.config:
+                    if 'layerin_q' in self.config[name]:
+                        cl.input_q = int(self.config.get(name, 'layerin_q'))
+
+                    if 'layerout_q' in self.config[name]:
+                        cl.output_q = int(self.config.get(name, 'layerout_q'))
 
             else:
                 # iniファイルに設定が無いときはKerasの型を使う。
@@ -255,6 +267,11 @@ class CocytusCompiler:
 
                         if 'weight_q' in  self.config['Cocyuts']:
                             cl.weight_q = int(self.config.get('Cocyuts', 'weight_q'))
+
+                        # 各レイヤー固有の指定
+                        if name in self.config:
+                            if 'weight_q' in self.config[name]:
+                                cl.weight_q = int(self.config.get(name, 'weight_q'))
 
                     else:
                     # iniファイルに設定が無いときはKerasの型を使う。

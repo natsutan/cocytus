@@ -310,6 +310,8 @@ class CqtGenH(CFile):
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path);\n')
         self.wr('int cqt_run(CQT_NET* np, void *dp);\n')
         self.cr()
+        self.wr('extern int cqt_process;\n')
+        self.cr()
 
         self.write_cqt_network(scope='extern')
         self.cr()
@@ -337,6 +339,9 @@ class CqtGenC(CFile):
         self.wr_file_header()
         self.wr_include('cqt_gen.h')
         self.wr_include('cqt_lib.h')
+        self.cr()
+
+        self.wr('int cqt_process;\n')
         self.cr()
 
         self.write_cqt_network()
@@ -370,6 +375,7 @@ class CqtGenC(CFile):
         layer_num = len(layers)
         cqt_net_name = self.compiler.get_model_name()
         self.wr('\t%s.layernum = %d;\n' % (cqt_net_name, layer_num))
+        self.wr('\tcqt_process = 0;\n')
         self.cr()
 
         for (i, l) in enumerate(layers):
@@ -690,6 +696,7 @@ class CqtGenC(CFile):
             outp = layer_detal.get_output_variable_name()
             func_name = layer_detal.make_func_name()
             self.wr('\t//%s\n' % name)
+            self.wr('\tcqt_process = %d;\n' % i)
             self.wr("\tret = %s(&(%s.layer[%d]), %s, %s);\n" % (func_name, cqt_net_name, i, inp, outp))
             self.wr('\tif(ret != CQT_RET_OK){\n')
             self.wr('\t\treturn ret;\n')

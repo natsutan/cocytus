@@ -241,10 +241,6 @@ def layer30_comp():
     plt.plot(x, k_f, color='b')
 
     plt.show()
-        if(strcmp(lp->name,"batch_normalization_1")==0) {
-            printf("%d %f %f %f %f\n", n, beta, gamma, mean, inv_denomin);
-        }
-
 
 
 def layer31_comp():

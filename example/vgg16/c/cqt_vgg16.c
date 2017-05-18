@@ -8,6 +8,8 @@
 #include "inc/cqt.h"
 #include "inc/cqt_net.h"
 #include "cqt_gen/cqt_gen.h"
+#include "cqt_gen/cqt_debug.h"
+
 
 typedef struct ret_pair
 {
@@ -27,15 +29,6 @@ typedef struct{
 NUMPY_HEADER np;
 
 //debug関数
-void layer0_output(void);
-void layer1_output(void);
-void layer2_output(void);
-void layer3_output(void);
-void layer15_output(void);
-void layer17_output(void);
-void layer19_output(void);
-void layer21_output(void);
-void last_layer_output(void);
 
 void print_result(void);
 
@@ -70,9 +63,7 @@ int main(void)
     print_result();
 
 
-    layer0_output();
-    layer21_output();
-    last_layer_output();
+    cqt_layer1_dump();
 
 
     return 0;

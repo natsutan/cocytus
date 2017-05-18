@@ -17,6 +17,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+    int bias_adj;
 
     int f, x, y, n;
     int idx_i,idx_o;
@@ -118,6 +119,10 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         if(cnvp->use_bias) {
                                 o_data += (bias << add_shift);
                         }
+
+                        //fixpoint adjust
+                        bias_adj = input_size_y / 64;
+                        o_data += bias_adj;
 
                         //activattion
                         if(cnvp->activation == ACT_RELU) {

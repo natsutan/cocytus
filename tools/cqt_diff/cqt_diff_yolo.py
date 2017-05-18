@@ -28,6 +28,8 @@ def layer0_comp():
     plt.show()
 
 def layer1_comp():
+    q = 8
+
     keras = np.load(keras_dir+'l01_4.npy')
     cqt = np.load(cqt_dir+'l01_4.npy')
 
@@ -44,7 +46,9 @@ def layer1_comp():
 
     plt.show()
 
+
 def layer2_comp():
+    q = 8
     keras = np.load(keras_dir+'l02_4.npy')
     cqt = np.load(cqt_dir+'l02_4.npy')
 
@@ -261,6 +265,6 @@ def layer31_comp():
     plt.show()
 
 
-layer4_comp()
+layer2_comp()
 
 print('finish')

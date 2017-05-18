@@ -9,6 +9,7 @@ SET(CMAKE_EXE_LINKER_FLAGS  "-pg")
 add_executable(cqt_vgg16
         cqt_vgg16.c
         cqt_gen/cqt_gen.c
+        cqt_gen/cqt_debug.c
         cqt_lib/numpy.c
         cqt_lib/cqt_lib.c
         cqt_lib/InputLayer.c
@@ -16,6 +17,6 @@ add_executable(cqt_vgg16
         cqt_lib/MaxPooling2D.c
         cqt_lib/Flatten.c
         cqt_lib/Dense.c
-        vgg16_debug.c vgg_table.h)
+        vgg_table.h)
 
 target_link_libraries(cqt_vgg16 m)

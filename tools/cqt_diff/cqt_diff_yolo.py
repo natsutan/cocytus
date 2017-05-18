@@ -49,8 +49,8 @@ def layer1_comp():
 
 def layer2_comp():
     q = 8
-    keras = np.load(keras_dir+'l02_4.npy')
-    cqt = np.load(cqt_dir+'l02_4.npy')
+    keras = np.load(keras_dir+'l02_0.npy')
+    cqt = np.load(cqt_dir+'l02_0.npy')
 
     c_f = cqt.flatten()[:512]
     k_f = keras.flatten()[:512]
@@ -67,6 +67,7 @@ def layer2_comp():
 
 
 def layer3_comp():
+    q = 8
     keras = np.load(keras_dir+'l03_1.npy')
     cqt = np.load(cqt_dir+'l03_1.npy')
 
@@ -84,6 +85,7 @@ def layer3_comp():
     plt.show()
 
 def layer4_comp():
+    q = 8
     keras = np.load(keras_dir+'l04_1.npy')
     cqt = np.load(cqt_dir+'l04_1.npy')
 
@@ -116,6 +118,24 @@ def layer5_comp():
     plt.plot(x, k_f, color='b')
 
     plt.show()
+
+def layer6_comp():
+    keras = np.load(keras_dir+'l06_1.npy')
+    cqt = np.load(cqt_dir+'l06_1.npy')
+
+    c_f = cqt.flatten()[:512]
+    k_f = keras.flatten()[:512]
+
+    x = np.arange(len(k_f))
+
+    if fix16mode:
+        c_f = c_f.astype(np.float32) / (2 ** q)
+
+    plt.plot(x, c_f, color='r')
+    plt.plot(x, k_f, color='b')
+
+    plt.show()
+
 
 def layer10_comp():
     keras = np.load(keras_dir+'l10_1.npy')
@@ -265,6 +285,6 @@ def layer31_comp():
     plt.show()
 
 
-layer2_comp()
+layer7_comp()
 
 print('finish')

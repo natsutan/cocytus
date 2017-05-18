@@ -17,6 +17,7 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     int data_sub_mean;
     int normalized_data_pre;
     int mean_adj;
+    int beta_adj;
     int mul_gamma;
     int mul_gamma_beta;
 
@@ -29,6 +30,7 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
 
     int max, min;
 
+    int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     assert(bnp->scale==true);
     assert(bnp->center==true);
 
@@ -36,8 +38,8 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
     input_size_num = lp->cqt_input_shape[3]; //入力の数
 
-    max = $max << $shift_val;
-    min = $min << $shift_val;
+    max = 127 << (lp->output_q);
+    min = -128 << (lp->output_q);
 
     for(n=0;n<input_size_num;n++) {
         beta = *(($weight_type *)bnp->beta_p + n);
@@ -58,14 +60,16 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
                 //もともとの計算式
                 //normalized_data = (i_data - mean) * inv_denomin;
                 //o_data = normalized_data * gamma + beta;
-                mean_adj = mean;
+                mean_adj = mean >> (lp->input_q - lp->weight_q);
                 data_sub_mean = (i_data - mean_adj);
 
                 normalized_data_pre = data_sub_mean * inv_denomin;
-                normalized_data  = normalized_data_pre >> $shift_val;
+                normalized_data  = normalized_data_pre >> mul_shift;
 
-                mul_gamma = (normalized_data * gamma) >> $shift_val;
-                mul_gamma_beta = mul_gamma + beta;
+                mul_gamma = (normalized_data * gamma) >> lp->weight_q;
+                beta_adj = beta >> (lp->output_q - lp->weight_q);
+                mul_gamma_beta = mul_gamma + beta_adj;
+
 
                 if(mul_gamma_beta > max) {
                     o_data = max;

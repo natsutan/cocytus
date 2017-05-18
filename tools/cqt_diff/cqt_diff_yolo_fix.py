@@ -20,6 +20,7 @@ def calc_statistics(l, d=0):
     keras = np.load(keras_dir + 'l%02d_%d.npy' % (l , d))
     cqt = np.load(cqt_dir+'l%02d_%d.npy' % (l, d))
 
+
     c_f = cqt.flatten()
     k_f = keras.flatten()
 

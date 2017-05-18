@@ -14,7 +14,6 @@
 #define CQT_NP_HEADER_ERR (3) //numpy読み込み時にヘッダー情報が異常
 #define CQT_FREAD_ERR (4) //fread時にエラー発生
 
-
 //----------------------------
 //ファイルのR/W用定義
 #define CQT_MAX_PATH 256

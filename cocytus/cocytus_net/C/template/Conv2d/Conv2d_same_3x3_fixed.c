@@ -121,8 +121,8 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         }
 
                         //fixpoint adjust
-                        bias_adj = input_size_y / 64;
-                        o_data += bias_adj;
+                        //bias_adj = input_size_y / 64;
+                        //o_data += bias_adj;
 
                         //activattion
                         if(cnvp->activation == ACT_RELU) {

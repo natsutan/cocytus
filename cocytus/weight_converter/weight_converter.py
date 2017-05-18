@@ -23,6 +23,7 @@ class WeightConverter:
             f = f['model_weights']
 
         self.save_weights_from_hdf5_group(f)
+        self.save_qpoint_file()
 
         if hasattr(f, 'close'):
             f.close()
@@ -147,3 +148,23 @@ class WeightConverter:
             sys.exit(1)
 
         return new_data
+
+    def save_qpoint_file(self):
+        """デバッグ用にＱポイントの情報を書き出す"""
+        fname = os.path.join(self.output_dir, 'qp.txt')
+        f = open(fname, 'w')
+        f.write("input, output, weight, layer\n")
+        first = True
+        for cl in self.compiler.cqt_layers:
+            name = cl.l.name
+            if first:
+                wq = 0
+                iq = 0
+                oq = 0
+                first = False
+            else:
+                wq = cl.weight_q
+                iq = cl.input_q
+                oq = cl.output_q
+            f.write("%3s, %3s, %3s, %s\n" % (iq, oq, wq, name))
+        f.close()

@@ -159,8 +159,8 @@ class WeightConverter:
             name = cl.l.name
             if first:
                 wq = 0
-                iq = 0
-                oq = 0
+                iq = 8
+                oq = 8
                 first = False
             else:
                 wq = cl.weight_q

@@ -24,6 +24,8 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+    int beta_shift = (lp->weight_q - lp->output_q);
+    int inv_bata_shift = -beta_shift;
 
     int n, x, y;
     int idx_i, idx_o;
@@ -60,14 +62,21 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
                 //もともとの計算式
                 //normalized_data = (i_data - mean) * inv_denomin;
                 //o_data = normalized_data * gamma + beta;
+
+                //ここはinput_qに合わせる
                 mean_adj = mean >> (lp->input_q - lp->weight_q);
                 data_sub_mean = (i_data - mean_adj);
 
+                //ここからoutpu_qに合わせる
                 normalized_data_pre = data_sub_mean * inv_denomin;
                 normalized_data  = normalized_data_pre >> mul_shift;
 
                 mul_gamma = (normalized_data * gamma) >> lp->weight_q;
-                beta_adj = beta >> (lp->output_q - lp->weight_q);
+                if (beta_shift >= 0) {
+                    beta_adj = beta >> beta_shift;
+                } else {
+                    beta_adj = beta << inv_bata_shift;
+                }
                 mul_gamma_beta = mul_gamma + beta_adj;
 
 

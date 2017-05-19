@@ -6,342 +6,69 @@ import sys
 
 keras_dir = '../../example/tiny-yolo/keras/output/'
 cqt_dir = '../../example/tiny-yolo/c_fix/output/'
+qp_file = '../../example/tiny-yolo/c_fix/weight/'
 
 fix16mode = True
-q = 9
 
-def layer0_comp():
-    keras = np.load(keras_dir+'l00_2.npy')
-    cqt = np.load(cqt_dir+'l00_2.npy')
 
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
 
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
 
-    x = np.arange(len(k_f))
+def layer_dump(i, q, fnum = 3):
+    """
+    引数で指定されたレイヤーの、Keras出力と、コキュートス出力を
+    比較して、画像に落とす。比較するフィルターは先頭から、fnum
+    まで。
+    出力はoutputディレクトリーに行われる。
+    :param i:int レイヤー番号
+    :param q:int 出力データのQ位置
+    :param fnum:int 画像化するフィルター数
+    :return:
+    """
 
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
+    for f in range(fnum):
+        plt.figure()
+        graph_name = 'l%02d_%d' % (i, f)
+        kname = os.path.join(keras_dir+'l%02d_%d.npy' % (i, f))
+        cname = os.path.join(cqt_dir+'l%02d_%d.npy' % (i, f))
+        k_data = np.load(kname).flatten()
+        c_data = np.load(cname).flatten()
+        if fix16mode:
+            c_data = c_data.astype(np.float32) / (2 ** q)
 
-    plt.show()
+        x = np.arange(len(k_data))
+        plt.plot(x, k_data, color='r', label='Keras')
+        plt.plot(x, c_data, color='b', label='Coqytus')
+        plt.title(graph_name)
+        plt.legend()
 
-def layer1_comp():
-    q = 8
+        img_fname = os.path.join('output', graph_name+'.png')
+        print('save %s' % img_fname)
+        plt.savefig(img_fname)
 
-    keras = np.load(keras_dir+'l01_4.npy')
-    cqt = np.load(cqt_dir+'l01_4.npy')
 
-    c_f = cqt.flatten()[:1024]
-    k_f = keras.flatten()[:1024]
 
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
+def read_qpfile(odir):
+    """qpファイルを読み込み、入力、出力、重みのＱ位置をリストにして返す"""
+    iqs = []
+    wqs = []
+    oqs = []
+    fname = os.path.join(odir, 'qp.txt')
 
-    x = np.arange(len(k_f))
+    for i, l in enumerate(open(fname).readlines()):
+        if i < 1:
+            continue
+        words = l.split(',')
+        iqs.append(int(words[0]))
+        oqs.append(int(words[1]))
+        wqs.append(int(words[2]))
 
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
+    return iqs, oqs, wqs
 
-    plt.show()
 
+iqs, oqs, wqs = read_qpfile(qp_file)
 
-def layer2_comp():
-    q = 8
-    keras = np.load(keras_dir+'l02_0.npy')
-    cqt = np.load(cqt_dir+'l02_0.npy')
+for i in range(31):
+    layer_dump(i, oqs[i])
 
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer3_comp():
-    q = 8
-    keras = np.load(keras_dir+'l03_1.npy')
-    cqt = np.load(cqt_dir+'l03_1.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer4_comp():
-    q = 8
-    keras = np.load(keras_dir+'l04_1.npy')
-    cqt = np.load(cqt_dir+'l04_1.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer5_comp():
-    q = 8
-    keras = np.load(keras_dir+'l05_1.npy')
-    cqt = np.load(cqt_dir+'l05_1.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer6_comp():
-    q = 9
-    keras = np.load(keras_dir+'l06_0.npy')
-    cqt = np.load(cqt_dir+'l06_0.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer7_comp():
-    q = 9
-    keras = np.load(keras_dir+'l07_0.npy')
-    cqt = np.load(cqt_dir+'l07_0.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer8_comp():
-    q = 9
-    keras = np.load(keras_dir+'l08_31.npy')
-    cqt = np.load(cqt_dir+'l08_31.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer9_comp():
-    keras = np.load(keras_dir+'l09_0.npy')
-    cqt = np.load(cqt_dir+'l09_0.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer10_comp():
-    keras = np.load(keras_dir+'l10_1.npy')
-    cqt = np.load(cqt_dir+'l10_1.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer15_comp():
-    keras = np.load(keras_dir+'l15_0.npy')
-    cqt = np.load(cqt_dir+'l15_0.npy')
-
-    c_f = cqt.flatten()[:512]
-    k_f = keras.flatten()[:512]
-
-    x = np.arange(len(k_f))
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer23_comp():
-    keras = np.load(keras_dir+'l23_0.npy')
-    cqt = np.load(cqt_dir+'l23_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer24_comp():
-    keras = np.load(keras_dir+'l24_0.npy')
-    cqt = np.load(cqt_dir+'l24_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-def layer25_comp():
-    keras = np.load(keras_dir+'l25_0.npy')
-    cqt = np.load(cqt_dir+'l25_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer26_comp():
-    keras = np.load(keras_dir+'l26_0.npy')
-    cqt = np.load(cqt_dir+'l26_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-
-
-def layer30_comp():
-    keras = np.load(keras_dir+'l30_0.npy')
-    cqt = np.load(cqt_dir+'l30_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-def layer31_comp():
-    keras = np.load(keras_dir+'l31_0.npy')
-    cqt = np.load(cqt_dir+'l31_0.npy')
-
-    c_f = cqt.flatten()
-    k_f = keras.flatten()
-
-    if fix16mode:
-        c_f = c_f.astype(np.float32) / (2 ** q)
-
-    x = np.arange(len(k_f))
-
-    plt.plot(x, c_f, color='r')
-    plt.plot(x, k_f, color='b')
-
-    plt.show()
-
-
-layer8_comp()
-#layer7_comp()
 
 print('finish')

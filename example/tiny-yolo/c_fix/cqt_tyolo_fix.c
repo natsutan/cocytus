@@ -16,7 +16,7 @@
 NUMPY_HEADER np;
 #define IMG_SIZE 416
 
-int div_q = 10;
+float div_q = 512;
 
 
 int main(void)

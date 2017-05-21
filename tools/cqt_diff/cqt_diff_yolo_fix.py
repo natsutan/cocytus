@@ -6,10 +6,28 @@ import sys
 
 keras_dir = '../../example/tiny-yolo/keras/output/'
 cqt_dir = '../../example/tiny-yolo/c_fix/output/'
+qp_file = '../../example/tiny-yolo/c_fix/weight/'
 
 fix16mode = True
-q = 9
 layer_num = 32
+oqs = []
+
+def read_qpfile(odir):
+    """qpファイルを読み込み、入力、出力、重みのＱ位置をリストにして返す"""
+    iqs = []
+    wqs = []
+    oqs = []
+    fname = os.path.join(odir, 'qp.txt')
+
+    for i, l in enumerate(open(fname).readlines()):
+        if i < 1:
+            continue
+        words = l.split(',')
+        iqs.append(int(words[0]))
+        oqs.append(int(words[1]))
+        wqs.append(int(words[2]))
+
+    return iqs, oqs, wqs
 
 
 def calc_statistics(l, d=0):
@@ -17,9 +35,11 @@ def calc_statistics(l, d=0):
     :param l:
     :return: (平均の差、分散の差、max, min, データ辺りのずれ)
     """
+    global oqs
     keras = np.load(keras_dir + 'l%02d_%d.npy' % (l , d))
     cqt = np.load(cqt_dir+'l%02d_%d.npy' % (l, d))
 
+    q = oqs[l]
 
     c_f = cqt.flatten()
     k_f = keras.flatten()
@@ -38,6 +58,8 @@ aves = []
 maxs = []
 mins = []
 vars = []
+iqs, oqs, wqs = read_qpfile(qp_file)
+
 
 for l in range(layer_num):
     print(l)
@@ -48,6 +70,8 @@ for l in range(layer_num):
     vars.append(vars)
 
 x = np.arange(len(aves))
+
+
 
 
 plt.plot(x, aves, color='b', label='average')

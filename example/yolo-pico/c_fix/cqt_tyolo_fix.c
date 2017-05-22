@@ -16,7 +16,7 @@
 NUMPY_HEADER np;
 #define IMG_SIZE 416
 
-float div_q = 512;
+
 
 
 int main(void)
@@ -24,7 +24,6 @@ int main(void)
     CQT_NET *tyolo_p;
     int ret;
     YOLO_PARAM  yolo_parameter;
-    CQT_LAYER *lp;
 
     assert(sizeof(FIXP8)==1);
     assert(sizeof(FIXP16)==2);
@@ -32,9 +31,10 @@ int main(void)
     tyolo_p = cqt_init();
     printf("cqt yolo fixed point\n");
 
+
     //input layer の出力に画像データを格納する。
 
-    ret = load_from_numpy(input_1_output, "../img/person.jpg_fix_q8.npy", 3*IMG_SIZE*IMG_SIZE, &np);
+    ret = load_from_numpy(input_1_output, "../img/person.jpg_fix_q9.npy", 3*IMG_SIZE*IMG_SIZE, &np);
     if(ret != CQT_RET_OK) {
         printf("error in load_from_numpy %d\n", ret);
         exit(1);
@@ -66,17 +66,6 @@ int main(void)
 
     ret = yolo_eval(conv2d_9_output, &yolo_parameter);
     printf("yolo eval %d\n", ret);
-
-    //overflow check
-    for(int i=0;i<32;i++) {
-        lp = &(tyolo_p->layer[i]);
-        if(lp->overflow_cnt != 0) {
-            printf("Overflow:l=%d, %s, cnt = %d, inq = %d, outq = %d, wq = %d\n",
-                   i, lp->name, lp->overflow_cnt, lp->input_q, lp->output_q, lp->weight_q);
-
-        }
-    }
-
 
     if(ret < 0) {
         printf("ERROR %d\n", ret);

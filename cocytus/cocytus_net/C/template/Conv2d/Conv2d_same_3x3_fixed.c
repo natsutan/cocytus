@@ -17,7 +17,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
-    int bias_adj;
+    //int bias_adj;
 
     int f, x, y, n;
     int idx_i,idx_o;
@@ -25,6 +25,9 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     $output_type o_data;
     int o_data_acc;
     int o_data_first;
+    int o_data_sat; //for saturation
+
+    int max, min;
 
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     int add_shift = lp->weight_q - lp->output_q;
@@ -41,6 +44,8 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
+    max = SHRT_MAX;
+    min = SHRT_MIN;
     memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(outp[0]));
 
     for(f=0;f<fill_num;f++) {
@@ -112,7 +117,17 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     o_data_acc += filter3x3[2][0] * data3x3[2][0];
                     o_data_acc += filter3x3[2][1] * data3x3[2][1];
                     o_data_acc += filter3x3[2][2] * data3x3[2][2];
-                    o_data = o_data_first + (o_data_acc >> mul_shift);
+                    o_data_sat = o_data_first + (o_data_acc >> mul_shift);
+
+                    if (max < o_data_sat) {
+                        lp->overflow_cnt++;
+                        o_data = max;
+                    } else if (o_data_sat < min ) {
+                        lp->overflow_cnt++;
+                        o_data = min;
+                    } else {
+                        o_data = ($output_type)o_data_sat;
+                    }
 
                     if(n==(input_size_num-1)) {
                         //bais

@@ -13,19 +13,22 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     $weight_type gamma;
     $weight_type beta;
     $weight_type inv_denomin;
+
+    //SIMD時には、32bitで宣言し演算時に飽和命令を使う。
     int normalized_data;
     int data_sub_mean;
     int normalized_data_pre;
-    int mean_adj;
-    int beta_adj;
     int mul_gamma;
     int mul_gamma_beta;
+
+    int mean_adj;
+    int beta_adj;
 
     int input_size_x;
     int input_size_y;
     int input_size_num;
     int beta_shift = (lp->weight_q - lp->output_q);
-    int inv_bata_shift = -beta_shift;
+    int inv_beta_shift = -beta_shift;
 
     int n, x, y;
     int idx_i, idx_o;
@@ -35,13 +38,14 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     assert(bnp->scale==true);
     assert(bnp->center==true);
+    assert(sizeof(int) < sizeof(long));
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
     input_size_num = lp->cqt_input_shape[3]; //入力の数
 
-    max = 127 << (lp->output_q);
-    min = -128 << (lp->output_q);
+    max = SHRT_MAX;
+    min = SHRT_MIN;
 
     for(n=0;n<input_size_num;n++) {
         beta = *(($weight_type *)bnp->beta_p + n);
@@ -75,15 +79,17 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
                 if (beta_shift >= 0) {
                     beta_adj = beta >> beta_shift;
                 } else {
-                    beta_adj = beta << inv_bata_shift;
+                    beta_adj = beta << inv_beta_shift;
                 }
                 mul_gamma_beta = mul_gamma + beta_adj;
 
 
                 if(mul_gamma_beta > max) {
+                    lp->overflow_cnt++;
                     o_data = max;
                 } else if (mul_gamma_beta < min) {
                     o_data = min;
+                    lp->overflow_cnt++;
                 } else {
                     o_data = mul_gamma_beta;
                 }

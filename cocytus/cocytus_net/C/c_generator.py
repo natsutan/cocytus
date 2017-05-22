@@ -481,7 +481,7 @@ class CqtGenC(CFile):
             self.wr('\t%s.layer[%d].input_q = %d;\n' % (cqt_net_name, i, input_q))
             self.wr('\t%s.layer[%d].weight_q = %d;\n' % (cqt_net_name, i, weight_q))
             self.wr('\t%s.layer[%d].output_q = %d;\n' % (cqt_net_name, i, output_q))
-
+            self.wr('\t%s.layer[%d].overflow_cnt = 0;\n' % (cqt_net_name, i))
             o_name = layer_detal.get_output_variable_name()
             self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))

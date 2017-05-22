@@ -116,6 +116,7 @@ class FunctionGenerator:
             if kernel_size == (3, 3) and self.conv2d_same_3x3_first:
                 with open(output_file, 'w') as fp:
                     fp.write('#include <string.h>\n')
+                    fp.write('#include <limits.h>\n')
                     fp.write('#include <assert.h>\n')
                     fp.write('#include "cqt.h"\n')
                     fp.write('#include "cqt_net.h"\n')
@@ -247,6 +248,7 @@ class FunctionGenerator:
             with open(output_file, 'w') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
+                fp.write('#include <limits.h>\n')
                 fp.write('#include <math.h>\n')
                 fp.write('#include "cqt.h"\n')
                 fp.write('#include "cqt_net.h"\n')

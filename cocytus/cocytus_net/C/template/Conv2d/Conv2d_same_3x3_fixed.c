@@ -46,7 +46,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     max = SHRT_MAX;
     min = SHRT_MIN;
-    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(outp[0]));
+    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof($output_type));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){

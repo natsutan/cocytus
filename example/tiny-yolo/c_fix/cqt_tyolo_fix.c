@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     int ret;
     YOLO_PARAM  yolo_parameter;
     CQT_LAYER *lp;
-    FILE *fp_in;
+    FILE *fp_in, *fp_out;
     char fpath[256];
     char *cp;
     char *nl_p;
@@ -43,6 +43,12 @@ int main(int argc, char *argv[])
         printf("can't open %s\n", argv[1]);
         exit(1);
     }
+    fp_out = fopen("pred.txt", "w");
+    if(fp_out == NULL) {
+        printf("can't open pred.txt\n");
+        exit(1);
+    }
+
 
     assert(sizeof(FIXP8)==1);
     assert(sizeof(FIXP16)==2);
@@ -92,7 +98,7 @@ int main(int argc, char *argv[])
         // ここから領域の計算
         yolo_parameter.width = IMG_SIZE;
         yolo_parameter.height = IMG_SIZE;
-        yolo_parameter.score_threshold = 0.3;
+        yolo_parameter.score_threshold = 0.15;
         yolo_parameter.iou_threshold = 0.5;
         yolo_parameter.classes = 20;
 
@@ -139,8 +145,14 @@ int main(int argc, char *argv[])
             }
             printf("%s %f (%d, %d), (%d, %d)\n",
                    voc_class[class], score, left, top, right, bottom);
+            fprintf(fp_out, "%s %s, %f (%d, %d), (%d, %d)\n",
+                    fpath, voc_class[class], score, left, top, right, bottom);
+            fflush(fp_out);
+
         }
     }
+    fclose(fp_out);
+    fclose(fp_in);
 
     return 0;
 }

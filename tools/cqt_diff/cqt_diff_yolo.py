@@ -36,8 +36,8 @@ def layer_dump(i, q, fnum = 3):
             c_data = c_data.astype(np.float32) / (2 ** q)
 
         x = np.arange(len(k_data))
-        plt.plot(x, k_data, color='r', label='Keras')
-        plt.plot(x, c_data, color='b', label='Coqytus')
+        plt.plot(x, k_data, color='b', label='Keras')
+        plt.plot(x, c_data, color='r', label='Cocytus')
         plt.title(graph_name)
         plt.legend()
 

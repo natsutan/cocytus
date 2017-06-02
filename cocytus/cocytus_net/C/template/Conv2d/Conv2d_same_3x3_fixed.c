@@ -31,6 +31,8 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     int add_shift = lp->weight_q - lp->output_q;
+    int out_shift = lp->input_q - lp->output_q;
+
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
@@ -138,6 +140,13 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         //fixpoint adjust
                         //bias_adj = input_size_y / 64;
                         //o_data += bias_adj;
+
+                        if(out_shift > 0) {
+                            o_data = o_data >> out_shift;
+                        } else if(out_shift < 0) {
+                            o_data = o_data << (-out_shift);
+                        }
+
 
                         //activattion
                         if(cnvp->activation == ACT_RELU) {

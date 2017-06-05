@@ -27,6 +27,11 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+
+    int mean_shift = (lp->weight_q - lp->input_q);
+    int inv_mean_shift = -mean_shift;
+
+
     int beta_shift = (lp->weight_q - lp->output_q);
     int inv_beta_shift = -beta_shift;
 
@@ -68,7 +73,11 @@ int $func_name(CQT_LAYER *lp, void *inp, void *outp)
                 //o_data = normalized_data * gamma + beta;
 
                 //ここはinput_qに合わせる
-                mean_adj = mean >> (lp->input_q - lp->weight_q);
+                if (mean_shift >= 0) {
+                    mean_adj = mean >> mean_shift;
+                } else {
+                    mean_adj = mean << inv_mean_shift;
+                }
                 data_sub_mean = (i_data - mean_adj);
 
                 //ここからoutpu_qに合わせる

@@ -1,0 +1,1 @@
+/home/natu/proj/myproj/cocytus/example/tiny-yolo/img/person.jpg_fix_q8.npy

@@ -75,7 +75,13 @@ class WeightConverter:
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)
 
-                        #int8の範囲にクリップする。
+                        d2_max = data2.max()
+                        d2_min = data2.min()
+                        d2_abs_max = max(d2_max, -d2_min)
+                        qpos = calc_qpos(d2_abs_max)
+                        print("WQ = %d, (max = %f, min = %f" % (qpos, d2_max, d2_min))
+
+                        #intの範囲にクリップする。
                         int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
@@ -100,6 +106,12 @@ class WeightConverter:
                         int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
+
+                        d2_max = data2.max()
+                        d2_min = data2.min()
+                        d2_abs_max = max(d2_max, -d2_min)
+                        qpos = calc_qpos(d2_abs_max)
+                        print("WQ = %d, (max = %f, min = %f" % (qpos, d2_max, d2_min))
 
                         #cliped = data2.clip(int_min, int_max) * (2 ** zerop) - (1.0 / (2 ** zerop))
                         cliped = data2.clip(int_min, int_max) * (2 ** fix_q) - (1.0 / (2 ** fix_q))
@@ -168,3 +180,17 @@ class WeightConverter:
                 oq = cl.output_q
             f.write("%3s, %3s, %3s, %s\n" % (iq, oq, wq, name))
         f.close()
+
+def calc_qpos(x, bit = 16):
+    """
+    引数の数値を表現できる最大のＱ位置を返す。
+    :param x: float
+    :return: int
+    """
+    for q in range(bit):
+        maxv = (2 ** (q - 1)) - 1
+        if x > maxv:
+            continue
+        return bit - q
+
+    return bit

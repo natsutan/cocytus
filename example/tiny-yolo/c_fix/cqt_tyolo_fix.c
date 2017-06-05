@@ -17,7 +17,12 @@ NUMPY_HEADER np;
 //tiny-yolo
 #define IMG_SIZE 416
 
-float div_q = 512;
+//Q9
+//float div_q = 512;
+
+//Q10
+float div_q = 1024;
+
 
 
 int main(int argc, char *argv[])
@@ -98,7 +103,7 @@ int main(int argc, char *argv[])
         // ここから領域の計算
         yolo_parameter.width = IMG_SIZE;
         yolo_parameter.height = IMG_SIZE;
-        yolo_parameter.score_threshold = 0.15;
+        yolo_parameter.score_threshold = 0.5;
         yolo_parameter.iou_threshold = 0.5;
         yolo_parameter.classes = 20;
 

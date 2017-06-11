@@ -18,10 +18,13 @@ NUMPY_HEADER np;
 #define IMG_SIZE 416
 
 //Q9
-//float div_q = 512;
+//float div_q = 1024;
 
 //Q10
-float div_q = 1024;
+//float div_q = 1024;
+
+//Q11
+float div_q = 2048;
 
 
 
@@ -118,7 +121,6 @@ int main(int argc, char *argv[])
                        i, lp->name, lp->overflow_cnt, lp->input_q, lp->output_q, lp->weight_q);
             }
         }
-
 
         if (ret < 0) {
             printf("ERROR %d\n", ret);

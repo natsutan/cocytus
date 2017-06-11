@@ -29,6 +29,9 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     int add_shift = lp->weight_q - lp->output_q;
+    int in_shift = lp->weight_q - lp->input_q;
+    int out_shift = lp->input_q - lp->output_q;
+
 
     //parameter check o_data
     assert(cnvp->kernel_size[0]==1);
@@ -55,7 +58,11 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
 
                     o_data = *(op + idx_o);
-                    o_data_acc = (int)o_data << $shift_val;;
+                    if(in_shift >= 0) {
+                        o_data_acc = (int)o_data >> in_shift;
+                    } else {
+                        o_data_acc = (int)o_data << (-in_shift);
+                    }
 
                     data = *(ip + idx_i);
                     o_data_acc += filter * data;
@@ -65,6 +72,13 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         //bais
                         if(cnvp->use_bias) {
                                 o_data += (bias << add_shift);
+                        }
+
+
+                      if(out_shift > 0) {
+                            o_data = o_data >> out_shift;
+                        } else if(out_shift < 0) {
+                            o_data = o_data << (-out_shift);
                         }
 
                         //activattion

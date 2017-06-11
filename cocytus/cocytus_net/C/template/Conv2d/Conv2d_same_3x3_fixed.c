@@ -137,14 +137,10 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                                 o_data += (bias << add_shift);
                         }
 
-                        //fixpoint adjust
-                        //bias_adj = input_size_y / 64;
-                        //o_data += bias_adj;
-
                         if(out_shift > 0) {
-                            o_data = o_data >> out_shift;
+                            o_data = (o_data >> out_shift) + 1;
                         } else if(out_shift < 0) {
-                            o_data = o_data << (-out_shift);
+                            o_data = (o_data << (-out_shift)) + 1
                         }
 
 

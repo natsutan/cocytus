@@ -86,6 +86,10 @@ class WeightConverter:
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
 
+                        # 小数点以下の補正
+                        adj = (1.0 / (2 ** fix_q)) / 2.0
+                        data2 = data2 + adj
+
                         cliped = data2.clip(int_min, int_max) * (2 ** fix_q) - (1.0 / (2**fix_q))
                         fix16_data = cliped.astype(np.int16)
                         np.save(filepath, fix16_data, allow_pickle=False)
@@ -106,6 +110,11 @@ class WeightConverter:
                         int_bit = 16 - fix_q
                         int_min = -(2 ** (int_bit - 1))
                         int_max = (2 ** (int_bit - 1)) - 1
+
+                        # 小数点以下の補正
+                        adj = (1.0 / (2 ** fix_q)) / 2.0
+                        data2 = data2 + adj
+
 
                         d2_max = data2.max()
                         d2_min = data2.min()

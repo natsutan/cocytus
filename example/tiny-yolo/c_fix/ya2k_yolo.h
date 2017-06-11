@@ -5,7 +5,8 @@
 #ifndef CQT_TYOLO_YA2K_YOLO_H
 #define CQT_TYOLO_YA2K_YOLO_H
 
-#define YOLO_MAX_RESULT (128)
+//#define YOLO_MAX_RESULT (128)
+#define YOLO_MAX_RESULT (1024)
 #define YOLO_CLASSES (20)
 #define YOLO_BUFSIZE (128)
 
@@ -61,6 +62,6 @@ extern const char voc_class[YOLO_CLASSES][YOLO_BUFSIZE];
 
 int yolo_eval(void *predp, YOLO_PARAM *pp);
 
-#define RET_YOLO_MAX_RESULT_OVER (-1)
+#define RET_YOLO_MAX_RESULT_OVER (-10)
 
 #endif //CQT_TYOLO_YA2K_YOLO_H

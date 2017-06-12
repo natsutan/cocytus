@@ -45,6 +45,14 @@ def layer_dump(i, q, fnum = 3):
         print('save %s' % img_fname)
         plt.savefig(img_fname)
 
+        plt.figure()
+        plt.plot(x, k_data - c_data, color='g', label='diff')
+        plt.title(graph_name+'diff')
+        plt.legend()
+        img_fname = os.path.join('output', graph_name + '_diff.png')
+        plt.savefig(img_fname)
+
+
 
 
 def read_qpfile(odir):

@@ -176,6 +176,9 @@ class WeightConverter:
         f = open(fname, 'w')
         f.write("input, output, weight, layer\n")
         first = True
+
+        last_oq = 0
+
         for cl in self.compiler.cqt_layers:
             name = cl.l.name
             if first:
@@ -186,7 +189,13 @@ class WeightConverter:
             else:
                 wq = cl.weight_q
                 iq = cl.input_q
-                oq = cl.output_q
+                if cl.keras_layer_type in ['LeakyReLU', 'MaxPooling2D']:
+                    oq = last_oq
+                else:
+                    oq = cl.output_q
+
+                last_oq = oq
+
             f.write("%3s, %3s, %3s, %s\n" % (iq, oq, wq, name))
         f.close()
 

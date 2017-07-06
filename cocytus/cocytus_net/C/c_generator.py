@@ -858,7 +858,7 @@ class CqtDebugC(CFile):
                 self.wr("\tnp_0.shape[2] = 0;\n")
                 self.wr("\tnp_0.shape[3] = 0;\n")
                 self.cr()
-                self.wr('\tret = save_to_numpy(%s[0], "output/l%02d_0.npy", & np_0);\n' % (output_variable_name, i))
+                self.wr('\tret = save_to_numpy((void *)%s, "output/l%02d_0.npy", &np_0);\n' % (output_variable_name, i))
                 self.wr('\tif (ret != CQT_RET_OK) {\n')
                 self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
                 self.wr('\t}\n')

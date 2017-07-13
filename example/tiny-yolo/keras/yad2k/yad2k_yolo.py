@@ -245,6 +245,7 @@ def yolo_eval(yolo_outputs,
     return boxes_last, scores_last, classes_last
 
 
+
 # デバッグ用エントリー
 if __name__ == '__main__':
     classes = 20

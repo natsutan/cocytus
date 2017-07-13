@@ -18,7 +18,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
         k_max = 1;
     }
 
-    $input_type *ip = (float *)inp;
+    $input_type *ip = ($input_type *)inp;
     $output_type *op = outp;
     int idx_i;
     int idx_o;

@@ -1,5 +1,6 @@
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
 #include <math.h>
 #include "cqt.h"
 #include "cqt_net.h"

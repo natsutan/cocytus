@@ -1,4 +1,5 @@
 #include <string.h>
+#include <limits.h>
 #include <assert.h>
 #include "cqt.h"
 #include "cqt_net.h"
@@ -40,7 +41,7 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
-    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(outp[0]));
+    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(float));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){

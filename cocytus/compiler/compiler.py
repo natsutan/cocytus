@@ -223,7 +223,7 @@ class CocytusCompiler:
             if 'input_dtype' in self.config['Cocyuts']:
                 # iniファイルの設定を優先
                 type = self.config.get('Cocyuts', 'input_dtype')
-                print("INFO input dtype conv to %s", type)
+                print("INFO input dtype conv to %s" % type)
                 input_type = type
             else:
                 # iniファイルに設定が無いときはKerasの型を使う。
@@ -233,7 +233,7 @@ class CocytusCompiler:
             if 'layerout_dtype' in self.config['Cocyuts']:
                 # iniファイルの設定を優先
                 type = self.config.get('Cocyuts', 'layerout_dtype')
-                print("INFO layer output dtype conv to %s", type)
+                print("INFO layer output dtype conv to %s" % type)
                 output_type = type
 
                 if 'layerout_q' in self.config['Cocyuts']:
@@ -262,7 +262,7 @@ class CocytusCompiler:
                     if 'weight_dtype' in self.config['Cocyuts']:
                         # iniファイルの設定を優先
                         type = self.config.get('Cocyuts', 'weight_dtype')
-                        print("INFO weight dtype conv to %s", type)
+                        print("INFO weight dtype conv to %s" % type)
                         wtype = type
 
                         if 'weight_q' in  self.config['Cocyuts']:

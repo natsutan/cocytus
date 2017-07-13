@@ -78,7 +78,7 @@ def main():
     # 出力するレイヤーを選択
 
     for l in range(22):
-        layer_dump(model, x, l)
+        layer_dump(model, pre_x, l)
 
     print('finish.')
 

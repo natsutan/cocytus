@@ -73,7 +73,7 @@ class WeightConverter:
                         cl = self.compiler.get_cqt_layer_obj(name)
                         fix_q = cl.weight_q
 
-                        print("convert conv2d Q = %d" % fix_q)
+                        print("convert weight Q = %d" % fix_q)
                         # 重みの型を変換する。
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)

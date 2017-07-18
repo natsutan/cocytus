@@ -31,7 +31,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     int add_shift = lp->weight_q - lp->output_q;
-    int out_shift = lp->input_q - lp->output_q;
+    //int out_shift = lp->input_q - lp->output_q;
 
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
@@ -137,11 +137,12 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                                 o_data += (bias >> add_shift);
                         }
 
-                        if(out_shift > 0) {
-                            o_data = (o_data >> out_shift);
-                        } else if(out_shift < 0) {
-                            o_data = (o_data << (-out_shift));
-                        }
+
+                        //if(out_shift > 0) {
+                        //    o_data = (o_data >> out_shift);
+                        //} else if(out_shift < 0) {
+                        //    o_data = (o_data << (-out_shift));
+                        //}
 
 
                         //activattion

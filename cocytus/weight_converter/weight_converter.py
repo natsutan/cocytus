@@ -64,13 +64,16 @@ class WeightConverter:
                     np.save(filepath, data2, allow_pickle=False)
                     print("save %s to %s" % (weight_name, filepath))
                 elif self.dtype == 'fix16':
-                    if weight_name.find('conv2d') == 0:
-                        name = weight_name.split('/')[0]
+                    # convolutionの重みかどうかの判定。
+                    fixconv_en, fix_name = self.is_fixconv(weight_name)
+
+                    if fixconv_en:
+                        name = fix_name
 
                         cl = self.compiler.get_cqt_layer_obj(name)
                         fix_q = cl.weight_q
 
-                        print("convert conv2d Q = %d" % fix_q)
+                        print("convert weight Q = %d" % fix_q)
                         # 重みの型を変換する。
                         filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
                         filepath = os.path.join(self.output_dir, filename)
@@ -199,6 +202,42 @@ class WeightConverter:
             f.write("%3s, %3s, %3s, %s\n" % (iq, oq, wq, name))
         f.close()
 
+    def is_fixconv(self, weight_name):
+        """
+        重みの名前がconv2dかどかの判定
+        重みのフォーマットが古いバージョンかどうかで判定ルーチンを変える。
+        戻り地は、真偽とレイヤー名のペア
+        """
+        config = self.compiler.config
+        if 'weight_filename_mode' in config['Cocyuts']:
+            weight_filename_mode = int(config['Cocyuts']['weight_filename_mode'])
+        else:
+            # default
+            weight_filename_mode = 0
+
+        # バージョンによって場合分け
+        if weight_filename_mode == 0:
+            if weight_name.find('conv') != -1:
+                names = weight_name.split('_')
+                name = names[0] + '_' + names[1]
+                return True, name
+            elif weight_name.find('fc') == 0  or weight_name.find('predictions') == 0:
+                names = weight_name.split('_')
+                name = names[0]
+                return True, name
+            else:
+                return False, ''
+        else:
+            if weight_name.find('conv2d') == 0:
+                name = weight_name.split('/')[0]
+                return True, name
+            else:
+                return False, ''
+
+
+
+
+
 def calc_qpos(x, bit = 16):
     """
     引数の数値を表現できる最大のＱ位置を返す。
@@ -212,3 +251,4 @@ def calc_qpos(x, bit = 16):
         return bit - q
 
     return bit
+

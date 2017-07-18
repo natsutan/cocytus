@@ -11,6 +11,49 @@ img_file = '../img/dog.png'
 width = 224
 height = 224
 
+def layer_dump(model, x, l, postfix=''):
+    """
+    :param model: Keras model
+    :param x: input data
+    :param l: layer number
+    :param postfix: postfix for numpy file name
+    :return: None
+    """
+    get_layer_output = K.function([model.layers[0].input, K.learning_phase()],
+                                  [model.layers[l].output])
+
+    layer_output = get_layer_output([x, 0])[0]
+    last_dim = layer_output.shape[-1] - 1
+
+    if l == 0:
+        d0 = layer_output[0,:, :, 0]
+        d1 = layer_output[0,:, :, 1]
+        d2 = layer_output[0,:, :, 2]
+        np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
+        np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
+        np.save('output/l%02d%s_2.npy' % (l, postfix), d2, allow_pickle=False)
+    else:
+        d0 = layer_output[0,:, :, 0]
+        d1 = layer_output[0,:, :, 1]
+        d2 = layer_output[0,:, :, 2]
+        d3 = layer_output[0,:, :, 3]
+        d4 = layer_output[0,:, :, 4]
+        dl = layer_output[0,:, :, last_dim]
+        np.save('output/l%02d%s_all.npy' % (l, postfix), layer_output, allow_pickle=False)
+        np.save('output/l%02d%s_0.npy' % (l, postfix), d0, allow_pickle=False)
+        np.save('output/l%02d%s_1.npy' % (l, postfix), d1, allow_pickle=False)
+        np.save('output/l%02d%s_2.npy' % (l, postfix), d2, allow_pickle=False)
+        np.save('output/l%02d%s_3.npy' % (l, postfix), d3, allow_pickle=False)
+        np.save('output/l%02d%s_4.npy' % (l, postfix), d4, allow_pickle=False)
+
+        np.save('output/l%02d%s_%d.npy' % (l, postfix, last_dim), dl, allow_pickle=False)
+
+
+
+file_post_fix = ''
+
+
+
 def main():
     img = image.load_img(img_file, target_size=(224, 224))
     x = image.img_to_array(img)
@@ -33,55 +76,9 @@ def main():
     # レイヤーの出力をnumpyに変換するサンプル
 
     # 出力するレイヤーを選択
-    l = 0
-    get_layer_output = K.function([model.layers[0].input, K.learning_phase()], [model.layers[l].output])
-    layer_output = get_layer_output([pre_x, 0])
 
-    print('L ', l, ' ', layer_output[0].shape)
-
-    if l == 0:
-        arr = layer_output[0][0]
-        d0 = arr[:, :, 0]
-        d1 = arr[:, :, 1]
-        d2 = arr[:, :, 2]
-        np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
-        np.save('output/dog_l%02d_1.npy' % l, d1, allow_pickle=False)
-        np.save('output/dog_l%02d_2.npy' % l, d2, allow_pickle=False)
-
-
-    if l == 2 or l == 3:
-        arr = layer_output[0][0]
-        d0 = layer_output[0][0][:,:,0]
-        d1 = layer_output[0][0][:,:,1]
-        d2 = layer_output[0][0][:,:,63]
-        arr = layer_output[0][0]
-        d0 = layer_output[0][:]
-
-        np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
-        np.save('output/dog_l%02d_1.npy' % l, d1, allow_pickle=False)
-        np.save('output/dog_l%02d_63.npy' % l, d2, allow_pickle=False)
-
-
-    if l == 14 or l == 15 or l == 17:
-        arr = layer_output[0][0]
-        d0 = layer_output[0][0][:,:,0]
-        d1 = layer_output[0][0][:,:,1]
-        d2 = layer_output[0][0][:,:,511]
-
-        np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
-        np.save('output/dog_l%02d_1.npy' % l, d1, allow_pickle=False)
-        np.save('output/dog_l%02d_511.npy' % l, d2, allow_pickle=False)
-
-
-    if l == 19 or l == 21:
-        arr = layer_output[0][0]
-        d0 = layer_output[0][:]
-
-        np.save('output/dog_l%02d_0.npy' % l, d0, allow_pickle=False)
-
-
-    if l == 22:
-        np.save('output/pred.npy' , layer_output, allow_pickle=False)
+    for l in range(22):
+        layer_dump(model, pre_x, l)
 
     print('finish.')
 

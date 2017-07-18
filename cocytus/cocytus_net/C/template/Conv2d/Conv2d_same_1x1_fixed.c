@@ -71,7 +71,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
-                                o_data += (bias << add_shift);
+                                o_data += (bias >> add_shift);
                         }
 
 

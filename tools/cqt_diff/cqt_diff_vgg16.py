@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn
 import sys
 
-keras_dir = '../../example/tiny-yolo/keras/output/'
-cqt_dir = '../../example/tiny-yolo/c_fix/output/'
-qp_file = '../../example/tiny-yolo/c_fix/weight/'
+keras_dir = '../../example/vgg16/keras/output/'
+cqt_dir = '../../example/vgg16/c_fix/output/'
+qp_file = '../../examplevgg16/c_fix/weight/'
 
 fix16mode = True
 
@@ -27,8 +27,12 @@ def layer_dump(i, q, fnum = 3):
         graph_name = 'l%02d_%d' % (i, f)
         kname = os.path.join(keras_dir+'l%02d_%d.npy' % (i, f))
         cname = os.path.join(cqt_dir+'l%02d_%d.npy' % (i, f))
-        k_data = np.load(kname).flatten()
-        c_data = np.load(cname).flatten()
+        k_data_1 = np.load(kname)
+        c_data_1 = np.load(cname)
+        k_data = k_data_1.flatten()
+        c_data = c_data_1.flatten()
+
+
         if fix16mode:
             c_data = c_data.astype(np.float32) / (2 ** q)
 
@@ -50,8 +54,6 @@ def layer_dump(i, q, fnum = 3):
         plt.savefig(img_fname)
 
 
-
-
 def read_qpfile(odir):
     """qpファイルを読み込み、入力、出力、重みのＱ位置をリストにして返す"""
     iqs = []
@@ -70,10 +72,10 @@ def read_qpfile(odir):
     return iqs, oqs, wqs
 
 
-iqs, oqs, wqs = read_qpfile(qp_file)
+#iqs, oqs, wqs = read_qpfile(qp_file)
 
-for i in range(31):
-    layer_dump(i, oqs[i])
-
+#for i in range(31):
+#    layer_dump(i, oqs[i])
+layer_dump(15, 3)
 
 print('finish')

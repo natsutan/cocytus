@@ -8,10 +8,10 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     LY_Conv2D *cnvp;
     cnvp = lp->param_p;
 
-    $input_type *ip = ($input_type *)inp;
-    $output_type *op = outp;
-    $weight_type *wp = cnvp->weight_p;
-    $weight_type *bp = cnvp->bias_p;
+    $input_type *ip = ($input_type *)inp;  //Qpos:input_q
+    $output_type *op = outp;               //Qpos:output_q
+    $weight_type *wp = cnvp->weight_p;     //Qpos:weight_q
+    $weight_type *bp = cnvp->bias_p;       //Qpos:weight_q
 
     int fill_num = cnvp->filters;
     int input_size_x;
@@ -21,17 +21,17 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int f, x, y, n;
     int idx_i,idx_o;
-    $weight_type w_data;
-    $output_type o_data;
-    int o_data_acc;
-    int o_data_first;
-    int o_data_sat; //for saturation
+    $weight_type w_data;                 //Qpos:weight_q
+    $output_type o_data;                 //Qpos:output_q
+    int o_data_acc;                      //Qpos:input_q + weight_q
+    int o_data_first;                    //Qpos:output_q
+    int o_data_sat; //for saturation     //Qpos:output_q
 
     int max, min;
 
     int mul_shift = lp->input_q + lp->weight_q - lp->output_q;
     int add_shift = lp->weight_q - lp->output_q;
-    int out_shift = lp->input_q - lp->output_q;
+    //int out_shift = lp->input_q - lp->output_q;
 
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
@@ -134,14 +134,15 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     if(n==(input_size_num-1)) {
                         //bais
                         if(cnvp->use_bias) {
-                                o_data += (bias << add_shift);
+                                o_data += (bias >> add_shift);
                         }
 
-                        if(out_shift > 0) {
-                            o_data = (o_data >> out_shift);
-                        } else if(out_shift < 0) {
-                            o_data = (o_data << (-out_shift));
-                        }
+
+                        //if(out_shift > 0) {
+                        //    o_data = (o_data >> out_shift);
+                        //} else if(out_shift < 0) {
+                        //    o_data = (o_data << (-out_shift));
+                        //}
 
 
                         //activattion

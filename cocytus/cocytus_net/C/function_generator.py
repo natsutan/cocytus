@@ -203,13 +203,22 @@ class FunctionGenerator:
         weight_type = layer_detail.weight_dtypes[0]
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'Dense.c')
-        template_file = os.path.join(self.template_dir, 'Dense', 'Dense.c')
+
+        if self.compiler.is_fix16_mode():
+            tfile = 'Dense_fixed.c'
+        else:
+            tfile = 'Dense.c'
+
+        template_file = os.path.join(self.template_dir, 'Dense', tfile)
+
+
 
         if self.dense_first:
             with open(output_file, 'w') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include <math.h>\n')
+                fp.write('#include <limits.h>\n')
                 fp.write('#include "cqt.h"\n')
                 fp.write('#include "cqt_net.h"\n')
                 fp.write('\n')

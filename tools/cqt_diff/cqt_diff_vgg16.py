@@ -76,6 +76,6 @@ def read_qpfile(odir):
 
 #for i in range(31):
 #    layer_dump(i, oqs[i])
-layer_dump(1, 0)
+layer_dump(15, 3)
 
 print('finish')

@@ -19,6 +19,8 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     $output_type accumulator;
     $output_type sm_data;
 
+
+
     float sum = 0.0;
 
     assert((dp->activation == ACT_RELU) || (dp->activation == ACT_SOFTMAX) || (dp->activation == ACT_LINEAR));

@@ -5,7 +5,7 @@ import string
 from compiler.compiler import CQT_Dtype
 
 ctype_dic = {CQT_Dtype.FLOAT32: 'float', CQT_Dtype.UINT8: 'unsigned char',
-             CQT_Dtype.FIX16:'FIXP16', CQT_Dtype.FIX8: 'FIXP8'}
+             CQT_Dtype.FIX16:'FIXP16', CQT_Dtype.FIX8: 'FIXP8', CQT_Dtype.FLOAT16: 'FP16'}
 
 
 class FunctionGenerator:

@@ -20,6 +20,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     int f, x, y, n;
     int idx_i,idx_o;
+    int xf, yf;
     $weight_type w_data;
     $output_type o_data;
 
@@ -37,25 +38,28 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 
     memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof($output_type));
 
-    for(f=0;f<fill_num;f++) {
-        for(n=0;n<input_size_num;n++){
-            // get filter
-            for(x=0;x<3;x++) {
-                for(y=0;y<3;y++) {
-                    idx_i = (f * input_size_num * 3 * 3) + (n * 3 * 3) + (y * 3) + x;
-                    w_data = *(wp+idx_i);
-                    filter3x3[x][y] = w_data;
-                }
-            }
-            bias = *(bp+f);
+    //apply filter
+    for(y=0;y<input_size_y;y++) {
+         for(x=0;x<input_size_x;x++) {
 
-            //apply filter
-            for(y=0;y<input_size_y;y++) {
-                for(x=0;x<input_size_x;x++) {
+           	for(f=0;f<fill_num;f++) {
+                idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
+                o_data = *(op+idx_o);
+                //o_data = 0.0;
+
+                bias = *(bp+f);
+
+                for(n=0;n<input_size_num;n++){
+                    for(xf=0;xf<3;xf++) {
+                        for(yf=0;yf<3;yf++) {
+                            idx_i = (f * input_size_num * 3 * 3) + (n * 3 * 3) + (yf * 3) + xf;
+                            w_data = *(wp+idx_i);
+                            filter3x3[xf][yf] = w_data;
+                        }
+                    }
+
                     //get data
                     idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
-                    idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
-                    o_data = *(op + idx_o);
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
@@ -104,24 +108,21 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                     o_data += filter3x3[2][0] * data3x3[2][0];
                     o_data += filter3x3[2][1] * data3x3[2][1];
                     o_data += filter3x3[2][2] * data3x3[2][2];
-
-                    if(n==(input_size_num-1)) {
-                        //bais
-                        if(cnvp->use_bias) {
-                                o_data += bias;
-                        }
-
-                        //activattion
-                        if(cnvp->activation == ACT_RELU) {
-                            if(o_data < 0) {
-                                o_data = 0.0;
-                            }
-                        }
-                    }
-
-                    *(op + idx_o) = o_data;
                 }
+
+                 if(cnvp->use_bias) {
+                     o_data += bias;
+                 }
+
+                 //activattion
+                if(cnvp->activation == ACT_RELU) {
+                     if(o_data < 0) {
+                         o_data = 0.0;
+                     }
+                }
+                *(op + idx_o) = o_data;
             }
+
         }
     }
     return CQT_RET_OK;

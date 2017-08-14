@@ -309,6 +309,11 @@ class CqtGenH(CFile):
         self.wr_include('cqt_net.h')
         self.cr()
 
+        if self.compiler.is_output_channel_last():
+            self.wr('#define CQT_CHANNEL_LAST\n')
+
+        self.cr()
+
         self.wr('CQT_NET* cqt_init(void);\n')
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path);\n')
         self.wr('int cqt_run(CQT_NET* np, void *dp);\n')

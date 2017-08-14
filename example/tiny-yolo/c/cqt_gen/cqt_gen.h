@@ -8,6 +8,8 @@
 #include "cqt.h"
 #include "cqt_net.h"
 
+#define CQT_CHANNEL_LAST
+
 CQT_NET* cqt_init(void);
 int cqt_load_weight_from_files(CQT_NET* np, const char *path);
 int cqt_run(CQT_NET* np, void *dp);

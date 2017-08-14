@@ -112,7 +112,10 @@ class FunctionGenerator:
                         else:
                             conv2d_template_fname = 'Conv2d_same_3x3.c'
                     elif kernel_size == (1, 1):
-                        conv2d_template_fname = 'Conv2d_same_1x1.c'
+                        if self.compiler.is_output_channel_last():
+                            conv2d_template_fname = 'Conv2d_same_1x1_cl.c'
+                        else:
+                            conv2d_template_fname = 'Conv2d_same_1x1.c'
 
             template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 

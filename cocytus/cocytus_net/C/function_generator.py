@@ -254,7 +254,10 @@ class FunctionGenerator:
 
             template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_fixed.c')
         else:
-            template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
+            if self.compiler.is_output_channel_last():
+                template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization_cl.c')
+            else:
+                template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
 
         if self.batchnormalization_first:
             with open(output_file, 'w') as fp:

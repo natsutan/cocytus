@@ -78,9 +78,9 @@ iqs, oqs, wqs = read_qpfile(qp_file)
 #for i in range(31):
 #    layer_dump(i, oqs[i])
 
-layer_dump(3, oqs[0])
-layer_dump(4, oqs[0])
-layer_dump(5, oqs[0])
+layer_dump(29, oqs[0])
+layer_dump(30, oqs[0])
+layer_dump(31, oqs[0])
 
 
 print('finish')

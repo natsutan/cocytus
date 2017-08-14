@@ -155,7 +155,10 @@ class FunctionGenerator:
         output_type = layer_detail.output_dtypes[0]
 
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'MaxPooling2D.c')
-        template_file = os.path.join(self.template_dir, 'MaxPooling2D', 'MaxPooling2D.c')
+        if self.compiler.is_output_channel_last():
+            template_file = os.path.join(self.template_dir, 'MaxPooling2D', 'MaxPooling2D_cl.c')
+        else:
+            template_file = os.path.join(self.template_dir, 'MaxPooling2D', 'MaxPooling2D.c')
 
         if self.maxpoolong2d_first:
             with open(output_file, 'w') as fp:

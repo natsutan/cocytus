@@ -1,16 +1,11 @@
-#include <string.h>
-#include <assert.h>
-#include "cqt.h"
-#include "cqt_net.h"
 
-
-int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
+int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 {
 
     LY_MaxPooling2D *mpp;
     mpp = lp->param_p;
-    float *ip = inp;
-    float *op = outp;
+    $input_type *ip = inp;
+    $output_type *op = outp;
 
 
     assert(mpp->pool_size[0]==2);
@@ -22,8 +17,8 @@ int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
 
     int x, y, n;
     int idx_i,idx_o;
-    float data[4]; //2x2
-    float max;
+    $input_type data[4]; //2x2
+    $output_type max;
 
     bool stride_1_padding_same_mode = false;
 

@@ -9,19 +9,11 @@
 #include "inc/cqt.h"
 #include "inc/cqt_net.h"
 #include "cqt_gen/cqt_gen.h"
+#include "cqt_gen/cqt_debug.h"
 #include "ya2k_yolo.h"
 
 NUMPY_HEADER np;
 #define IMG_SIZE 416
-
-extern void layer0_output(void);
-extern void layer1_output(void);
-extern void layer2_output(void);
-extern void layer3_output(void);
-extern void layer23_output(void);
-extern void layer24_output(void);
-extern void layer30_output(void);
-extern void layer31_output(void);
 
 
 int main(void)
@@ -35,7 +27,7 @@ int main(void)
 
     //input layer の出力に画像データを格納する。
 
-    ret = load_from_numpy(input_1_output, "../img/person.jpg.npy", 3*IMG_SIZE*IMG_SIZE, &np);
+    ret = load_from_numpy(input_1_output, "../img/person.jpg_cl.npy", 3*IMG_SIZE*IMG_SIZE, &np);
     if(ret != CQT_RET_OK) {
         printf("error in load_from_numpy %d\n", ret);
         exit(1);
@@ -51,6 +43,8 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+
+    cqt_layer1_dump();
 
     // ここから領域の計算
     yolo_parameter.width = 620;
@@ -93,6 +87,8 @@ int main(void)
         printf("%s %f (%d, %d), (%d, %d)\n",
                voc_class[class], score, left, top, right, bottom);
     }
+
+
 
     return 0;
 }

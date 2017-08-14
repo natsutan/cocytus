@@ -251,13 +251,16 @@ class CFile:
         :return:
         """
         self.wr("//outputs\n")
+        channel_last = self.compiler.is_output_channel_last()
+
         layers = self.compiler.get_layers()
         for l in layers:
             name = l.name
             layer_detal = self.compiler.get_cqt_layer_obj(name)
             class_name = layer_detal.keras_layer_type
             o_shape = layer_detal.get_output_shape()
-            dim_s = dim_str_from_keras_4d_shape_output(o_shape)
+
+            dim_s = dim_str_from_keras_4d_shape_output(o_shape, cl = channel_last)
 
             o_name = layer_detal.get_output_variable_name()
             o_type = layer_detal.get_output_type_str()
@@ -815,34 +818,12 @@ class CqtDebugC(CFile):
                 self.wr("\tNUMPY_HEADER np_0 = np;\n")
                 self.wr("\tint ret;\n")
                 self.cr()
-                self.wr("\tnp_0.shape[0] = %d * %d;\n" % (size1, size2))
-                self.wr("\tnp_0.shape[1] = 0;\n")
-                self.wr("\tnp_0.shape[2] = 0;\n")
+                self.wr("\tnp_0.shape[0] = %d;\n" % size2)
+                self.wr("\tnp_0.shape[1] = %d;\n" % size1)
+                self.wr("\tnp_0.shape[2] = %d;\n" % num)
                 self.wr("\tnp_0.shape[3] = 0;\n")
                 self.cr()
-                self.wr('\tret = save_to_numpy(%s[0], "output/l%02d_0.npy", & np_0);\n' % (output_variable_name, i))
-                self.wr('\tif (ret != CQT_RET_OK) {\n')
-                self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
-                self.wr('\t}\n')
-                self.wr('\tret = save_to_numpy(%s[1], "output/l%02d_1.npy", & np_0);\n' % (output_variable_name, i))
-                self.wr('\tif (ret != CQT_RET_OK) {\n')
-                self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
-                self.wr('\t}\n')
-                if i != 0:
-                    self.wr('\tret = save_to_numpy(%s[2], "output/l%02d_2.npy", & np_0);\n' % (output_variable_name, i))
-                    self.wr('\tif (ret != CQT_RET_OK) {\n')
-                    self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
-                    self.wr('\t}\n')
-                    self.wr('\tret = save_to_numpy(%s[3], "output/l%02d_3.npy", & np_0);\n' % (output_variable_name, i))
-                    self.wr('\tif (ret != CQT_RET_OK) {\n')
-                    self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
-                    self.wr('\t}\n')
-                    self.wr('\tret = save_to_numpy(%s[4], "output/l%02d_4.npy", & np_0);\n' % (output_variable_name, i))
-                    self.wr('\tif (ret != CQT_RET_OK) {\n')
-                    self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
-                    self.wr('\t}\n')
-
-                self.wr('\tret = save_to_numpy(%s[%d], "output/l%02d_%d.npy", & np_0);\n' % (output_variable_name, num -1, i, num - 1))
+                self.wr('\tret = save_to_numpy(%s, "output/l%02d.npy", & np_0);\n' % (output_variable_name, i))
                 self.wr('\tif (ret != CQT_RET_OK) {\n')
                 self.wr('\t\tprintf("ERROR in layer0_output %d\\n", ret);\n')
                 self.wr('\t}\n')
@@ -913,9 +894,12 @@ def dim_str_from_keras_4d_shape(shape):
         return "[%d][%d][%d][%d]" % (shape[3], shape[2], shape[1], shape[0])
 
 
-def dim_str_from_keras_4d_shape_output(shape):
+def dim_str_from_keras_4d_shape_output(shape, cl = False):
     if len(shape) == 4:
-        return "[%d][%d][%d]" % (shape[3], shape[2], shape[1])
+        if cl:
+            return "[%d][%d][%d]" % (shape[1], shape[2], shape[3])
+        else:
+            return "[%d][%d][%d]" % (shape[3], shape[2], shape[1])
     elif len(shape) == 3:
         return "[%d][%d]" % (shape[2], shape[1])
     elif len(shape) == 2:

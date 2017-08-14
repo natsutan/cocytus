@@ -5,10 +5,10 @@ import seaborn
 import sys
 
 keras_dir = '../../example/tiny-yolo/keras/output/'
-cqt_dir = '../../example/tiny-yolo/c_fix/output/'
-qp_file = '../../example/tiny-yolo/c_fix/weight/'
+cqt_dir = '../../example/tiny-yolo/c/output/'
+qp_file = '../../example/tiny-yolo/c/weight/'
 
-fix16mode = True
+fix16mode = False
 
 def layer_dump(i, q, fnum = 3):
     """
@@ -26,15 +26,18 @@ def layer_dump(i, q, fnum = 3):
         plt.figure()
         graph_name = 'l%02d_%d' % (i, f)
         kname = os.path.join(keras_dir+'l%02d_%d.npy' % (i, f))
-        cname = os.path.join(cqt_dir+'l%02d_%d.npy' % (i, f))
+        cname = os.path.join(cqt_dir+'l%02d.npy' % i)
         k_data = np.load(kname).flatten()
-        c_data = np.load(cname).flatten()
+
+        c_data = np.load(cname)
+        c_data_f = c_data[:,:,f].flatten()
+
         if fix16mode:
             c_data = c_data.astype(np.float32) / (2 ** q)
 
         x = np.arange(len(k_data))
         plt.plot(x, k_data, color='b', label='Keras')
-        plt.plot(x, c_data, color='r', label='Cocytus')
+        plt.plot(x, c_data_f, color='r', label='Cocytus')
         plt.title(graph_name)
         plt.legend()
 
@@ -43,7 +46,7 @@ def layer_dump(i, q, fnum = 3):
         plt.savefig(img_fname)
 
         plt.figure()
-        plt.plot(x, k_data - c_data, color='g', label='diff')
+        plt.plot(x, k_data - c_data_f, color='g', label='diff')
         plt.title(graph_name+'diff')
         plt.legend()
         img_fname = os.path.join('output', graph_name + '_diff.png')
@@ -72,8 +75,9 @@ def read_qpfile(odir):
 
 iqs, oqs, wqs = read_qpfile(qp_file)
 
-for i in range(31):
-    layer_dump(i, oqs[i])
+#for i in range(31):
+#    layer_dump(i, oqs[i])
 
+layer_dump(1, oqs[0])
 
 print('finish')

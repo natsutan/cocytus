@@ -20,6 +20,7 @@ def main():
     image_data = np.array(resized_image, dtype='float32') / 255.0
 
     arr = np.asarray(image_data, dtype=np.float32)
+    np.save(img_file + '_cl.npy', arr, allow_pickle=False)
 
     ori_shape = arr.shape
 

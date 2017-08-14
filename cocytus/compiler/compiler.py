@@ -382,6 +382,19 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_output_channel_last(self):
+        """
+        出力データが、channel_lastの並びになっていときTrue, そうでないときはFalseを返す。
+
+        output_format=channels_last
+        :return:
+        """
+        try:
+            output_format = self.config.get('CGEN', 'output_format')
+            return output_format == 'channels_last'
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
+
 
 
 def conv_type_np_to_cqt(tf_type):

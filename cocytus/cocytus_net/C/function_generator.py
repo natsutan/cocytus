@@ -107,7 +107,10 @@ class FunctionGenerator:
                         conv2d_template_fname = 'Conv2d_same_1x1_fixed.c'
                 else:
                     if kernel_size == (3, 3):
-                        conv2d_template_fname = 'Conv2d_same_3x3.c'
+                        if self.compiler.is_output_channel_last():
+                            conv2d_template_fname = 'Conv2d_same_3x3_cl.c'
+                        else:
+                            conv2d_template_fname = 'Conv2d_same_3x3.c'
                     elif kernel_size == (1, 1):
                         conv2d_template_fname = 'Conv2d_same_1x1.c'
 

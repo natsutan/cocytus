@@ -23,6 +23,7 @@
 //型の宣言
 typedef short FIXP16;
 typedef signed char FIXP8;
+typedef short FP16;
 
 //#include "nnnet_def.h"
 //#include "numpy.h"

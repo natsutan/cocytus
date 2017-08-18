@@ -16,6 +16,7 @@ class CQT_Dtype(Enum):
     FLOAT32 = 4
     FIX8 = 5
     FIX16 = 6
+    FLOAT16 = 7
 
 
 class CocytusLayerInfo:
@@ -36,6 +37,7 @@ class CocytusLayerInfo:
         self.keras_layer_type = keras_layer_type
         self.mangle_dic = {CQT_Dtype.FLOAT32: 'f', CQT_Dtype.UINT8: 'ui8',
                            CQT_Dtype.FIX16: 'fx16', CQT_Dtype.FIX8: 'fx8',
+                           CQT_Dtype.FLOAT16: 'fp16',
                            CQT_Dtype.NONE: 'none'}
         self.input_q = 8
         self.output_q = 8
@@ -113,6 +115,8 @@ class CocytusLayerInfo:
             return 'FIXP16'
         elif type == CQT_Dtype.FIX8:
             return 'FIXP8'
+        elif type == CQT_Dtype.FLOAT16:
+            return 'FP16'
 
         raise ValueError("Error layer %s type is not supported" % type)
 
@@ -136,6 +140,8 @@ class CocytusLayerInfo:
             return 'FIXP16'
         elif type == CQT_Dtype.FIX8:
             return 'FIXP8'
+        elif type == CQT_Dtype.FLOAT16:
+            return 'FP16'
 
         raise ValueError("Error layer %s type is not supported" % type)
 
@@ -406,6 +412,6 @@ def conv_type_np_to_cqt(tf_type):
     dtype = str(tf_type)
 
     conv_dic = {"<dtype: 'float32'>": CQT_Dtype.FLOAT32, "<dtype: 'float32_ref'>": CQT_Dtype.FLOAT32,
-                "fix8" : CQT_Dtype.FIX8, "fix16": CQT_Dtype.FIX16 }
+                "fix8" : CQT_Dtype.FIX8, "fix16": CQT_Dtype.FIX16, "fp16": CQT_Dtype.FLOAT16}
 
     return conv_dic[dtype]

@@ -130,6 +130,18 @@ class WeightConverter:
                         fix16_data = cliped.astype(np.int16)
                         np.save(filepath, fix16_data, allow_pickle=False)
                         print("save %s to %s(fix16) min = %f, max = %f" % (weight_name, filepath, data2.min(), data2.max()))
+                elif self.dtype == 'fp16':
+                    # Kerasの重みをそのまま使う
+                    filename = weight_name.replace(':0', '_z').replace('/', '_') + '.npy'
+                    filepath = os.path.join(self.output_dir, filename)
+
+                    data_fp16 = data2.astype(np.float16)
+
+                    np.save(filepath, data_fp16, allow_pickle=False)
+                    print("save %s to %s(fp16)" % (weight_name, filepath))
+
+
+
                 else:
                     print("ERROR unkown weight dtype = %s" % self.dtype)
 

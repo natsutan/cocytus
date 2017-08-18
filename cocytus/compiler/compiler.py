@@ -401,6 +401,13 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_neon_enable(self):
+        try:
+            output_format = self.config.get('CGEN', 'neon')
+            return output_format == 'fp32'
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
+
 
 
 def conv_type_np_to_cqt(tf_type):

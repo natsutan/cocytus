@@ -42,6 +42,10 @@ class CGenerator:
         :return:
         """
         headers = ['cqt.h', 'cqt_type.h', 'cqt_keras.h', 'numpy.h', 'cqt_net.h']
+
+        if self.compiler.is_neon_enable():
+            headers.append('SSE2NEON.h')
+
         for h in headers:
             shutil.copy(os.path.join(template_dir, h),
                         os.path.join(target_dir, 'inc'))

@@ -150,8 +150,8 @@ void cqt_layer0_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
-	np_0.shape[1] = 416;
+	np_0.shape[0] = NEON_HTR + 416 + NEON_HPADDING_0;
+	np_0.shape[1] = 416 + NEON_VTR*3;
 	np_0.shape[2] = 3;
 	np_0.shape[3] = 0;
 
@@ -166,8 +166,8 @@ void cqt_layer1_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
-	np_0.shape[1] = 416;
+	np_0.shape[0] = NEON_HTR + 416 + NEON_HPADDING_0;
+	np_0.shape[1] = 416 + NEON_VTR*3;
 	np_0.shape[2] = 16;
 	np_0.shape[3] = 0;
 
@@ -182,8 +182,8 @@ void cqt_layer2_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
-	np_0.shape[1] = 416;
+	np_0.shape[0] = NEON_HTR + 416 + NEON_HPADDING_0;
+	np_0.shape[1] = 416 + NEON_VTR*3;
 	np_0.shape[2] = 16;
 	np_0.shape[3] = 0;
 
@@ -198,8 +198,8 @@ void cqt_layer3_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
-	np_0.shape[1] = 416;
+	np_0.shape[0] = NEON_HTR + 416 + NEON_HPADDING_0;
+	np_0.shape[1] = 416 + NEON_VTR*3;
 	np_0.shape[2] = 16;
 	np_0.shape[3] = 0;
 
@@ -214,8 +214,8 @@ void cqt_layer4_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
-	np_0.shape[1] = 208;
+	np_0.shape[0] = NEON_HTR + 208 + NEON_HPADDING_0;
+	np_0.shape[1] = 208 + NEON_VTR*3;
 	np_0.shape[2] = 16;
 	np_0.shape[3] = 0;
 
@@ -230,8 +230,8 @@ void cqt_layer5_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
-	np_0.shape[1] = 208;
+	np_0.shape[0] = NEON_HTR + 208 + NEON_HPADDING_0;
+	np_0.shape[1] = 208 + NEON_VTR*3;
 	np_0.shape[2] = 32;
 	np_0.shape[3] = 0;
 
@@ -246,8 +246,8 @@ void cqt_layer6_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
-	np_0.shape[1] = 208;
+	np_0.shape[0] = NEON_HTR + 208 + NEON_HPADDING_0;
+	np_0.shape[1] = 208 + NEON_VTR*3;
 	np_0.shape[2] = 32;
 	np_0.shape[3] = 0;
 
@@ -262,8 +262,8 @@ void cqt_layer7_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
-	np_0.shape[1] = 208;
+	np_0.shape[0] = NEON_HTR + 208 + NEON_HPADDING_0;
+	np_0.shape[1] = 208 + NEON_VTR*3;
 	np_0.shape[2] = 32;
 	np_0.shape[3] = 0;
 
@@ -278,8 +278,8 @@ void cqt_layer8_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
-	np_0.shape[1] = 104;
+	np_0.shape[0] = NEON_HTR + 104 + NEON_HPADDING_0;
+	np_0.shape[1] = 104 + NEON_VTR*3;
 	np_0.shape[2] = 32;
 	np_0.shape[3] = 0;
 
@@ -294,8 +294,8 @@ void cqt_layer9_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
-	np_0.shape[1] = 104;
+	np_0.shape[0] = NEON_HTR + 104 + NEON_HPADDING_0;
+	np_0.shape[1] = 104 + NEON_VTR*3;
 	np_0.shape[2] = 64;
 	np_0.shape[3] = 0;
 
@@ -310,8 +310,8 @@ void cqt_layer10_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
-	np_0.shape[1] = 104;
+	np_0.shape[0] = NEON_HTR + 104 + NEON_HPADDING_0;
+	np_0.shape[1] = 104 + NEON_VTR*3;
 	np_0.shape[2] = 64;
 	np_0.shape[3] = 0;
 
@@ -326,8 +326,8 @@ void cqt_layer11_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
-	np_0.shape[1] = 104;
+	np_0.shape[0] = NEON_HTR + 104 + NEON_HPADDING_0;
+	np_0.shape[1] = 104 + NEON_VTR*3;
 	np_0.shape[2] = 64;
 	np_0.shape[3] = 0;
 
@@ -342,8 +342,8 @@ void cqt_layer12_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
-	np_0.shape[1] = 52;
+	np_0.shape[0] = NEON_HTR + 52 + NEON_HPADDING_0;
+	np_0.shape[1] = 52 + NEON_VTR*3;
 	np_0.shape[2] = 64;
 	np_0.shape[3] = 0;
 
@@ -358,8 +358,8 @@ void cqt_layer13_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
-	np_0.shape[1] = 52;
+	np_0.shape[0] = NEON_HTR + 52 + NEON_HPADDING_0;
+	np_0.shape[1] = 52 + NEON_VTR*3;
 	np_0.shape[2] = 128;
 	np_0.shape[3] = 0;
 
@@ -374,8 +374,8 @@ void cqt_layer14_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
-	np_0.shape[1] = 52;
+	np_0.shape[0] = NEON_HTR + 52 + NEON_HPADDING_0;
+	np_0.shape[1] = 52 + NEON_VTR*3;
 	np_0.shape[2] = 128;
 	np_0.shape[3] = 0;
 
@@ -390,8 +390,8 @@ void cqt_layer15_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
-	np_0.shape[1] = 52;
+	np_0.shape[0] = NEON_HTR + 52 + NEON_HPADDING_0;
+	np_0.shape[1] = 52 + NEON_VTR*3;
 	np_0.shape[2] = 128;
 	np_0.shape[3] = 0;
 
@@ -406,8 +406,8 @@ void cqt_layer16_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
-	np_0.shape[1] = 26;
+	np_0.shape[0] = NEON_HTR + 26 + NEON_HPADDING_2;
+	np_0.shape[1] = 26 + NEON_VTR*3;
 	np_0.shape[2] = 128;
 	np_0.shape[3] = 0;
 
@@ -422,8 +422,8 @@ void cqt_layer17_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
-	np_0.shape[1] = 26;
+	np_0.shape[0] = NEON_HTR + 26 + NEON_HPADDING_2;
+	np_0.shape[1] = 26 + NEON_VTR*3;
 	np_0.shape[2] = 256;
 	np_0.shape[3] = 0;
 
@@ -438,8 +438,8 @@ void cqt_layer18_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
-	np_0.shape[1] = 26;
+	np_0.shape[0] = NEON_HTR + 26 + NEON_HPADDING_2;
+	np_0.shape[1] = 26 + NEON_VTR*3;
 	np_0.shape[2] = 256;
 	np_0.shape[3] = 0;
 
@@ -454,8 +454,8 @@ void cqt_layer19_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
-	np_0.shape[1] = 26;
+	np_0.shape[0] = NEON_HTR + 26 + NEON_HPADDING_2;
+	np_0.shape[1] = 26 + NEON_VTR*3;
 	np_0.shape[2] = 256;
 	np_0.shape[3] = 0;
 
@@ -470,8 +470,8 @@ void cqt_layer20_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 256;
 	np_0.shape[3] = 0;
 
@@ -486,8 +486,8 @@ void cqt_layer21_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 512;
 	np_0.shape[3] = 0;
 
@@ -502,8 +502,8 @@ void cqt_layer22_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 512;
 	np_0.shape[3] = 0;
 
@@ -518,8 +518,8 @@ void cqt_layer23_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 512;
 	np_0.shape[3] = 0;
 
@@ -534,8 +534,8 @@ void cqt_layer24_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 512;
 	np_0.shape[3] = 0;
 
@@ -550,8 +550,8 @@ void cqt_layer25_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -566,8 +566,8 @@ void cqt_layer26_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -582,8 +582,8 @@ void cqt_layer27_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -598,8 +598,8 @@ void cqt_layer28_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -614,8 +614,8 @@ void cqt_layer29_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -630,8 +630,8 @@ void cqt_layer30_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 1024;
 	np_0.shape[3] = 0;
 
@@ -646,8 +646,8 @@ void cqt_layer31_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
-	np_0.shape[1] = 13;
+	np_0.shape[0] = NEON_HTR + 13 + NEON_HPADDING_3;
+	np_0.shape[1] = 13 + NEON_VTR*3;
 	np_0.shape[2] = 125;
 	np_0.shape[3] = 0;
 

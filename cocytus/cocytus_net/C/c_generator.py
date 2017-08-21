@@ -4,6 +4,9 @@ import datetime
 from compiler.compiler import CQT_Dtype
 from cocytus_net.C.function_generator import FunctionGenerator
 
+neon_padding_list = ('NEON_HPADDING_0', 'NEON_HPADDING_3', 'NEON_HPADDING_2', 'NEON_HPADDING_1',)
+
+
 class CGenerator:
     def __init__(self, compiler):
         self.compiler = compiler
@@ -836,10 +839,20 @@ class CqtDebugC(CFile):
                 self.wr("\tNUMPY_HEADER np_0 = np;\n")
                 self.wr("\tint ret;\n")
                 self.cr()
-                self.wr("\tnp_0.shape[0] = %d;\n" % size2)
-                self.wr("\tnp_0.shape[1] = %d;\n" % size1)
-                self.wr("\tnp_0.shape[2] = %d;\n" % num)
-                self.wr("\tnp_0.shape[3] = 0;\n")
+                if not self.compiler.is_neon_enable():
+                    self.wr("\tnp_0.shape[0] = %d;\n" % size2)
+                    self.wr("\tnp_0.shape[1] = %d;\n" % size1)
+                    self.wr("\tnp_0.shape[2] = %d;\n" % num)
+                    self.wr("\tnp_0.shape[3] = 0;\n")
+                else:
+                    # neon対応
+                    padding = neon_padding_list[size2 % 4]
+                    self.wr("\tnp_0.shape[0] = NEON_HTR + %d + %s;\n" % (size2, padding))
+                    self.wr("\tnp_0.shape[1] = %d + NEON_VTR*3;\n" % size1)
+                    self.wr("\tnp_0.shape[2] = %d;\n" % num)
+                    self.wr("\tnp_0.shape[3] = 0;\n")
+
+
                 self.cr()
                 self.wr('\tret = save_to_numpy(%s, "output/l%02d.npy", & np_0);\n' % (output_variable_name, i))
                 self.wr('\tif (ret != CQT_RET_OK) {\n')
@@ -933,10 +946,9 @@ def dim_str_from_keras_4d_shape_output_noen(shape, layer_detail):
     :param layer_detail:出力レイヤ
     :return: 文字列
     '''
-    padding_list = ('NEON_HPADDING_0', 'NEON_HPADDING_3', 'NEON_HPADDING_2', 'NEON_HPADDING_1', )
 
     if len(shape) == 4:
-        padding = padding_list[shape[1] % 4]
+        padding = neon_padding_list[shape[1] % 4]
         return "[%d][%d+NEON_VTR*3][NEON_HTR+%d+%s]" % (shape[3], shape[2], shape[1], padding)
     elif len(shape) == 3:
         print("waring no support output ")

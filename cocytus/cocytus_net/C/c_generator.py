@@ -103,7 +103,6 @@ class CGenerator:
         fg.generate()
 
 
-
 class CFile:
     def __init__(self, file, compier):
         self.file = file
@@ -938,7 +937,7 @@ def dim_str_from_keras_4d_shape_output_noen(shape, layer_detail):
 
     if len(shape) == 4:
         padding = padding_list[shape[1] % 4]
-        return "[%d][%d+NEON_VTR*5][NEON_HTR+%d+%s]" % (shape[3], shape[2], shape[1], padding)
+        return "[%d][%d+NEON_VTR*3][NEON_HTR+%d+%s]" % (shape[3], shape[2], shape[1], padding)
     elif len(shape) == 3:
         print("waring no support output ")
         return "[%d][%d]" % (shape[2], shape[1])

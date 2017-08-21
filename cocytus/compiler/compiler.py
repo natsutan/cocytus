@@ -404,7 +404,7 @@ class CocytusCompiler:
     def is_neon_enable(self):
         try:
             output_format = self.config.get('CGEN', 'neon')
-            return output_format == 'fp32'
+            return True
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 

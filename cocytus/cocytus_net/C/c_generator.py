@@ -264,13 +264,23 @@ class CFile:
             class_name = layer_detal.keras_layer_type
             o_shape = layer_detal.get_output_shape()
 
-            dim_s = dim_str_from_keras_4d_shape_output(o_shape, cl = channel_last)
 
             o_name = layer_detal.get_output_variable_name()
             o_type = layer_detal.get_output_type_str()
             scope_s = add_space(scope)
 
-            self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
+            if not self.compiler.is_neon_enable():
+                # neon非対応の処理
+                dim_s = dim_str_from_keras_4d_shape_output(o_shape, cl=channel_last)
+                self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
+            else:
+                # neon 対応時に外枠を確保する。
+                # 横のサイズが4の倍数で無い時はパディングを入れる。
+                dim_s = dim_str_from_keras_4d_shape_output_noen(o_shape, layer_detal)
+
+                self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
+
+
 
     def wr_assign(self, variable_name, value, tab=1):
         """
@@ -903,7 +913,7 @@ def dim_str_from_keras_4d_shape(shape):
         return "[%d][%d][%d][%d]" % (shape[3], shape[2], shape[1], shape[0])
 
 
-def dim_str_from_keras_4d_shape_output(shape, cl = False):
+def dim_str_from_keras_4d_shape_output(shape, cl=False, neon=False):
     if len(shape) == 4:
         if cl:
             return "[%d][%d][%d]" % (shape[1], shape[2], shape[3])
@@ -914,6 +924,29 @@ def dim_str_from_keras_4d_shape_output(shape, cl = False):
     elif len(shape) == 2:
         return "[%d]" % shape[1]
     else:
+        return ""
+
+
+def dim_str_from_keras_4d_shape_output_noen(shape, layer_detail):
+    '''
+    noen対応のパデング付、出力用領域を確保する。
+    :param shape:出力の次元情報
+    :param layer_detail:出力レイヤ
+    :return: 文字列
+    '''
+    padding_list = ('NEON_HPADDING_0', 'NEON_HPADDING_3', 'NEON_HPADDING_2', 'NEON_HPADDING_1', )
+
+    if len(shape) == 4:
+        padding = padding_list[shape[1] % 4]
+        return "[%d][%d+NEON_VTR*5][NEON_HTR+%d+%s]" % (shape[3], shape[2], shape[1], padding)
+    elif len(shape) == 3:
+        print("waring no support output ")
+        return "[%d][%d]" % (shape[2], shape[1])
+    elif len(shape) == 2:
+        print("waring no support output ")
+        return "[%d]" % shape[1]
+    else:
+        print("waring no support output ")
         return ""
 
 

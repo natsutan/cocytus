@@ -28,3 +28,12 @@ typedef short FP16;
 //#include "nnnet_def.h"
 //#include "numpy.h"
 //#include "nnn_func.h"
+
+//-------------------------
+//NEON用外枠、パディング定義
+#define NEON_VTR (2)
+#define NEON_HTR (4)
+#define NEON_HPADDING_0 (0)
+#define NEON_HPADDING_1 (1)
+#define NEON_HPADDING_2 (2)
+#define NEON_HPADDING_3 (3)

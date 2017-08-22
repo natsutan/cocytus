@@ -847,9 +847,10 @@ class CqtDebugC(CFile):
                 else:
                     # neon対応
                     padding = neon_padding_list[size2 % 4]
-                    self.wr("\tnp_0.shape[0] = NEON_HTR + %d + %s;\n" % (size2, padding))
+                    # 並びが怪しい
+                    self.wr("\tnp_0.shape[0] = %d;\n" % num)
                     self.wr("\tnp_0.shape[1] = %d + NEON_VTR*3;\n" % size1)
-                    self.wr("\tnp_0.shape[2] = %d;\n" % num)
+                    self.wr("\tnp_0.shape[2] = NEON_HTR + %d + %s;\n" % (size2, padding))
                     self.wr("\tnp_0.shape[3] = 0;\n")
 
 

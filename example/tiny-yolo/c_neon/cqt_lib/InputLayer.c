@@ -42,7 +42,7 @@ int CQT_InputLayer_if_of (CQT_LAYER *np, void *inp, void *outp)
         for(y=0;y<input_size_y;y++) {
             for(x=0;x<input_size_x;x++) {
                 idx_i = f * input_size_y * input_size_x + y * input_size_x + x;
-                idx_o = f * output_size_y * output_size_x + y * output_size_x + x;
+                idx_o = f * output_size_y * output_size_x + (y + NEON_VTR) * output_size_x + (x + NEON_HTR);
                 data = *(ip + idx_i);
                 *(op + idx_o) = data;
             }

@@ -23,6 +23,9 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+    int data_size_x;
+    int data_size_y;
+    int padding;
 
     int f, x, y, n;
     int idx_i,idx_o;
@@ -32,6 +35,12 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
     input_size_num = lp->cqt_input_shape[3]; //入力の数
+
+    padding = lp->neon_padding_h;
+
+    data_size_x = NEON_HTR + input_size_x + padding; //確保している画像サイズ
+    data_size_y = input_size_y + NEON_VTR * 3; //確保している画像サイズ
+
 
     //parameter check o_data
     assert(cnvp->kernel_size[0]==3);

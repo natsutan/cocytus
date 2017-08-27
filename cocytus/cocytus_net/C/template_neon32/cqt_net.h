@@ -17,6 +17,8 @@ typedef struct cqt_net_layer_tag {
     int weight_q;
     int output_q;
     int overflow_cnt;
+    //neon only
+    int neon_padding_h;
 
     void *param_p;  //pointer to parameters
     void *data_p;   //pointer to data, eg:weights

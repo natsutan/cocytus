@@ -508,8 +508,10 @@ class CqtGenC(CFile):
             self.wr('\t%s.layer[%d].overflow_cnt = 0;\n' % (cqt_net_name, i))
 
             if self.compiler.is_neon_enable():
-                padding = neon_padding_list[i_shape[1] % 4]
-                self.wr('\t%s.layer[%d].neon_padding_h = %s;\n' % (cqt_net_name, i, padding))
+                padi = neon_padding_list[i_shape[1] % 4]
+                self.wr('\t%s.layer[%d].neon_padding_hi = %s;\n' % (cqt_net_name, i, padi))
+                pado = neon_padding_list[o_shape[1] % 4]
+                self.wr('\t%s.layer[%d].neon_padding_ho = %s;\n' % (cqt_net_name, i, pado))
 
             o_name = layer_detal.get_output_variable_name()
             self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))

@@ -13,6 +13,18 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x = lp->cqt_input_shape[1];  //入力　x size
     int input_size_y = lp->cqt_input_shape[2];  //入力　y size
     int input_size_num = lp->cqt_input_shape[3];  //入力の数
+    int output_size_x = lp->cqt_output_shape[1];  //出力　x size
+    int output_size_y = lp->cqt_output_shape[2];  //出力　y size
+
+    int input_data_size_x;
+    int input_data_size_y;
+    int input_padding;
+
+    int output_data_size_x;
+    int output_data_size_y;
+    int output_padding;
+
+
 
     int x, y, n;
     int idx_i,idx_o;
@@ -20,6 +32,15 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     $output_type max;
 
     bool stride_1_padding_same_mode = false;
+
+    input_padding = lp->neon_padding_hi;
+    input_data_size_x = NEON_HTR + input_size_x + input_padding; //確保している画像サイズ
+    input_data_size_y = input_size_y + NEON_VTR * 3; //確保している画像サイズ
+
+    output_padding = lp->neon_padding_ho;
+    output_data_size_x = NEON_HTR + output_size_x + output_padding; //確保している画像サイズ
+    output_data_size_y = output_size_y + NEON_VTR * 3; //確保している画像サイズ
+
 
     //パラメータチェック
     //strideが1x1, padding=PD_SAMEの時は別ルーチンを通る。
@@ -47,13 +68,18 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
         for(n=0;n<input_size_num;n++) {
             for(y=0;y<input_size_y;y+=2) {
                 for(x=0;x<input_size_x;x+=2){
-                    idx_i = (n * input_size_y * input_size_x) + (y * input_size_x) + x;
-                    idx_o = n * (input_size_y * input_size_x / 4) + (y * input_size_x / 4) + (x/2);
+                    idx_i = n * (input_data_size_y * input_data_size_x)
+                            + ((y + NEON_VTR) * input_data_size_x)
+                            + (x + NEON_HTR);
+
+                    idx_o = n * (output_data_size_y * output_data_size_x)
+                            + (((y/2) + NEON_VTR) * output_data_size_x)
+                            + ((x/2) + NEON_HTR) ;
 
                     data[0] = *(ip + idx_i);
                     data[1] = *(ip + idx_i + 1);
-                    data[2] = *(ip + idx_i + input_size_x);
-                    data[3] = *(ip + idx_i + input_size_x + 1);
+                    data[2] = *(ip + idx_i + input_data_size_x);
+                    data[3] = *(ip + idx_i + input_data_size_x + 1);
 
                     //max
                     max = data[0];

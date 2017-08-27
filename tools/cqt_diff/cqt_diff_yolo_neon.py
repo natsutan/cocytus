@@ -10,6 +10,8 @@ qp_file = '../../example/tiny-yolo/c_neon/weight/'
 
 fix16mode = False
 neon = True
+neon_padding_list = (0, 3, 2, 1)
+
 
 def layer_dump(i, q, fnum = 3):
     """
@@ -28,11 +30,21 @@ def layer_dump(i, q, fnum = 3):
         graph_name = 'l%02d_%d' % (i, f)
         kname = os.path.join(keras_dir+'l%02d_%d.npy' % (i, f))
         cname = os.path.join(cqt_dir+'l%02d.npy' % i)
-        k_data = np.load(kname).flatten()
+        k_data = np.load(kname)
+        k_shape = k_data.shape
+        k_data = k_data.flatten()
 
         c_data = np.load(cname)
+        xsize = c_data.shape[2]
+
+
+        padding = xsize - k_shape[1] - 4
+
         if neon:
-            c_data_f = c_data[f,2:-4,4:]
+            if padding != 0:
+                c_data_f = c_data[f,2:-4,4:-padding]
+            else:
+                c_data_f = c_data[f,2:-4,4:]
         else:
             c_data_f = c_data[f,:,:]
 

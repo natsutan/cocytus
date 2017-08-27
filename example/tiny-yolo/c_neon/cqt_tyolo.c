@@ -45,7 +45,7 @@ int main(void)
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    cqt_layer3_dump();
+    cqt_layer16_dump();
     return 0;
 
     // ここから領域の計算

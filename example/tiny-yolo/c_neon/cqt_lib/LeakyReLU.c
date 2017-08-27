@@ -19,6 +19,10 @@ int CQT_LeakyReLU_if_of(CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+    int data_size_x;
+    int data_size_y;
+    int padding;
+
 
     int n, x, y;
     int idx_i, idx_o;
@@ -27,12 +31,17 @@ int CQT_LeakyReLU_if_of(CQT_LAYER *lp, void *inp, void *outp)
     input_size_y = lp->cqt_input_shape[2];  //画像サイズ
     input_size_num = lp->cqt_input_shape[3]; //入力の数
 
+    padding = lp->neon_padding_h;
+
+    data_size_x = NEON_HTR + input_size_x + padding; //確保している画像サイズ
+    data_size_y = input_size_y + NEON_VTR * 3; //確保している画像サイズ
+
     alpha = lrp->alpha;
 
     for(n=0;n<input_size_num;n++) {
         for(y=0;y<input_size_y;y++) {
             for(x=0;x<input_size_x;x++) {
-                idx_i = (n * input_size_y * input_size_x) + (y * input_size_x) + x;
+                idx_i = n * (data_size_y * data_size_x) + ((y + NEON_VTR) * data_size_x) + (x + NEON_HTR);
                 idx_o = idx_i;
                 i_data = *(ip + idx_i);
                 if (i_data > 0.0) {

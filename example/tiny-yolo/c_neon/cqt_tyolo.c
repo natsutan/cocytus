@@ -45,7 +45,6 @@ int main(void)
         printf("ERROR in cqt_run %d\n", ret);
     }
 
-    cqt_layer0_dump();
     cqt_layer1_dump();
     return 0;
 

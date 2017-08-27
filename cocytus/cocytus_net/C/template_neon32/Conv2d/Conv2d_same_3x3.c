@@ -44,7 +44,7 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
-    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof($output_type));
+    memset(op, 0.0, fill_num * data_size_y * data_size_x * sizeof($output_type));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){
@@ -62,47 +62,26 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
             for(y=0;y<input_size_y;y++) {
                 for(x=0;x<input_size_x;x++) {
                     //get data
-                    idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
-                    idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
+                    idx_i = n * (data_size_y * data_size_x) + (((y + NEON_VTR)-1) * data_size_x) + (x + NEON_HTR);
+                    idx_o = f * (data_size_y * data_size_x) + ((y + NEON_VTR) * data_size_x) + (x + NEON_HTR);
                     o_data = *(op + idx_o);
 
                     data3x3[0][0] = *(ip + idx_i - 1);
                     data3x3[0][1] = *(ip + idx_i);
                     data3x3[0][2] = *(ip + idx_i + 1);
 
-                    idx_i = n * (input_size_y * input_size_x) + y * input_size_y + x;
+                    idx_i = n * (data_size_y * data_size_x) + (y + NEON_VTR) * data_size_x + (x + NEON_HTR);
                     data3x3[1][0] = *(ip + idx_i - 1);
                     data3x3[1][1] = *(ip + idx_i);
                     data3x3[1][2] = *(ip + idx_i + 1);
 
-                    idx_i = n * (input_size_y * input_size_x) + (y + 1) * input_size_y + x;
+                    idx_i = n * (data_size_y * data_size_x) + ((y + NEON_VTR) + 1) * data_size_x + (x + NEON_HTR);
                     data3x3[2][0] = *(ip + idx_i - 1);
                     data3x3[2][1] = *(ip + idx_i);
                     data3x3[2][2] = *(ip + idx_i + 1);
 
                     //border == 'same
-                    //zero padding
-                    if (x == 0) {
-                        data3x3[0][0] = 0;
-                        data3x3[1][0] = 0;
-                        data3x3[2][0] = 0;
-                    }
-                    if (x == (input_size_x - 1)) {
-                        data3x3[0][2] = 0;
-                        data3x3[1][2] = 0;
-                        data3x3[2][2] = 0;
-                    }
-                    if (y == 0) {
-                        data3x3[0][0] = 0;
-                        data3x3[0][1] = 0;
-                        data3x3[0][2] = 0;
-                    }
-                    if (y == (input_size_y - 1)) {
-                        data3x3[2][0] = 0;
-                        data3x3[2][1] = 0;
-                        data3x3[2][2] = 0;
-                    }
-
+                    //入力データ側で０パディングをしてあるため、パディング処理不要
 
                     o_data += filter3x3[0][0] * data3x3[0][0];
                     o_data += filter3x3[0][1] * data3x3[0][1];

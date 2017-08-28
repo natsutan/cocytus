@@ -44,10 +44,7 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
-
-    cqt_layerdump(23);
-    cqt_layerdump(24);
-    return 0;
+    
 
     // ここから領域の計算
     yolo_parameter.width = 620;

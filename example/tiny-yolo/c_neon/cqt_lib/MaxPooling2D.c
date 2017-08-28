@@ -110,7 +110,7 @@ int CQT_MaxPooling2D_if_of (CQT_LAYER *lp, void *inp, void *outp)
                             + (x + NEON_HTR);
 
                     idx_o = idx_i;
-                    
+
                     if(y==(input_size_y-1)) {
                         //一番下
                         data[0] = *(ip + idx_i);

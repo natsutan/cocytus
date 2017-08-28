@@ -22,6 +22,9 @@ int CQT_Conv2D_same_1x1_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     int input_size_x;
     int input_size_y;
     int input_size_num;
+    int data_size_x;
+    int data_size_y;
+    int padding;
 
     int f, x, y, n;
     int idx_i,idx_o, idx_w;
@@ -39,7 +42,12 @@ int CQT_Conv2D_same_1x1_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
-    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(float));
+    padding = lp->neon_padding_hi;
+
+    data_size_x = NEON_HTR + input_size_x + padding; //確保している画像サイズ
+    data_size_y = input_size_y + NEON_VTR * 3; //確保している画像サイズ
+
+    memset(op, 0.0, fill_num * data_size_y * data_size_x * sizeof(float));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){
@@ -51,8 +59,8 @@ int CQT_Conv2D_same_1x1_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
             for(y=0;y<input_size_y;y++) {
                 for(x=0;x<input_size_x;x++) {
                     //get data
-                    idx_i = n * (input_size_y * input_size_x) + (y * input_size_y) + x;
-                    idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
+                    idx_i = n * (data_size_y * data_size_x) + ((y + NEON_VTR) * data_size_x) + (x + NEON_HTR);
+                    idx_o = f * (data_size_y * data_size_x) + ((y + NEON_VTR) * data_size_x) + (x + NEON_HTR);
 
                     o_data = *(op + idx_o);
                     data = *(ip + idx_i);

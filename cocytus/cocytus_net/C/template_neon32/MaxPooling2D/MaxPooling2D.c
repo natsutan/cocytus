@@ -24,8 +24,6 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     int output_data_size_y;
     int output_padding;
 
-
-
     int x, y, n;
     int idx_i,idx_o;
     $input_type data[4]; //2x2
@@ -40,7 +38,6 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
     output_padding = lp->neon_padding_ho;
     output_data_size_x = NEON_HTR + output_size_x + output_padding; //確保している画像サイズ
     output_data_size_y = output_size_y + NEON_VTR * 3; //確保している画像サイズ
-
 
     //パラメータチェック
     //strideが1x1, padding=PD_SAMEの時は別ルーチンを通る。
@@ -103,7 +100,10 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
         for(n=0;n<input_size_num;n++) {
             for(y=0;y<input_size_y;y++) {
                 for(x=0;x<input_size_x;x++){
-                    idx_i = (n * input_size_y * input_size_x) + (y * input_size_x) + x;
+                    idx_i = n * (input_data_size_y * input_data_size_x)
+                            + ((y + NEON_VTR) * input_data_size_x)
+                            + (x + NEON_HTR);
+
                     idx_o = idx_i;
 
                     if(y==(input_size_y-1)) {
@@ -120,14 +120,14 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
                         //右端
                         data[0] = *(ip + idx_i);
                         data[1] = data[0];
-                        data[2] = *(ip + idx_i + input_size_x);
+                        data[2] = *(ip + idx_i + input_data_size_x);
                         data[3] = data[0];
                     } else {
                         //通常の処理
                         data[0] = *(ip + idx_i);
                         data[1] = *(ip + idx_i + 1);
-                        data[2] = *(ip + idx_i + input_size_x);
-                        data[3] = *(ip + idx_i + input_size_x + 1);
+                        data[2] = *(ip + idx_i + input_data_size_x);
+                        data[3] = *(ip + idx_i + input_data_size_x + 1);
                     }
 
                     //max

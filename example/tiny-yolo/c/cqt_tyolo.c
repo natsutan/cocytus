@@ -27,7 +27,7 @@ int main(void)
 
     //input layer の出力に画像データを格納する。
 
-    ret = load_from_numpy(input_1_output, "../img/person.jpg_cl.npy", 3*IMG_SIZE*IMG_SIZE, &np);
+    ret = load_from_numpy(input_1_output, "../img/person.jpg.npy", 3*IMG_SIZE*IMG_SIZE, &np);
     if(ret != CQT_RET_OK) {
         printf("error in load_from_numpy %d\n", ret);
         exit(1);

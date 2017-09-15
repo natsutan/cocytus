@@ -2024,7 +2024,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_1
 	cqt_process = 1;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[1]), input_1_output, conv2d_1_output);
+	ret = CQT_conv2d_1_3x3(&(g_cqt_sequential_1.layer[1]), input_1_output, conv2d_1_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2052,7 +2052,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_2
 	cqt_process = 5;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[5]), max_pooling2d_1_output, conv2d_2_output);
+	ret = CQT_conv2d_2_3x3(&(g_cqt_sequential_1.layer[5]), max_pooling2d_1_output, conv2d_2_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2080,7 +2080,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_3
 	cqt_process = 9;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[9]), max_pooling2d_2_output, conv2d_3_output);
+	ret = CQT_conv2d_3_3x3(&(g_cqt_sequential_1.layer[9]), max_pooling2d_2_output, conv2d_3_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2108,7 +2108,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_4
 	cqt_process = 13;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[13]), max_pooling2d_3_output, conv2d_4_output);
+	ret = CQT_conv2d_4_3x3(&(g_cqt_sequential_1.layer[13]), max_pooling2d_3_output, conv2d_4_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2136,7 +2136,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_5
 	cqt_process = 17;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[17]), max_pooling2d_4_output, conv2d_5_output);
+	ret = CQT_conv2d_5_3x3(&(g_cqt_sequential_1.layer[17]), max_pooling2d_4_output, conv2d_5_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2164,7 +2164,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_6
 	cqt_process = 21;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[21]), max_pooling2d_5_output, conv2d_6_output);
+	ret = CQT_conv2d_6_3x3(&(g_cqt_sequential_1.layer[21]), max_pooling2d_5_output, conv2d_6_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2192,7 +2192,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_7
 	cqt_process = 25;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[25]), max_pooling2d_6_output, conv2d_7_output);
+	ret = CQT_conv2d_7_3x3(&(g_cqt_sequential_1.layer[25]), max_pooling2d_6_output, conv2d_7_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}
@@ -2213,7 +2213,7 @@ int cqt_run(CQT_NET* np, void *dp) {
 
 	//conv2d_8
 	cqt_process = 28;
-	ret = CQT_Conv2D_same_3x3_if_wf_of(&(g_cqt_sequential_1.layer[28]), leaky_re_lu_7_output, conv2d_8_output);
+	ret = CQT_conv2d_8_3x3(&(g_cqt_sequential_1.layer[28]), leaky_re_lu_7_output, conv2d_8_output);
 	if(ret != CQT_RET_OK){
 		return ret;
 	}

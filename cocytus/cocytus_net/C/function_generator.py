@@ -3,6 +3,7 @@ import os
 import string
 
 from compiler.compiler import CQT_Dtype
+from cocytus_net.sdsoc import sdsoc_gen
 
 ctype_dic = {CQT_Dtype.FLOAT32: 'float', CQT_Dtype.UINT8: 'unsigned char',
              CQT_Dtype.FIX16:'FIXP16', CQT_Dtype.FIX8: 'FIXP8', CQT_Dtype.FLOAT16: 'FP16'}
@@ -22,6 +23,7 @@ class FunctionGenerator:
         self.dense_first = True
         self.batchnormalization_first = True
         self.leakyrelu_first = True
+        self.sdsoc_gen = sdsoc_gen.SDSOC_gen()
 
     def get_config(self):
         """
@@ -40,26 +42,36 @@ class FunctionGenerator:
         for i, l in enumerate(layers):
             name = l.name
             config = l.get_config()
-            layer_detal = self.compiler.get_cqt_layer_obj(name)
-            class_name = layer_detal.keras_layer_type
+            layer_detail = self.compiler.get_cqt_layer_obj(name)
+            class_name = layer_detail.keras_layer_type
 
-            func_name = layer_detal.make_func_name()
+            func_name = layer_detail.make_func_name()
+
+            # fpga
+            if class_name == 'Conv2D':
+                kernel_size = layer_detail.l.kernel_size
+                padding = layer_detail.l.padding
+                if kernel_size == (3, 3) and padding == 'same' and self.compiler.is_target_sdsoc():
+                    output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_3x3.c')
+                    self.sdsoc_gen.generate(output_file, layer_detail, l)
+                    continue
+
             if not func_name in func_list:
                 print('generating int %s(CQT_LAYER *lp, void *inp, void *outp);' % func_name)
                 if class_name == 'InputLayer':
-                    self.generate_input_layer(layer_detal)
+                    self.generate_input_layer(layer_detail)
                 elif class_name == 'Conv2D':
-                    self.generate_conv2d(layer_detal)
+                    self.generate_conv2d(layer_detail)
                 elif class_name == 'MaxPooling2D':
-                    self.generate_maxpooling2d(layer_detal)
+                    self.generate_maxpooling2d(layer_detail)
                 elif class_name == 'Flatten':
-                    self.generate_flatten(layer_detal)
+                    self.generate_flatten(layer_detail)
                 elif class_name == 'Dense':
-                    self.generate_dense(layer_detal)
+                    self.generate_dense(layer_detail)
                 elif class_name == 'BatchNormalization':
-                    self.generate_batchnormalization(layer_detal)
+                    self.generate_batchnormalization(layer_detail)
                 elif class_name == 'LeakyReLU':
-                    self.generate_leakyrelu(layer_detal)
+                    self.generate_leakyrelu(layer_detail)
 
                 func_list.append(func_name)
 
@@ -153,6 +165,8 @@ class FunctionGenerator:
                                     func_name_hw=func_name+'_hw'
                                     )
             fpout.write(func_str)
+
+
 
     def generate_maxpooling2d(self, layer_detail):
 

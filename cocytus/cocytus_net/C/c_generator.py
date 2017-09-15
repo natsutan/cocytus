@@ -357,8 +357,6 @@ class CqtGenH(CFile):
         self.wr_output_definition(scope='extern', conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
 
-        if self.compiler.is_target_sdsoc():
-            self.wr('#define MAX_OUT_SIZE (%d)\n' % self.compiler.get_max_out_size())
 
         self.fp.write('\n')
 
@@ -774,7 +772,15 @@ class CqtGenC(CFile):
 
             inp = self.compiler.get_prev_layer_output_name(i)
             outp = layer_detal.get_output_variable_name()
+
             func_name = layer_detal.make_func_name()
+
+            # FPGA用に関数を分ける
+            if class_name == 'Conv2D' and self.compiler.is_target_sdsoc():
+                size = l.kernel_size
+                if size == (3, 3):
+                    func_name = 'CQT_' + name + "_3x3"
+
             self.wr('\t//%s\n' % name)
             self.wr('\tcqt_process = %d;\n' % i)
             self.wr("\tret = %s(&(%s.layer[%d]), %s, %s);\n" % (func_name, cqt_net_name, i, inp, outp))
@@ -832,6 +838,13 @@ class CqtLibH(CFile):
             class_name = layer_detal.keras_layer_type
 
             func_name = layer_detal.make_func_name()
+
+            # FPGA用に関数を分ける
+            if class_name == 'Conv2D' and self.compiler.is_target_sdsoc():
+                size = l.kernel_size
+                if size == (3, 3):
+                    func_name = 'CQT_' + name + "_3x3"
+                    
             if not func_name in func_list:
                 self.wr('int %s(CQT_LAYER *lp, void *inp, void *outp);\n' % func_name)
                 func_list.append(func_name)

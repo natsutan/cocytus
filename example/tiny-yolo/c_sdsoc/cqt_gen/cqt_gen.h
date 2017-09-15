@@ -189,4 +189,5 @@ extern float *batch_normalization_8_output; //batch_normalization_8_output[1024]
 extern float *leaky_re_lu_8_output; //leaky_re_lu_8_output[1024][13][13]
 extern float *conv2d_9_output; //conv2d_9_output[125][13][13]
 
+#define MAX_OUT_SIZE (2768896)
 

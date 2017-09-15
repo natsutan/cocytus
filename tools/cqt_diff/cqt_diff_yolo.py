@@ -5,8 +5,8 @@ import seaborn
 import sys
 
 keras_dir = '../../example/tiny-yolo/keras/output/'
-cqt_dir = '../../example/tiny-yolo/c/output/'
-qp_file = '../../example/tiny-yolo/c/weight/'
+cqt_dir = '../../example/tiny-yolo/c_sdsoc/output/'
+qp_file = '../../example/tiny-yolo/c_sdsoc/weight/'
 
 fix16mode = False
 
@@ -30,7 +30,10 @@ def layer_dump(i, q, fnum = 3):
         k_data = np.load(kname).flatten()
 
         c_data = np.load(cname)
-        c_data_f = c_data[:,:,f].flatten()
+        c_data_tmp = c_data[f,:,:]
+        c_data_f = c_data_tmp.flatten()
+
+        diff_x = k_data - c_data_f
 
         if fix16mode:
             c_data = c_data.astype(np.float32) / (2 ** q)
@@ -45,8 +48,9 @@ def layer_dump(i, q, fnum = 3):
         print('save %s' % img_fname)
         plt.savefig(img_fname)
 
+        s, e = 0, 1000
         plt.figure()
-        plt.plot(x, k_data - c_data_f, color='g', label='diff')
+        plt.plot(x[s:e], diff_x[s:e], color='g', label='diff')
         plt.title(graph_name+'diff')
         plt.legend()
         img_fname = os.path.join('output', graph_name + '_diff.png')
@@ -78,8 +82,7 @@ iqs, oqs, wqs = read_qpfile(qp_file)
 #for i in range(31):
 #    layer_dump(i, oqs[i])
 
-layer_dump(29, oqs[0])
-layer_dump(30, oqs[0])
+#layer_dump(0, oqs[0])
 layer_dump(31, oqs[0])
 
 

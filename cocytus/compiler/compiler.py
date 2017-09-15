@@ -417,10 +417,32 @@ class CocytusCompiler:
             return False
 
     def get_max_out_size(self):
+        if self.max_out_size == 0:
+            self.calc_max_out_size()
+
         return self.max_out_size
 
-    def update_max_out_size(self, x):
-        self.max_out_size = max([self.max_out_size, x])
+    def calc_max_out_size(self):
+        layers = self.get_layers()
+
+        for (i, l) in enumerate(layers):
+            name = l.name
+            layer_detal = self.get_cqt_layer_obj(name)
+
+            # Noneを0に置き換え
+            o_shape = [0 if x is None else x for x in layer_detal.get_output_shape()]
+            if len(o_shape) == 4:
+                out_size = o_shape[3] * o_shape[2] * o_shape[1]
+            elif len(o_shape) == 3:
+                out_size = o_shape[2] * o_shape[1]
+            elif len(o_shape) == 2:
+                out_size = o_shape[1]
+            elif len(o_shape) == 1:
+                out_size = o_shape[0]
+
+            if self.max_out_size < out_size:
+                self.max_out_size = out_size
+
 
 
 def conv_type_np_to_cqt(tf_type):

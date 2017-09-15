@@ -150,9 +150,9 @@ void cqt_layer0_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
+	np_0.shape[0] = 3;
 	np_0.shape[1] = 416;
-	np_0.shape[2] = 3;
+	np_0.shape[2] = 416;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(input_1_output, "output/l00.npy", & np_0);
@@ -166,9 +166,9 @@ void cqt_layer1_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
+	np_0.shape[0] = 16;
 	np_0.shape[1] = 416;
-	np_0.shape[2] = 16;
+	np_0.shape[2] = 416;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_1_output, "output/l01.npy", & np_0);
@@ -182,9 +182,9 @@ void cqt_layer2_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
+	np_0.shape[0] = 16;
 	np_0.shape[1] = 416;
-	np_0.shape[2] = 16;
+	np_0.shape[2] = 416;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_1_output, "output/l02.npy", & np_0);
@@ -198,9 +198,9 @@ void cqt_layer3_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 416;
+	np_0.shape[0] = 16;
 	np_0.shape[1] = 416;
-	np_0.shape[2] = 16;
+	np_0.shape[2] = 416;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_1_output, "output/l03.npy", & np_0);
@@ -214,9 +214,9 @@ void cqt_layer4_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
+	np_0.shape[0] = 16;
 	np_0.shape[1] = 208;
-	np_0.shape[2] = 16;
+	np_0.shape[2] = 208;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_1_output, "output/l04.npy", & np_0);
@@ -230,9 +230,9 @@ void cqt_layer5_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
+	np_0.shape[0] = 32;
 	np_0.shape[1] = 208;
-	np_0.shape[2] = 32;
+	np_0.shape[2] = 208;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_2_output, "output/l05.npy", & np_0);
@@ -246,9 +246,9 @@ void cqt_layer6_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
+	np_0.shape[0] = 32;
 	np_0.shape[1] = 208;
-	np_0.shape[2] = 32;
+	np_0.shape[2] = 208;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_2_output, "output/l06.npy", & np_0);
@@ -262,9 +262,9 @@ void cqt_layer7_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 208;
+	np_0.shape[0] = 32;
 	np_0.shape[1] = 208;
-	np_0.shape[2] = 32;
+	np_0.shape[2] = 208;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_2_output, "output/l07.npy", & np_0);
@@ -278,9 +278,9 @@ void cqt_layer8_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
+	np_0.shape[0] = 32;
 	np_0.shape[1] = 104;
-	np_0.shape[2] = 32;
+	np_0.shape[2] = 104;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_2_output, "output/l08.npy", & np_0);
@@ -294,9 +294,9 @@ void cqt_layer9_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
+	np_0.shape[0] = 64;
 	np_0.shape[1] = 104;
-	np_0.shape[2] = 64;
+	np_0.shape[2] = 104;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_3_output, "output/l09.npy", & np_0);
@@ -310,9 +310,9 @@ void cqt_layer10_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
+	np_0.shape[0] = 64;
 	np_0.shape[1] = 104;
-	np_0.shape[2] = 64;
+	np_0.shape[2] = 104;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_3_output, "output/l10.npy", & np_0);
@@ -326,9 +326,9 @@ void cqt_layer11_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 104;
+	np_0.shape[0] = 64;
 	np_0.shape[1] = 104;
-	np_0.shape[2] = 64;
+	np_0.shape[2] = 104;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_3_output, "output/l11.npy", & np_0);
@@ -342,9 +342,9 @@ void cqt_layer12_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
+	np_0.shape[0] = 64;
 	np_0.shape[1] = 52;
-	np_0.shape[2] = 64;
+	np_0.shape[2] = 52;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_3_output, "output/l12.npy", & np_0);
@@ -358,9 +358,9 @@ void cqt_layer13_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
+	np_0.shape[0] = 128;
 	np_0.shape[1] = 52;
-	np_0.shape[2] = 128;
+	np_0.shape[2] = 52;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_4_output, "output/l13.npy", & np_0);
@@ -374,9 +374,9 @@ void cqt_layer14_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
+	np_0.shape[0] = 128;
 	np_0.shape[1] = 52;
-	np_0.shape[2] = 128;
+	np_0.shape[2] = 52;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_4_output, "output/l14.npy", & np_0);
@@ -390,9 +390,9 @@ void cqt_layer15_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 52;
+	np_0.shape[0] = 128;
 	np_0.shape[1] = 52;
-	np_0.shape[2] = 128;
+	np_0.shape[2] = 52;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_4_output, "output/l15.npy", & np_0);
@@ -406,9 +406,9 @@ void cqt_layer16_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
+	np_0.shape[0] = 128;
 	np_0.shape[1] = 26;
-	np_0.shape[2] = 128;
+	np_0.shape[2] = 26;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_4_output, "output/l16.npy", & np_0);
@@ -422,9 +422,9 @@ void cqt_layer17_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
+	np_0.shape[0] = 256;
 	np_0.shape[1] = 26;
-	np_0.shape[2] = 256;
+	np_0.shape[2] = 26;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_5_output, "output/l17.npy", & np_0);
@@ -438,9 +438,9 @@ void cqt_layer18_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
+	np_0.shape[0] = 256;
 	np_0.shape[1] = 26;
-	np_0.shape[2] = 256;
+	np_0.shape[2] = 26;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_5_output, "output/l18.npy", & np_0);
@@ -454,9 +454,9 @@ void cqt_layer19_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 26;
+	np_0.shape[0] = 256;
 	np_0.shape[1] = 26;
-	np_0.shape[2] = 256;
+	np_0.shape[2] = 26;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_5_output, "output/l19.npy", & np_0);
@@ -470,9 +470,9 @@ void cqt_layer20_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 256;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 256;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_5_output, "output/l20.npy", & np_0);
@@ -486,9 +486,9 @@ void cqt_layer21_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 512;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 512;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_6_output, "output/l21.npy", & np_0);
@@ -502,9 +502,9 @@ void cqt_layer22_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 512;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 512;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_6_output, "output/l22.npy", & np_0);
@@ -518,9 +518,9 @@ void cqt_layer23_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 512;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 512;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_6_output, "output/l23.npy", & np_0);
@@ -534,9 +534,9 @@ void cqt_layer24_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 512;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 512;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(max_pooling2d_6_output, "output/l24.npy", & np_0);
@@ -550,9 +550,9 @@ void cqt_layer25_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_7_output, "output/l25.npy", & np_0);
@@ -566,9 +566,9 @@ void cqt_layer26_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_7_output, "output/l26.npy", & np_0);
@@ -582,9 +582,9 @@ void cqt_layer27_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_7_output, "output/l27.npy", & np_0);
@@ -598,9 +598,9 @@ void cqt_layer28_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_8_output, "output/l28.npy", & np_0);
@@ -614,9 +614,9 @@ void cqt_layer29_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(batch_normalization_8_output, "output/l29.npy", & np_0);
@@ -630,9 +630,9 @@ void cqt_layer30_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 1024;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 1024;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(leaky_re_lu_8_output, "output/l30.npy", & np_0);
@@ -646,9 +646,9 @@ void cqt_layer31_dump(void)
 	NUMPY_HEADER np_0 = np;
 	int ret;
 
-	np_0.shape[0] = 13;
+	np_0.shape[0] = 125;
 	np_0.shape[1] = 13;
-	np_0.shape[2] = 125;
+	np_0.shape[2] = 13;
 	np_0.shape[3] = 0;
 
 	ret = save_to_numpy(conv2d_9_output, "output/l31.npy", & np_0);

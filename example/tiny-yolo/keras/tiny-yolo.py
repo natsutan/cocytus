@@ -11,9 +11,9 @@ from PIL import Image, ImageDraw
 
 from yad2k.yad2k_yolo import yolo_eval, voc_label
 
-#img_file = '../img/person.jpg'
+img_file = '../img/person.jpg'
 #img_file = '../img/dog.jpg'
-img_file = '../img/000058.jpg'
+#img_file = '../img/000058.jpg'
 
 # 入力サイズ等はここを変更
 width = 416

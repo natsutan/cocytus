@@ -59,26 +59,67 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
             for(y=0;y<input_size_y;y++) {
                 for(x=0;x<input_size_x;x++) {
                     //get data
-                    idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
                     idx_o = f * (input_size_y * input_size_x) + (y * input_size_x) + x;
+
+
+
+                    if(y != 0) {
+                        idx_i = n * (input_size_y * input_size_x) + ((y-1) * input_size_x) + x;
+                    } else {
+                        idx_i = n * (input_size_y * input_size_x) + (y * input_size_x) + x;
+                    }
+
                     o_data = *(op + idx_o);
 
-                    data3x3[0][0] = *(ip + idx_i - 1);
+                    if(x != 0) {
+                        data3x3[0][0] = *(ip + idx_i - 1);
+                    } else {
+                        data3x3[0][0] = 0.0;
+                    }
+
                     data3x3[0][1] = *(ip + idx_i);
-                    data3x3[0][2] = *(ip + idx_i + 1);
 
+                    if (x != (input_size_x - 1)) {
+                        data3x3[0][2] = *(ip + idx_i + 1);
+                    } else {
+                        data3x3[0][2] = 0.0;
+                    }
                     idx_i = n * (input_size_y * input_size_x) + y * input_size_y + x;
-                    data3x3[1][0] = *(ip + idx_i - 1);
-                    data3x3[1][1] = *(ip + idx_i);
-                    data3x3[1][2] = *(ip + idx_i + 1);
+                    if(x != 0) {
+                        data3x3[1][0] = *(ip + idx_i - 1);
+                    } else {
+                        data3x3[1][0] = 0.0;
+                    }
 
-                    idx_i = n * (input_size_y * input_size_x) + (y + 1) * input_size_y + x;
-                    data3x3[2][0] = *(ip + idx_i - 1);
+                    data3x3[1][1] = *(ip + idx_i);
+                    if (x != (input_size_x - 1)) {
+                        data3x3[1][2] = *(ip + idx_i + 1);
+                    } else {
+                        data3x3[1][2] = 0.0;
+                    }
+
+                    if(y != (input_size_y - 1)) {
+                        idx_i = n * (input_size_y * input_size_x) + (y + 1) * input_size_y + x;
+                    } else {
+                        idx_i = n * (input_size_y * input_size_x) + y * input_size_y + x;
+                    }
+
+                    if (x != 0) {
+                        data3x3[2][0] = *(ip + idx_i - 1);
+                    } else {
+                        data3x3[2][0] = 0.0;
+                    }
                     data3x3[2][1] = *(ip + idx_i);
-                    data3x3[2][2] = *(ip + idx_i + 1);
+
+                    if (x != (input_size_x - 1)) {
+                        data3x3[2][2] = *(ip + idx_i + 1);
+                    } else {
+                        data3x3[2][2] = 0.0;
+                    }
 
                     //border == 'same
                     //zero padding
+                    #if 0
                     if (x == 0) {
                         data3x3[0][0] = 0;
                         data3x3[1][0] = 0;
@@ -89,6 +130,7 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                         data3x3[1][2] = 0;
                         data3x3[2][2] = 0;
                     }
+                    #endif
                     if (y == 0) {
                         data3x3[0][0] = 0;
                         data3x3[0][1] = 0;
@@ -99,7 +141,6 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
                         data3x3[2][1] = 0;
                         data3x3[2][2] = 0;
                     }
-
 
                     o_data += filter3x3[0][0] * data3x3[0][0];
                     o_data += filter3x3[0][1] * data3x3[0][1];

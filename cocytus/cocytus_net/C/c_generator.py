@@ -357,6 +357,9 @@ class CqtGenH(CFile):
         self.wr_output_definition(scope='extern', conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
 
+        if self.compiler.is_target_sdsoc():
+            self.wr('#define MAX_OUT_SIZE (%d)\n' % self.compiler.get_max_out_size())
+
         self.fp.write('\n')
 
 
@@ -552,7 +555,6 @@ class CqtGenC(CFile):
                 self.wr('\t\treturn NULL;\n')
                 self.wr('\t}\n')
                 self.cr();
-                self.compiler.update_max_out_size(out_size)
 
 
             self.cr()
@@ -905,9 +907,9 @@ class CqtDebugC(CFile):
                 self.wr("\tint ret;\n")
                 self.cr()
                 if not self.compiler.is_neon_enable():
-                    self.wr("\tnp_0.shape[0] = %d;\n" % size2)
+                    self.wr("\tnp_0.shape[0] = %d;\n" % num)
                     self.wr("\tnp_0.shape[1] = %d;\n" % size1)
-                    self.wr("\tnp_0.shape[2] = %d;\n" % num)
+                    self.wr("\tnp_0.shape[2] = %d;\n" % size2)
                     self.wr("\tnp_0.shape[3] = 0;\n")
                 else:
                     # neon対応
@@ -976,7 +978,7 @@ def create_c_dir(tdir):
     :param tdir: str
     :return:
     """
-    dirs = ['inc', 'cqt_gen', 'cqt_lib', 'weight']
+    dirs = ['inc', 'cqt_gen', 'cqt_lib', 'weight', 'output']
     for d in dirs:
         path = os.path.join(tdir, d)
         if not os.path.isdir(path):

@@ -23,6 +23,10 @@ int main(void)
     YOLO_PARAM  yolo_parameter;
 
     tyolo_p = cqt_init();
+    if(tyolo_p==NULL) {
+        printf("malloc error\n");
+        exit(1);
+    }
     printf("hello cqt\n");
 
     //input layer の出力に画像データを格納する。
@@ -43,6 +47,8 @@ int main(void)
     if(ret != CQT_RET_OK){
         printf("ERROR in cqt_run %d\n", ret);
     }
+    //cqt_layer0_dump();
+    cqt_layer31_dump();
 
 
     // ここから領域の計算
@@ -87,7 +93,7 @@ int main(void)
                voc_class[class], score, left, top, right, bottom);
     }
 
-
+    cqt_close(tyolo_p);
 
     return 0;
 }

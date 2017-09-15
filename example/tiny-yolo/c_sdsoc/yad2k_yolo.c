@@ -257,29 +257,36 @@ void yolo_head(void *predp)
                 //yoloの出力結果にアクセスするときは、idx_kを使う。
                 idx_k = k * (YOLO_CLASSES + 5);
 
+                //conv2d_9_output[125][13][13]
                 //box_xy = sigmoid(feats[..., :2])
-                data0 = conv2d_9_output[idx_k+0][row][col];
-                data1 = conv2d_9_output[idx_k+1][row][col];
+                //data0 = conv2d_9_output[idx_k+0][row][col];
+                //data1 = conv2d_9_output[idx_k+1][row][col];
+                data0 = conv2d_9_output[((idx_k+0) * 13 * 13) + (row * 13) + col];
+                data1 = conv2d_9_output[((idx_k+1) * 13 * 13) + (row * 13) + col];
 
                 box_xy[row][col][k][0] = (sigmoid(data0) + col) / YOLO_REGION_SIZE;
                 box_xy[row][col][k][1] = (sigmoid(data1) + row) / YOLO_REGION_SIZE;
 
                 //box_wh = np.exp(feats[..., 2:4])
-                data0 = conv2d_9_output[idx_k+2][row][col];
-                data1 = conv2d_9_output[idx_k+3][row][col];
+                //data0 = conv2d_9_output[idx_k+2][row][col];
+                //data1 = conv2d_9_output[idx_k+3][row][col];
+                data0 = conv2d_9_output[((idx_k+2) * 13 * 13) + (row * 13) + col];
+                data1 = conv2d_9_output[((idx_k+3) * 13 * 13) + (row * 13) + col];
 
                 box_wh[row][col][k][0] = (float) ((exp(data0) * voc_anchors[k][0]) / YOLO_REGION_SIZE);
                 box_wh[row][col][k][1] = (float) ((exp(data1) * voc_anchors[k][1]) / YOLO_REGION_SIZE);
 
                 //box_confidence = sigmoid(feats[..., 4:5])
-                data0 = conv2d_9_output[idx_k+4][row][col];
+                //data0 = conv2d_9_output[idx_k+4][row][col];
+                data0 = conv2d_9_output[((idx_k+4) * 13 * 13) + (row * 13) + col];
                 box_confidence[row][col][k] = sigmoid(data0);
 
                 //box_class_probs = softmax(feats[..., 5:])
                 softmax_max = 0.0;
                 //一回目のループでmaxを求める。
                 for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    //data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    data0 = conv2d_9_output[((idx_k + 5 + i) * 13 * 13) + (row * 13) + col];
                     if (softmax_max < data0) {
                         softmax_max = data0;
                     }
@@ -287,7 +294,8 @@ void yolo_head(void *predp)
                 //２回目のループでexpとsumを求める。
                 softmax_sum = 0.0;
                 for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    //data0 = conv2d_9_output[idx_k + 5 + i][row][col];
+                    data0 = conv2d_9_output[((idx_k + 5 + i) * 13 * 13) + (row * 13) +col];
                     softmax_work[i] = (float) exp(data0 - softmax_max);
                     softmax_sum += softmax_work[i];
                 }
@@ -300,66 +308,6 @@ void yolo_head(void *predp)
     }
 }
 
-//処理結果は、box_xy, box_wh, box_confidence, box_class_probs
-//yolo_headのコラムラストバージョン
-void yolo_head_cl(void)
-{
-    int row, col;
-    int k, i, idx_k;
-    float data0, data1;
-    float softmax_work[YOLO_CLASSES];
-    float softmax_sum;
-    float softmax_max;
-
-    //配列の並びをKerasに合わせる。
-    for(row=0;row<YOLO_REGION_SIZE;row++) {
-        for(col=0;col<YOLO_REGION_SIZE;col++) {
-            for(k=0;k<YOLO_CLUSTERS;k++) {
-                //yoloの出力結果にアクセスするときは、idx_kを使う。
-                idx_k = k * (YOLO_CLASSES + 5);
-
-                //box_xy = sigmoid(feats[..., :2])
-                data0 = conv2d_9_output[row][col][idx_k+0];
-                data1 = conv2d_9_output[row][col][idx_k+1];
-
-                box_xy[row][col][k][0] = (sigmoid(data0) + col) / YOLO_REGION_SIZE;
-                box_xy[row][col][k][1] = (sigmoid(data1) + row) / YOLO_REGION_SIZE;
-
-                //box_wh = np.exp(feats[..., 2:4])
-                data0 = conv2d_9_output[row][col][idx_k+2];
-                data1 = conv2d_9_output[row][col][idx_k+3];
-
-                box_wh[row][col][k][0] = (float) ((exp(data0) * voc_anchors[k][0]) / YOLO_REGION_SIZE);
-                box_wh[row][col][k][1] = (float) ((exp(data1) * voc_anchors[k][1]) / YOLO_REGION_SIZE);
-
-                //box_confidence = sigmoid(feats[..., 4:5])
-                data0 = conv2d_9_output[row][col][idx_k+4];
-                box_confidence[row][col][k] = sigmoid(data0);
-
-                //box_class_probs = softmax(feats[..., 5:])
-                softmax_max = 0.0;
-                //一回目のループでmaxを求める。
-                for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[row][col][idx_k + 5 + i];
-                    if (softmax_max < data0) {
-                        softmax_max = data0;
-                    }
-                }
-                //２回目のループでexpとsumを求める。
-                softmax_sum = 0.0;
-                for(i=0;i<YOLO_CLASSES;i++) {
-                    data0 = conv2d_9_output[row][col][idx_k + 5 + i];
-                    softmax_work[i] = (float) exp(data0 - softmax_max);
-                    softmax_sum += softmax_work[i];
-                }
-
-                for(i=0;i<YOLO_CLASSES;i++) {
-                    box_class_probs[row][col][k][i] = softmax_work[i] / softmax_sum;
-                }
-            }
-        }
-    }
-}
 
 int yolo_eval(void *predp, YOLO_PARAM *pp)
 {

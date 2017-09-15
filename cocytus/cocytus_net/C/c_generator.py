@@ -339,6 +339,8 @@ class CqtGenH(CFile):
         self.wr('CQT_NET* cqt_init(void);\n')
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path);\n')
         self.wr('int cqt_run(CQT_NET* np, void *dp);\n')
+        self.wr('void cqt_close(CQT_NET* np);\n')
+
         self.cr()
         self.wr('extern int cqt_process;\n')
         self.cr()
@@ -391,6 +393,8 @@ class CqtGenC(CFile):
         self.write_cqt_load_weight_from_files()
         self.cr()
         self.write_cqt_run()
+        self.cr()
+        self.write_cqt_close()
         self.cr()
 
     def write_cqt_init(self):
@@ -486,21 +490,29 @@ class CqtGenC(CFile):
                 self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[2] = %d;\n' % (cqt_net_name, i, o_shape[2]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[3] = %d;\n' % (cqt_net_name, i, o_shape[3]))
+                out_size = o_shape[3] * o_shape[2] * o_shape[1]
+                out_size_s = '%d * %d * %d' % (o_shape[3], o_shape[2], o_shape[1])
             elif len(o_shape) == 3:
                 self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[2] = %d;\n' % (cqt_net_name, i, o_shape[2]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+                out_size = o_shape[2] * o_shape[1]
+                out_size_s = '%d * %d' % (o_shape[2], o_shape[1])
             elif len(o_shape) == 2:
                 self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[1] = %d;\n' % (cqt_net_name, i, o_shape[1]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[2] = 0;\n' % (cqt_net_name, i))
                 self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+                out_size = o_shape[1]
+                out_size_s = '%d' % o_shape[1]
             elif len(o_shape) == 1:
                 self.wr('\t%s.layer[%d].cqt_output_shape[0] = %d;\n' % (cqt_net_name, i, o_shape[0]))
                 self.wr('\t%s.layer[%d].cqt_output_shape[1] = 0;\n' % (cqt_net_name, i))
                 self.wr('\t%s.layer[%d].cqt_output_shape[2] = 0;\n' % (cqt_net_name, i))
                 self.wr('\t%s.layer[%d].cqt_output_shape[3] = 0;\n' % (cqt_net_name, i))
+                out_size = o_shape[0]
+                out_size_s = '%d' % o_shape[0]
             else:
                 raise ValueError("ERROR unsupported shape %s %s", (name, str(o_shape)))
 
@@ -522,6 +534,27 @@ class CqtGenC(CFile):
             o_name = layer_detal.get_output_variable_name()
             self.wr('\t%s.layer[%d].param_p = &%s;\n' % (cqt_net_name, i, name))
             self.wr('\t%s.layer[%d].data_p = &%s;\n' % (cqt_net_name, i, o_name))
+
+            if self.compiler.is_target_sdsoc():
+                # sds_alloc
+                if layer_detal.output_dtypes[0] == CQT_Dtype.FLOAT32:
+                    element_size = 4
+                else:
+                    print('ERROR unsuported dtype %s', layer_detal.output_dtypes[0])
+                    sys.exit()
+
+                o_shape = layer_detal.get_output_shape()
+                o_type = layer_detal.get_output_type_str()
+
+                self.cr()
+                self.wr('\t%s = (%s *)sds_alloc(%s * sizeof(%s));\n' % (o_name, o_type, out_size_s, o_type))
+                self.wr('\tif (%s == NULL) {\n' % o_name)
+                self.wr('\t\treturn NULL;\n')
+                self.wr('\t}\n')
+                self.cr();
+                self.compiler.update_max_out_size(out_size)
+
+
             self.cr()
 
         self.wr('\treturn &%s;\n' % cqt_net_name)
@@ -749,6 +782,25 @@ class CqtGenC(CFile):
             self.wr('\n')
 
         self.wr('\treturn CQT_RET_OK;\n')
+        self.wr('}\n')
+
+
+    def write_cqt_close(self):
+        self.wr('void cqt_close(CQT_NET* np) {\n')
+        self.cr()
+
+        if self.compiler.is_target_sdsoc():
+
+            layers = self.compiler.get_layers()
+            layer_num = len(layers)
+            cqt_net_name = self.compiler.get_model_name()
+
+            for (i, l) in enumerate(layers):
+                name = l.name
+                layer_detal = self.compiler.get_cqt_layer_obj(name)
+                o_name = layer_detal.get_output_variable_name()
+                self.wr('\tsds_free(%s);\n' % o_name)
+
         self.wr('}\n')
 
 

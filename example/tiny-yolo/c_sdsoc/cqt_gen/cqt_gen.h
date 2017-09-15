@@ -12,6 +12,7 @@
 CQT_NET* cqt_init(void);
 int cqt_load_weight_from_files(CQT_NET* np, const char *path);
 int cqt_run(CQT_NET* np, void *dp);
+void cqt_close(CQT_NET* np);
 
 extern int cqt_process;
 

@@ -213,6 +213,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[0].param_p = &input_1;
 	g_cqt_sequential_1.layer[0].data_p = &input_1_output;
 
+	input_1_output = (float *)sds_alloc(3 * 416 * 416 * sizeof(float));
+	if (input_1_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[1].name, "conv2d_1");
 	g_cqt_sequential_1.layer[1].type = LT_Conv2D;
 	conv2d_1.filters = 16;
@@ -257,6 +263,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[1].param_p = &conv2d_1;
 	g_cqt_sequential_1.layer[1].data_p = &conv2d_1_output;
 
+	conv2d_1_output = (float *)sds_alloc(16 * 416 * 416 * sizeof(float));
+	if (conv2d_1_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[2].name, "batch_normalization_1");
 	g_cqt_sequential_1.layer[2].type = LT_BatchNormalization;
 	batch_normalization_1.axis = -1;
@@ -299,6 +311,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[2].param_p = &batch_normalization_1;
 	g_cqt_sequential_1.layer[2].data_p = &batch_normalization_1_output;
 
+	batch_normalization_1_output = (float *)sds_alloc(16 * 416 * 416 * sizeof(float));
+	if (batch_normalization_1_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[3].name, "leaky_re_lu_1");
 	g_cqt_sequential_1.layer[3].type = LT_LeakyReLU;
 	leaky_re_lu_1.alpha = 0.10000000149011612;
@@ -328,6 +346,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[3].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[3].param_p = &leaky_re_lu_1;
 	g_cqt_sequential_1.layer[3].data_p = &leaky_re_lu_1_output;
+
+	leaky_re_lu_1_output = (float *)sds_alloc(16 * 416 * 416 * sizeof(float));
+	if (leaky_re_lu_1_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[4].name, "max_pooling2d_1");
 	g_cqt_sequential_1.layer[4].type = LT_MaxPooling2D;
@@ -363,6 +387,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[4].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[4].param_p = &max_pooling2d_1;
 	g_cqt_sequential_1.layer[4].data_p = &max_pooling2d_1_output;
+
+	max_pooling2d_1_output = (float *)sds_alloc(16 * 208 * 208 * sizeof(float));
+	if (max_pooling2d_1_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[5].name, "conv2d_2");
 	g_cqt_sequential_1.layer[5].type = LT_Conv2D;
@@ -408,6 +438,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[5].param_p = &conv2d_2;
 	g_cqt_sequential_1.layer[5].data_p = &conv2d_2_output;
 
+	conv2d_2_output = (float *)sds_alloc(32 * 208 * 208 * sizeof(float));
+	if (conv2d_2_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[6].name, "batch_normalization_2");
 	g_cqt_sequential_1.layer[6].type = LT_BatchNormalization;
 	batch_normalization_2.axis = -1;
@@ -450,6 +486,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[6].param_p = &batch_normalization_2;
 	g_cqt_sequential_1.layer[6].data_p = &batch_normalization_2_output;
 
+	batch_normalization_2_output = (float *)sds_alloc(32 * 208 * 208 * sizeof(float));
+	if (batch_normalization_2_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[7].name, "leaky_re_lu_2");
 	g_cqt_sequential_1.layer[7].type = LT_LeakyReLU;
 	leaky_re_lu_2.alpha = 0.10000000149011612;
@@ -479,6 +521,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[7].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[7].param_p = &leaky_re_lu_2;
 	g_cqt_sequential_1.layer[7].data_p = &leaky_re_lu_2_output;
+
+	leaky_re_lu_2_output = (float *)sds_alloc(32 * 208 * 208 * sizeof(float));
+	if (leaky_re_lu_2_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[8].name, "max_pooling2d_2");
 	g_cqt_sequential_1.layer[8].type = LT_MaxPooling2D;
@@ -514,6 +562,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[8].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[8].param_p = &max_pooling2d_2;
 	g_cqt_sequential_1.layer[8].data_p = &max_pooling2d_2_output;
+
+	max_pooling2d_2_output = (float *)sds_alloc(32 * 104 * 104 * sizeof(float));
+	if (max_pooling2d_2_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[9].name, "conv2d_3");
 	g_cqt_sequential_1.layer[9].type = LT_Conv2D;
@@ -559,6 +613,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[9].param_p = &conv2d_3;
 	g_cqt_sequential_1.layer[9].data_p = &conv2d_3_output;
 
+	conv2d_3_output = (float *)sds_alloc(64 * 104 * 104 * sizeof(float));
+	if (conv2d_3_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[10].name, "batch_normalization_3");
 	g_cqt_sequential_1.layer[10].type = LT_BatchNormalization;
 	batch_normalization_3.axis = -1;
@@ -601,6 +661,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[10].param_p = &batch_normalization_3;
 	g_cqt_sequential_1.layer[10].data_p = &batch_normalization_3_output;
 
+	batch_normalization_3_output = (float *)sds_alloc(64 * 104 * 104 * sizeof(float));
+	if (batch_normalization_3_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[11].name, "leaky_re_lu_3");
 	g_cqt_sequential_1.layer[11].type = LT_LeakyReLU;
 	leaky_re_lu_3.alpha = 0.10000000149011612;
@@ -630,6 +696,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[11].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[11].param_p = &leaky_re_lu_3;
 	g_cqt_sequential_1.layer[11].data_p = &leaky_re_lu_3_output;
+
+	leaky_re_lu_3_output = (float *)sds_alloc(64 * 104 * 104 * sizeof(float));
+	if (leaky_re_lu_3_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[12].name, "max_pooling2d_3");
 	g_cqt_sequential_1.layer[12].type = LT_MaxPooling2D;
@@ -665,6 +737,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[12].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[12].param_p = &max_pooling2d_3;
 	g_cqt_sequential_1.layer[12].data_p = &max_pooling2d_3_output;
+
+	max_pooling2d_3_output = (float *)sds_alloc(64 * 52 * 52 * sizeof(float));
+	if (max_pooling2d_3_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[13].name, "conv2d_4");
 	g_cqt_sequential_1.layer[13].type = LT_Conv2D;
@@ -710,6 +788,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[13].param_p = &conv2d_4;
 	g_cqt_sequential_1.layer[13].data_p = &conv2d_4_output;
 
+	conv2d_4_output = (float *)sds_alloc(128 * 52 * 52 * sizeof(float));
+	if (conv2d_4_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[14].name, "batch_normalization_4");
 	g_cqt_sequential_1.layer[14].type = LT_BatchNormalization;
 	batch_normalization_4.axis = -1;
@@ -752,6 +836,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[14].param_p = &batch_normalization_4;
 	g_cqt_sequential_1.layer[14].data_p = &batch_normalization_4_output;
 
+	batch_normalization_4_output = (float *)sds_alloc(128 * 52 * 52 * sizeof(float));
+	if (batch_normalization_4_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[15].name, "leaky_re_lu_4");
 	g_cqt_sequential_1.layer[15].type = LT_LeakyReLU;
 	leaky_re_lu_4.alpha = 0.10000000149011612;
@@ -781,6 +871,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[15].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[15].param_p = &leaky_re_lu_4;
 	g_cqt_sequential_1.layer[15].data_p = &leaky_re_lu_4_output;
+
+	leaky_re_lu_4_output = (float *)sds_alloc(128 * 52 * 52 * sizeof(float));
+	if (leaky_re_lu_4_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[16].name, "max_pooling2d_4");
 	g_cqt_sequential_1.layer[16].type = LT_MaxPooling2D;
@@ -816,6 +912,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[16].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[16].param_p = &max_pooling2d_4;
 	g_cqt_sequential_1.layer[16].data_p = &max_pooling2d_4_output;
+
+	max_pooling2d_4_output = (float *)sds_alloc(128 * 26 * 26 * sizeof(float));
+	if (max_pooling2d_4_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[17].name, "conv2d_5");
 	g_cqt_sequential_1.layer[17].type = LT_Conv2D;
@@ -861,6 +963,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[17].param_p = &conv2d_5;
 	g_cqt_sequential_1.layer[17].data_p = &conv2d_5_output;
 
+	conv2d_5_output = (float *)sds_alloc(256 * 26 * 26 * sizeof(float));
+	if (conv2d_5_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[18].name, "batch_normalization_5");
 	g_cqt_sequential_1.layer[18].type = LT_BatchNormalization;
 	batch_normalization_5.axis = -1;
@@ -903,6 +1011,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[18].param_p = &batch_normalization_5;
 	g_cqt_sequential_1.layer[18].data_p = &batch_normalization_5_output;
 
+	batch_normalization_5_output = (float *)sds_alloc(256 * 26 * 26 * sizeof(float));
+	if (batch_normalization_5_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[19].name, "leaky_re_lu_5");
 	g_cqt_sequential_1.layer[19].type = LT_LeakyReLU;
 	leaky_re_lu_5.alpha = 0.10000000149011612;
@@ -932,6 +1046,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[19].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[19].param_p = &leaky_re_lu_5;
 	g_cqt_sequential_1.layer[19].data_p = &leaky_re_lu_5_output;
+
+	leaky_re_lu_5_output = (float *)sds_alloc(256 * 26 * 26 * sizeof(float));
+	if (leaky_re_lu_5_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[20].name, "max_pooling2d_5");
 	g_cqt_sequential_1.layer[20].type = LT_MaxPooling2D;
@@ -967,6 +1087,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[20].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[20].param_p = &max_pooling2d_5;
 	g_cqt_sequential_1.layer[20].data_p = &max_pooling2d_5_output;
+
+	max_pooling2d_5_output = (float *)sds_alloc(256 * 13 * 13 * sizeof(float));
+	if (max_pooling2d_5_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[21].name, "conv2d_6");
 	g_cqt_sequential_1.layer[21].type = LT_Conv2D;
@@ -1012,6 +1138,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[21].param_p = &conv2d_6;
 	g_cqt_sequential_1.layer[21].data_p = &conv2d_6_output;
 
+	conv2d_6_output = (float *)sds_alloc(512 * 13 * 13 * sizeof(float));
+	if (conv2d_6_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[22].name, "batch_normalization_6");
 	g_cqt_sequential_1.layer[22].type = LT_BatchNormalization;
 	batch_normalization_6.axis = -1;
@@ -1054,6 +1186,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[22].param_p = &batch_normalization_6;
 	g_cqt_sequential_1.layer[22].data_p = &batch_normalization_6_output;
 
+	batch_normalization_6_output = (float *)sds_alloc(512 * 13 * 13 * sizeof(float));
+	if (batch_normalization_6_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[23].name, "leaky_re_lu_6");
 	g_cqt_sequential_1.layer[23].type = LT_LeakyReLU;
 	leaky_re_lu_6.alpha = 0.10000000149011612;
@@ -1083,6 +1221,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[23].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[23].param_p = &leaky_re_lu_6;
 	g_cqt_sequential_1.layer[23].data_p = &leaky_re_lu_6_output;
+
+	leaky_re_lu_6_output = (float *)sds_alloc(512 * 13 * 13 * sizeof(float));
+	if (leaky_re_lu_6_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[24].name, "max_pooling2d_6");
 	g_cqt_sequential_1.layer[24].type = LT_MaxPooling2D;
@@ -1118,6 +1262,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[24].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[24].param_p = &max_pooling2d_6;
 	g_cqt_sequential_1.layer[24].data_p = &max_pooling2d_6_output;
+
+	max_pooling2d_6_output = (float *)sds_alloc(512 * 13 * 13 * sizeof(float));
+	if (max_pooling2d_6_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[25].name, "conv2d_7");
 	g_cqt_sequential_1.layer[25].type = LT_Conv2D;
@@ -1163,6 +1313,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[25].param_p = &conv2d_7;
 	g_cqt_sequential_1.layer[25].data_p = &conv2d_7_output;
 
+	conv2d_7_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (conv2d_7_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[26].name, "batch_normalization_7");
 	g_cqt_sequential_1.layer[26].type = LT_BatchNormalization;
 	batch_normalization_7.axis = -1;
@@ -1205,6 +1361,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[26].param_p = &batch_normalization_7;
 	g_cqt_sequential_1.layer[26].data_p = &batch_normalization_7_output;
 
+	batch_normalization_7_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (batch_normalization_7_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[27].name, "leaky_re_lu_7");
 	g_cqt_sequential_1.layer[27].type = LT_LeakyReLU;
 	leaky_re_lu_7.alpha = 0.10000000149011612;
@@ -1234,6 +1396,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[27].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[27].param_p = &leaky_re_lu_7;
 	g_cqt_sequential_1.layer[27].data_p = &leaky_re_lu_7_output;
+
+	leaky_re_lu_7_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (leaky_re_lu_7_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[28].name, "conv2d_8");
 	g_cqt_sequential_1.layer[28].type = LT_Conv2D;
@@ -1279,6 +1447,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[28].param_p = &conv2d_8;
 	g_cqt_sequential_1.layer[28].data_p = &conv2d_8_output;
 
+	conv2d_8_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (conv2d_8_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[29].name, "batch_normalization_8");
 	g_cqt_sequential_1.layer[29].type = LT_BatchNormalization;
 	batch_normalization_8.axis = -1;
@@ -1321,6 +1495,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[29].param_p = &batch_normalization_8;
 	g_cqt_sequential_1.layer[29].data_p = &batch_normalization_8_output;
 
+	batch_normalization_8_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (batch_normalization_8_output == NULL) {
+		return NULL;
+	}
+
+
 	strcpy(g_cqt_sequential_1.layer[30].name, "leaky_re_lu_8");
 	g_cqt_sequential_1.layer[30].type = LT_LeakyReLU;
 	leaky_re_lu_8.alpha = 0.10000000149011612;
@@ -1350,6 +1530,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[30].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[30].param_p = &leaky_re_lu_8;
 	g_cqt_sequential_1.layer[30].data_p = &leaky_re_lu_8_output;
+
+	leaky_re_lu_8_output = (float *)sds_alloc(1024 * 13 * 13 * sizeof(float));
+	if (leaky_re_lu_8_output == NULL) {
+		return NULL;
+	}
+
 
 	strcpy(g_cqt_sequential_1.layer[31].name, "conv2d_9");
 	g_cqt_sequential_1.layer[31].type = LT_Conv2D;
@@ -1394,6 +1580,12 @@ CQT_NET* cqt_init(void) {
 	g_cqt_sequential_1.layer[31].overflow_cnt = 0;
 	g_cqt_sequential_1.layer[31].param_p = &conv2d_9;
 	g_cqt_sequential_1.layer[31].data_p = &conv2d_9_output;
+
+	conv2d_9_output = (float *)sds_alloc(125 * 13 * 13 * sizeof(float));
+	if (conv2d_9_output == NULL) {
+		return NULL;
+	}
+
 
 	return &g_cqt_sequential_1;
 }
@@ -2048,5 +2240,41 @@ int cqt_run(CQT_NET* np, void *dp) {
 	}
 
 	return CQT_RET_OK;
+}
+
+void cqt_close(CQT_NET* np) {
+
+	sds_free(input_1_output);
+	sds_free(conv2d_1_output);
+	sds_free(batch_normalization_1_output);
+	sds_free(leaky_re_lu_1_output);
+	sds_free(max_pooling2d_1_output);
+	sds_free(conv2d_2_output);
+	sds_free(batch_normalization_2_output);
+	sds_free(leaky_re_lu_2_output);
+	sds_free(max_pooling2d_2_output);
+	sds_free(conv2d_3_output);
+	sds_free(batch_normalization_3_output);
+	sds_free(leaky_re_lu_3_output);
+	sds_free(max_pooling2d_3_output);
+	sds_free(conv2d_4_output);
+	sds_free(batch_normalization_4_output);
+	sds_free(leaky_re_lu_4_output);
+	sds_free(max_pooling2d_4_output);
+	sds_free(conv2d_5_output);
+	sds_free(batch_normalization_5_output);
+	sds_free(leaky_re_lu_5_output);
+	sds_free(max_pooling2d_5_output);
+	sds_free(conv2d_6_output);
+	sds_free(batch_normalization_6_output);
+	sds_free(leaky_re_lu_6_output);
+	sds_free(max_pooling2d_6_output);
+	sds_free(conv2d_7_output);
+	sds_free(batch_normalization_7_output);
+	sds_free(leaky_re_lu_7_output);
+	sds_free(conv2d_8_output);
+	sds_free(batch_normalization_8_output);
+	sds_free(leaky_re_lu_8_output);
+	sds_free(conv2d_9_output);
 }
 

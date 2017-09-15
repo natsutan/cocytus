@@ -202,6 +202,7 @@ class CocytusCompiler:
         self.layers = self.model.layers
         self.nn_prefix = nn_prefix
         self.cqt_layers = []
+        self.max_out_size = 0;
 
         try:
             mode = config.get('Cocyuts', 'weight_filename_mode')
@@ -415,6 +416,11 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def get_max_out_size(self):
+        return self.max_out_size
+
+    def update_max_out_size(self, x):
+        self.max_out_size = max([self.max_out_size, x])
 
 
 def conv_type_np_to_cqt(tf_type):

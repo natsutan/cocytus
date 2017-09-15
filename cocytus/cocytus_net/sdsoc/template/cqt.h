@@ -1,5 +1,6 @@
 // Cocytus Header
 #pragma once
+#include "cqt_type.h"
 //-----------------------------
 //compile時のdefine上書きで変更可能
 #define CQT_MAX_LAYER_NUM   32  //最大レイヤー数
@@ -13,6 +14,8 @@
 #define CQT_ERR_NO_FILE (2)   //ファイルがオープンできない
 #define CQT_NP_HEADER_ERR (3) //numpy読み込み時にヘッダー情報が異常
 #define CQT_FREAD_ERR (4) //fread時にエラー発生
+#define CQT_MALLOC_ERR (5) //malloc時にエラー発生
+
 
 //----------------------------
 //ファイルのR/W用定義
@@ -33,6 +36,7 @@ typedef short FP16;
 #ifdef __SDSCC__
 #include "sds_lib.h"
 #else
+#include <stdlib.h>
 #define sds_alloc(x) malloc(x)
 #define sds_free(x) free(x)
 #endif

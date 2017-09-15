@@ -28,3 +28,11 @@ typedef short FP16;
 //#include "nnnet_def.h"
 //#include "numpy.h"
 //#include "nnn_func.h"
+
+//SDSOC
+#ifdef __SDSCC__
+#include "sds_lib.h"
+#else
+#define sds_alloc(x) malloc(x)
+#define sds_free(x) free(x)
+#endif

@@ -175,7 +175,7 @@ class CFile:
         self.wr('// cocytus network\n')
         self.wr('%sCQT_NET %s;\n' % (scope_s, name))
 
-    def wr_layer_defination(self, scope=None):
+    def wr_layer_definition(self, scope=None):
         """
         レイヤー変数の定義を行う。
         scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
@@ -250,10 +250,11 @@ class CFile:
                 self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mv_name, mv_dim))
 
 
-    def wr_output_defination(self, scope=None):
+    def wr_output_definition(self, scope=None, conv_pointer=False):
         """
         output変数の定義を行う。
         scopeを変更する場合は、scope引数に"extern"もしくは"static"を指定する。
+        conv_pointerがTrueの時は、pointerで宣言する。
         :return:
         """
         self.wr("//outputs\n")
@@ -274,7 +275,12 @@ class CFile:
             if not self.compiler.is_neon_enable():
                 # neon非対応の処理
                 dim_s = dim_str_from_keras_4d_shape_output(o_shape, cl=channel_last)
-                self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
+                if conv_pointer:
+                    # pointerで宣言
+                    self.wr('%s%s *%s; //%s%s\n' % (scope_s, o_type, o_name, o_name, dim_s))
+
+                else:
+                    self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
             else:
                 # neon 対応時に外枠を確保する。
                 # 横のサイズが4の倍数で無い時はパディングを入れる。
@@ -340,13 +346,13 @@ class CqtGenH(CFile):
         self.write_cqt_network(scope='extern')
         self.cr()
 
-        self.wr_layer_defination(scope='extern')
+        self.wr_layer_definition(scope='extern')
         self.cr()
 
         self.wr_weight_definition(scope='extern')
         self.cr()
 
-        self.wr_output_defination(scope='extern')
+        self.wr_output_definition(scope='extern', conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
 
         self.fp.write('\n')
@@ -371,13 +377,13 @@ class CqtGenC(CFile):
         self.write_cqt_network()
         self.cr()
 
-        self.wr_layer_defination()
+        self.wr_layer_definition()
         self.cr()
 
         self.wr_weight_definition()
         self.cr()
 
-        self.wr_output_defination()
+        self.wr_output_definition(conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
 
         self.write_cqt_init()
@@ -818,7 +824,7 @@ class CqtDebugC(CFile):
         self.wr_include('cqt_debug.h')
         self.cr()
 
-        self.wr_output_defination(scope='extern')
+        self.wr_output_definition(scope='extern', conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
         self.wr('extern NUMPY_HEADER np;\n')
         self.cr()

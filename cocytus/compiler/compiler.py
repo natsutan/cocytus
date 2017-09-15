@@ -408,6 +408,13 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_target_sdsoc(self):
+        try:
+            target = self.config.get('Cocyuts', 'target')
+            return target == 'sdsoc'
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
+
 
 
 def conv_type_np_to_cqt(tf_type):

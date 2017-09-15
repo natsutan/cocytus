@@ -126,6 +126,7 @@ class FunctionGenerator:
                     fp.write('#include <assert.h>\n')
                     fp.write('#include "cqt.h"\n')
                     fp.write('#include "cqt_net.h"\n')
+                    fp.write('#include "../cqt_gen/cqt_gen.h"\n')
                     fp.write('\n')
                 self.conv2d_same_3x3_first = False
 
@@ -148,7 +149,9 @@ class FunctionGenerator:
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
                                     output_type=ctype_dic[output_type],
-                                    shift_val=shift_val)
+                                    shift_val=shift_val,
+                                    func_name_hw=func_name+'_hw'
+                                    )
             fpout.write(func_str)
 
     def generate_maxpooling2d(self, layer_detail):

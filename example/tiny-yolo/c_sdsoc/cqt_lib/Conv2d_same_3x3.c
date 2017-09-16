@@ -110,7 +110,7 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<416;y++) {
@@ -178,27 +178,25 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (416 - 1)) {
-                for(li=0;li<416;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<416;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (416 - 1)) {
+            for(li=0;li<416;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<416;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -307,7 +305,7 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<208;y++) {
@@ -375,27 +373,25 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (208 - 1)) {
-                for(li=0;li<208;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<208;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (208 - 1)) {
+            for(li=0;li<208;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<208;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -504,7 +500,7 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<104;y++) {
@@ -572,27 +568,25 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (104 - 1)) {
-                for(li=0;li<104;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<104;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (104 - 1)) {
+            for(li=0;li<104;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<104;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -701,7 +695,7 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<52;y++) {
@@ -769,27 +763,25 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (52 - 1)) {
-                for(li=0;li<52;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<52;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (52 - 1)) {
+            for(li=0;li<52;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<52;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -898,7 +890,7 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<26;y++) {
@@ -966,27 +958,25 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (26 - 1)) {
-                for(li=0;li<26;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<26;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (26 - 1)) {
+            for(li=0;li<26;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<26;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -1095,7 +1085,7 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<13;y++) {
@@ -1163,27 +1153,25 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (13 - 1)) {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (13 - 1)) {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -1292,7 +1280,7 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<13;y++) {
@@ -1360,27 +1348,25 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (13 - 1)) {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (13 - 1)) {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }
@@ -1489,7 +1475,7 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<13;y++) {
@@ -1557,27 +1543,25 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != (13 - 1)) {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<13;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != (13 - 1)) {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<13;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }

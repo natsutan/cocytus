@@ -103,7 +103,7 @@ $func_prot_hw
         idx_i++;
     }
 
-    write_buf_idx　= 3;
+    write_buf_idx = 3;
 
     //apply filter
     for(y=0;y<$input_size_y;y++) {
@@ -171,27 +171,25 @@ $func_prot_hw
             *(op + idx_o) = o_data;
             idx_o++;
 
-            //次のデータの書き込み
-            //パラレル化可能
-            if (y != ($input_size_y - 1)) {
-                for(li=0;li<$input_size_x;li++) {
-                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
-                    idx_i++;
-                }
-            } else {
-                for(li=0;li<$input_size_x;li++) {
-                    line_buffer[write_buf_idx][li] = 0;
-                }
+        }
+        //次のデータの書き込み
+        //パラレル化可能
+        if (y != ($input_size_y - 1)) {
+            for(li=0;li<$input_size_x;li++) {
+                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                idx_i++;
             }
-
-            if (write_buf_idx　== 3) {
-                write_buf_idx = 0;
-            } else {
-                write_buf_idx++;
+        } else {
+            for(li=0;li<$input_size_x;li++) {
+                line_buffer[write_buf_idx][li] = 0;
             }
-
         }
 
+        if (write_buf_idx == 3) {
+            write_buf_idx = 0;
+        } else {
+            write_buf_idx++;
+        }
     }
 
 }

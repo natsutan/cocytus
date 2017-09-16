@@ -1,4 +1,3 @@
-void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], $weight_type weight[9], $weight_type bias, int input_size_x, int input_size_y, int act, int last);
 
 int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 {
@@ -64,14 +63,14 @@ int $func_name (CQT_LAYER *lp, void *inp, void *outp)
            idx_i = n * (input_size_y * input_size_x);
            idx_o = f * (input_size_y * input_size_x);
 
-           $func_name_hw(ip + idx_i, op  + idx_o, filter3x3, bias, input_size_x, input_size_y, 0, last);
+           $func_name_hw(ip + idx_i, op  + idx_o, filter3x3, bias, 0, last);
 
         }
     }
     return CQT_RET_OK;
 }
 
-void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], $weight_type weight[9], $weight_type bias, int input_size_x, int input_size_y, int act, int last)
+$func_prot_hw
 {
 
     $input_type data3x3[3][3];
@@ -80,16 +79,16 @@ void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], 
     int idx_i, idx_o;
 
     //apply filter
-    for(y=0;y<input_size_y;y++) {
-        for(x=0;x<input_size_x;x++) {
+    for(y=0;y<$input_size_y;y++) {
+        for(x=0;x<$input_size_x;x++) {
             //get data
-            idx_o = (y * input_size_x) + x;
+            idx_o = (y * $input_size_x) + x;
             o_data = *(op + idx_o);
 
             if(y != 0) {
-                idx_i = ((y-1) * input_size_x) + x;
+                idx_i = ((y-1) * $input_size_x) + x;
             } else {
-                idx_i = (y * input_size_x) + x;
+                idx_i = (y * $input_size_x) + x;
             }
 
             if(x != 0) {
@@ -100,12 +99,12 @@ void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], 
 
             data3x3[0][1] = *(ip + idx_i);
 
-            if (x != (input_size_x - 1)) {
+            if (x != ($input_size_x - 1)) {
                 data3x3[0][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[0][2] = 0.0;
             }
-            idx_i = y * input_size_y + x;
+            idx_i = y * $input_size_y + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
             } else {
@@ -113,16 +112,16 @@ void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], 
             }
 
             data3x3[1][1] = *(ip + idx_i);
-            if (x != (input_size_x - 1)) {
+            if (x != ($input_size_x - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
-            if(y != (input_size_y - 1)) {
-                idx_i =  (y + 1) * input_size_y + x;
+            if(y != ($input_size_y - 1)) {
+                idx_i =  (y + 1) * $input_size_y + x;
             } else {
-                idx_i =  y * input_size_y + x;
+                idx_i =  y * $input_size_y + x;
             }
 
             if (x != 0) {
@@ -132,13 +131,26 @@ void $func_name_hw($input_type ip[MAX_OUT_SIZE], $output_type op[MAX_OUT_SIZE], 
             }
             data3x3[2][1] = *(ip + idx_i);
 
-            if (x != (input_size_x - 1)) {
+            if (x != ($input_size_x - 1)) {
                 data3x3[2][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[2][2] = 0.0;
             }
 
-            //border == 'same
+
+
+
+        //border == 'same
+            if (y == 0) {
+                data3x3[0][0] = 0;
+                data3x3[0][1] = 0;
+                data3x3[0][2] = 0;
+            }
+            if (y == (input_size_y - 1)) {
+                data3x3[2][0] = 0;
+                data3x3[2][1] = 0;
+                data3x3[2][2] = 0;
+            }
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[1] * data3x3[0][1];

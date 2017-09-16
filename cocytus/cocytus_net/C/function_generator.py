@@ -23,7 +23,7 @@ class FunctionGenerator:
         self.dense_first = True
         self.batchnormalization_first = True
         self.leakyrelu_first = True
-        self.sdsoc_gen = sdsoc_gen.SDSOC_gen()
+        self.sdsoc_gen = sdsoc_gen.SDSOC_gen(template_dir)
 
     def get_config(self):
         """
@@ -53,7 +53,7 @@ class FunctionGenerator:
                 padding = layer_detail.l.padding
                 if kernel_size == (3, 3) and padding == 'same' and self.compiler.is_target_sdsoc():
                     output_file = os.path.join(self.target_dir, 'cqt_lib', 'Conv2d_same_3x3.c')
-                    self.sdsoc_gen.generate(output_file, layer_detail, l)
+                    self.sdsoc_gen.generate(output_file, layer_detail)
                     continue
 
             if not func_name in func_list:

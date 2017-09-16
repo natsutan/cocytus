@@ -83,7 +83,7 @@ iqs, oqs, wqs = read_qpfile(qp_file)
 #    layer_dump(i, oqs[i])
 
 #layer_dump(0, oqs[0])
-layer_dump(31, oqs[0])
+layer_dump(2, oqs[0])
 
 
 print('finish')

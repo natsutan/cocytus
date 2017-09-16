@@ -116,8 +116,12 @@ class SDSOC_gen():
     def wr(self, s):
         self.fp_c.write(s)
 
-
     def add_funciton_to_header(self, prototype):
-
+        self.fp_h.write("#pragma SDS data zero_copy(ip)\n")
+        self.fp_h.write("#pragma SDS data zero_copy(op)\n")
+        self.fp_h.write("#pragma SDS data access_pattern(ip:SEQUENTIAL)\n")
+        self.fp_h.write("#pragma SDS data mem_attribute(ip:PHYSICAL_CONTIGUOUS)\n")
+        self.fp_h.write("#pragma SDS data mem_attribute(op:PHYSICAL_CONTIGUOUS)\n")
         self.fp_h.write("%s;\n" % prototype)
+        self.fp_h.write("\n")
 

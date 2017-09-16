@@ -93,20 +93,20 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][416]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[416][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<416;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<416;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<416;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -143,17 +143,17 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(416 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(416 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(416 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -183,12 +183,12 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
         //パラレル化可能
         if (y != (416 - 1)) {
             for(li=0;li<416;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<416;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -288,20 +288,20 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][208]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[208][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<208;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<208;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<208;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -338,17 +338,17 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(208 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(208 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(208 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -378,12 +378,12 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
         //パラレル化可能
         if (y != (208 - 1)) {
             for(li=0;li<208;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<208;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -483,20 +483,20 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][104]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[104][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<104;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<104;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<104;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -533,17 +533,17 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(104 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(104 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(104 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -573,12 +573,12 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
         //パラレル化可能
         if (y != (104 - 1)) {
             for(li=0;li<104;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<104;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -678,20 +678,20 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][52]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[52][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<52;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<52;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<52;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -728,17 +728,17 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(52 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(52 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(52 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -768,12 +768,12 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
         //パラレル化可能
         if (y != (52 - 1)) {
             for(li=0;li<52;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<52;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -873,20 +873,20 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][26]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[26][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<26;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<26;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<26;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -923,17 +923,17 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(26 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(26 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(26 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -963,12 +963,12 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
         //パラレル化可能
         if (y != (26 - 1)) {
             for(li=0;li<26;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<26;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -1068,20 +1068,20 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][13]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[13][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<13;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -1118,17 +1118,17 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1158,12 +1158,12 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         //パラレル化可能
         if (y != (13 - 1)) {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -1263,20 +1263,20 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][13]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[13][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<13;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -1313,17 +1313,17 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1353,12 +1353,12 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         //パラレル化可能
         if (y != (13 - 1)) {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 
@@ -1458,20 +1458,20 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     idx_o = 0;
     idx_i = 0;
 
-    static float line_buffer[3][13]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static float line_buffer[13][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<13;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<13;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -1508,17 +1508,17 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1548,12 +1548,12 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
         //パラレル化可能
         if (y != (13 - 1)) {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<13;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 

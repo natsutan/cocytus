@@ -86,20 +86,20 @@ $func_prot_hw
     idx_o = 0;
     idx_i = 0;
 
-    static $input_type line_buffer[3][$input_size_x]; // line-buffers
-    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+    static $input_type line_buffer[$input_size_x][4]; // line-buffers
+    #pragma HLS ARRAY_PARTITION variable=line_buffer block factor=4
 
     for(li=0;li<$input_size_x;li++) {
-        line_buffer[0][li] = 0;
+        line_buffer[li][3] = 0;
     }
 
     for(li=0;li<$input_size_x;li++) {
-        line_buffer[1][li] = *(ip + idx_i);
+        line_buffer[li][1] = *(ip + idx_i);
         idx_i++;
     }
 
     for(li=0;li<$input_size_x;li++) {
-        line_buffer[2][li] = *(ip + idx_i);
+        line_buffer[li][2] = *(ip + idx_i);
         idx_i++;
     }
 
@@ -136,17 +136,17 @@ $func_prot_hw
             }
 
             // データ選択
-            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
-            data3x3[0][1] = line_buffer[read_buf_idx0][x];
-            data3x3[0][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx0];
+            data3x3[0][1] = line_buffer[x][read_buf_idx0];
+            data3x3[0][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[x+1][read_buf_idx0];
 
-            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
-            data3x3[1][1] = line_buffer[read_buf_idx1][x];
-            data3x3[1][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx1];
+            data3x3[1][1] = line_buffer[x][read_buf_idx1];
+            data3x3[1][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[x+1][read_buf_idx1];
 
-            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
-            data3x3[2][1] = line_buffer[read_buf_idx2][x];
-            data3x3[2][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[x-1][read_buf_idx2];
+            data3x3[2][1] = line_buffer[x][read_buf_idx2];
+            data3x3[2][2] = (x==($input_size_x - 1)) ? 0 : line_buffer[x+1][read_buf_idx2];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -176,12 +176,12 @@ $func_prot_hw
         //パラレル化可能
         if (y != ($input_size_y - 1)) {
             for(li=0;li<$input_size_x;li++) {
-                line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                line_buffer[li][write_buf_idx] = *(ip + idx_i);
                 idx_i++;
             }
         } else {
             for(li=0;li<$input_size_x;li++) {
-                line_buffer[write_buf_idx][li] = 0;
+                line_buffer[li][write_buf_idx] = 0;
             }
         }
 

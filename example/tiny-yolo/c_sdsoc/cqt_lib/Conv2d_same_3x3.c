@@ -92,9 +92,12 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             idx_o = (y * 416) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 416) + x;
             } else {
+            //dummy
                 idx_i = (y * 416) + x;
             }
 
@@ -111,6 +114,9 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 416 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -119,12 +125,14 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (416 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (416 - 1)) {
                 idx_i =  (y + 1) * 416 + x;
             } else {
@@ -145,28 +153,26 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (416 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -273,9 +279,12 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             idx_o = (y * 208) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 208) + x;
             } else {
+            //dummy
                 idx_i = (y * 208) + x;
             }
 
@@ -292,6 +301,9 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 208 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -300,12 +312,14 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (208 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (208 - 1)) {
                 idx_i =  (y + 1) * 208 + x;
             } else {
@@ -326,28 +340,26 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (208 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -454,9 +466,12 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             idx_o = (y * 104) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 104) + x;
             } else {
+            //dummy
                 idx_i = (y * 104) + x;
             }
 
@@ -473,6 +488,9 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 104 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -481,12 +499,14 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (104 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (104 - 1)) {
                 idx_i =  (y + 1) * 104 + x;
             } else {
@@ -507,28 +527,26 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (104 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -635,9 +653,12 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             idx_o = (y * 52) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 52) + x;
             } else {
+            //dummy
                 idx_i = (y * 52) + x;
             }
 
@@ -654,6 +675,9 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 52 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -662,12 +686,14 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (52 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (52 - 1)) {
                 idx_i =  (y + 1) * 52 + x;
             } else {
@@ -688,28 +714,26 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (52 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -816,9 +840,12 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             idx_o = (y * 26) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 26) + x;
             } else {
+            //dummy
                 idx_i = (y * 26) + x;
             }
 
@@ -835,6 +862,9 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 26 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -843,12 +873,14 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (26 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (26 - 1)) {
                 idx_i =  (y + 1) * 26 + x;
             } else {
@@ -869,28 +901,26 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (26 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -997,9 +1027,12 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 13) + x;
             } else {
+            //dummy
                 idx_i = (y * 13) + x;
             }
 
@@ -1016,6 +1049,9 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 13 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -1024,12 +1060,14 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (13 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (13 - 1)) {
                 idx_i =  (y + 1) * 13 + x;
             } else {
@@ -1050,28 +1088,26 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (13 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -1178,9 +1214,12 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 13) + x;
             } else {
+            //dummy
                 idx_i = (y * 13) + x;
             }
 
@@ -1197,6 +1236,9 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 13 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -1205,12 +1247,14 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (13 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (13 - 1)) {
                 idx_i =  (y + 1) * 13 + x;
             } else {
@@ -1231,28 +1275,26 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (13 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {
@@ -1359,9 +1401,12 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * 13) + x;
             } else {
+            //dummy
                 idx_i = (y * 13) + x;
             }
 
@@ -1378,6 +1423,9 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * 13 + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -1386,12 +1434,14 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != (13 - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != (13 - 1)) {
                 idx_i =  (y + 1) * 13 + x;
             } else {
@@ -1412,28 +1462,26 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == (13 - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {

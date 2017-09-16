@@ -85,9 +85,12 @@ $func_prot_hw
             idx_o = (y * $input_size_x) + x;
             o_data = *(op + idx_o);
 
+
+            //capture data 1
             if(y != 0) {
                 idx_i = ((y-1) * $input_size_x) + x;
             } else {
+            //dummy
                 idx_i = (y * $input_size_x) + x;
             }
 
@@ -104,6 +107,9 @@ $func_prot_hw
             } else {
                 data3x3[0][2] = 0.0;
             }
+
+
+            //capture data 2
             idx_i = y * $input_size_y + x;
             if(x != 0) {
                 data3x3[1][0] = *(ip + idx_i - 1);
@@ -112,12 +118,14 @@ $func_prot_hw
             }
 
             data3x3[1][1] = *(ip + idx_i);
+
             if (x != ($input_size_x - 1)) {
                 data3x3[1][2] = *(ip + idx_i + 1);
             } else {
                 data3x3[1][2] = 0.0;
             }
 
+            //capture data 3
             if(y != ($input_size_y - 1)) {
                 idx_i =  (y + 1) * $input_size_y + x;
             } else {
@@ -138,28 +146,26 @@ $func_prot_hw
             }
 
 
-
-
         //border == 'same
             if (y == 0) {
                 data3x3[0][0] = 0;
                 data3x3[0][1] = 0;
                 data3x3[0][2] = 0;
             }
-            if (y == (input_size_y - 1)) {
+            if (y == ($input_size_y - 1)) {
                 data3x3[2][0] = 0;
                 data3x3[2][1] = 0;
                 data3x3[2][2] = 0;
             }
 
             o_data += weight[0] * data3x3[0][0];
-            o_data += weight[1] * data3x3[0][1];
-            o_data += weight[2] * data3x3[0][2];
-            o_data += weight[3] * data3x3[1][0];
+            o_data += weight[3] * data3x3[0][1];
+            o_data += weight[6] * data3x3[0][2];
+            o_data += weight[1] * data3x3[1][0];
             o_data += weight[4] * data3x3[1][1];
-            o_data += weight[5] * data3x3[1][2];
-            o_data += weight[6] * data3x3[2][0];
-            o_data += weight[7] * data3x3[2][1];
+            o_data += weight[7] * data3x3[1][2];
+            o_data += weight[2] * data3x3[2][0];
+            o_data += weight[5] * data3x3[2][1];
             o_data += weight[8] * data3x3[2][2];
 
             if(last) {

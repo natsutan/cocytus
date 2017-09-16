@@ -84,86 +84,76 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][416]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<416;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<416;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<416;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<416;y++) {
         for(x=0;x<416;x++) {
             //get data
-            idx_o = (y * 416) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 416) + x;
-            } else {
-            //dummy
-                idx_i = (y * 416) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (416 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 416 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (416 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (416 - 1)) {
-                idx_i =  (y + 1) * 416 + x;
-            } else {
-                idx_i =  y * 416 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (416 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (416 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(416 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -177,7 +167,6 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -187,6 +176,27 @@ void CQT_conv2d_1_3x3_hw(float ip[173056], float op[173056], float weight[9], in
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (416 - 1)) {
+                for(li=0;li<416;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<416;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -271,86 +281,76 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][208]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<208;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<208;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<208;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<208;y++) {
         for(x=0;x<208;x++) {
             //get data
-            idx_o = (y * 208) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 208) + x;
-            } else {
-            //dummy
-                idx_i = (y * 208) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (208 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 208 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (208 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (208 - 1)) {
-                idx_i =  (y + 1) * 208 + x;
-            } else {
-                idx_i =  y * 208 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (208 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (208 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(208 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -364,7 +364,6 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -374,6 +373,27 @@ void CQT_conv2d_2_3x3_hw(float ip[43264], float op[43264], float weight[9], int 
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (208 - 1)) {
+                for(li=0;li<208;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<208;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -458,86 +478,76 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][104]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<104;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<104;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<104;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<104;y++) {
         for(x=0;x<104;x++) {
             //get data
-            idx_o = (y * 104) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 104) + x;
-            } else {
-            //dummy
-                idx_i = (y * 104) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (104 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 104 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (104 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (104 - 1)) {
-                idx_i =  (y + 1) * 104 + x;
-            } else {
-                idx_i =  y * 104 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (104 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (104 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(104 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -551,7 +561,6 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -561,6 +570,27 @@ void CQT_conv2d_3_3x3_hw(float ip[10816], float op[10816], float weight[9], int 
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (104 - 1)) {
+                for(li=0;li<104;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<104;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -645,86 +675,76 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][52]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<52;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<52;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<52;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<52;y++) {
         for(x=0;x<52;x++) {
             //get data
-            idx_o = (y * 52) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 52) + x;
-            } else {
-            //dummy
-                idx_i = (y * 52) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (52 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 52 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (52 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (52 - 1)) {
-                idx_i =  (y + 1) * 52 + x;
-            } else {
-                idx_i =  y * 52 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (52 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (52 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(52 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -738,7 +758,6 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -748,6 +767,27 @@ void CQT_conv2d_4_3x3_hw(float ip[2704], float op[2704], float weight[9], int bi
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (52 - 1)) {
+                for(li=0;li<52;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<52;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -832,86 +872,76 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][26]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<26;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<26;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<26;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<26;y++) {
         for(x=0;x<26;x++) {
             //get data
-            idx_o = (y * 26) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 26) + x;
-            } else {
-            //dummy
-                idx_i = (y * 26) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (26 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 26 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (26 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (26 - 1)) {
-                idx_i =  (y + 1) * 26 + x;
-            } else {
-                idx_i =  y * 26 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (26 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (26 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(26 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -925,7 +955,6 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -935,6 +964,27 @@ void CQT_conv2d_5_3x3_hw(float ip[676], float op[676], float weight[9], int bias
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (26 - 1)) {
+                for(li=0;li<26;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<26;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -1019,86 +1069,76 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][13]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<13;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<13;y++) {
         for(x=0;x<13;x++) {
             //get data
-            idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 13) + x;
-            } else {
-            //dummy
-                idx_i = (y * 13) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (13 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 13 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (13 - 1)) {
-                idx_i =  (y + 1) * 13 + x;
-            } else {
-                idx_i =  y * 13 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (13 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1112,7 +1152,6 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -1122,6 +1161,27 @@ void CQT_conv2d_6_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (13 - 1)) {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -1206,86 +1266,76 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][13]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<13;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<13;y++) {
         for(x=0;x<13;x++) {
             //get data
-            idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 13) + x;
-            } else {
-            //dummy
-                idx_i = (y * 13) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (13 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 13 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (13 - 1)) {
-                idx_i =  (y + 1) * 13 + x;
-            } else {
-                idx_i =  y * 13 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (13 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1299,7 +1349,6 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -1309,6 +1358,27 @@ void CQT_conv2d_7_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (13 - 1)) {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }
@@ -1393,86 +1463,76 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
     float o_data;
     int x, y;
     int idx_i, idx_o;
+    int li; // for line buffer
+    int write_buf_idx; //次に書き込むラインバッファ 2bit
+    int read_buf_idx0; //読み出し位置のインデックス 2bit
+    int read_buf_idx1; //読み出し位置のインデックス 2bit
+    int read_buf_idx2; //読み出し位置のインデックス 2bit
+
+    idx_o = 0;
+    idx_i = 0;
+
+    static float line_buffer[3][13]; // line-buffers
+    //#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=1
+
+    for(li=0;li<13;li++) {
+        line_buffer[0][li] = 0;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[1][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    for(li=0;li<13;li++) {
+        line_buffer[2][li] = *(ip + idx_i);
+        idx_i++;
+    }
+
+    write_buf_idx　= 3;
 
     //apply filter
     for(y=0;y<13;y++) {
         for(x=0;x<13;x++) {
             //get data
-            idx_o = (y * 13) + x;
             o_data = *(op + idx_o);
 
-
-            //capture data 1
-            if(y != 0) {
-                idx_i = ((y-1) * 13) + x;
-            } else {
-            //dummy
-                idx_i = (y * 13) + x;
+            //メモリのラインバッファ選択
+            switch (y % 4) {
+                case 0:
+                    read_buf_idx0 = 0;
+                    read_buf_idx1 = 1;
+                    read_buf_idx2 = 2;
+                    break;
+                case 1:
+                    read_buf_idx0 = 1;
+                    read_buf_idx1 = 2;
+                    read_buf_idx2 = 3;
+                    break;
+                case 2:
+                    read_buf_idx0 = 2;
+                    read_buf_idx1 = 3;
+                    read_buf_idx2 = 0;
+                    break;
+                default:  //case 3
+                    read_buf_idx0 = 3;
+                    read_buf_idx1 = 0;
+                    read_buf_idx2 = 1;
+                    break;
             }
 
-            if(x != 0) {
-                data3x3[0][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[0][0] = 0.0;
-            }
+            // データ選択
+            data3x3[0][0] = (x==0) ? 0 : line_buffer[read_buf_idx0][x-1];
+            data3x3[0][1] = line_buffer[read_buf_idx0][x];
+            data3x3[0][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx0][x+1];
 
-            data3x3[0][1] = *(ip + idx_i);
+            data3x3[1][0] = (x==0) ? 0 : line_buffer[read_buf_idx1][x-1];
+            data3x3[1][1] = line_buffer[read_buf_idx1][x];
+            data3x3[1][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx1][x+1];
 
-            if (x != (13 - 1)) {
-                data3x3[0][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[0][2] = 0.0;
-            }
-
-
-            //capture data 2
-            idx_i = y * 13 + x;
-            if(x != 0) {
-                data3x3[1][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[1][0] = 0.0;
-            }
-
-            data3x3[1][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[1][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[1][2] = 0.0;
-            }
-
-            //capture data 3
-            if(y != (13 - 1)) {
-                idx_i =  (y + 1) * 13 + x;
-            } else {
-                idx_i =  y * 13 + x;
-            }
-
-            if (x != 0) {
-                data3x3[2][0] = *(ip + idx_i - 1);
-            } else {
-                data3x3[2][0] = 0.0;
-            }
-            data3x3[2][1] = *(ip + idx_i);
-
-            if (x != (13 - 1)) {
-                data3x3[2][2] = *(ip + idx_i + 1);
-            } else {
-                data3x3[2][2] = 0.0;
-            }
-
-
-        //border == 'same
-            if (y == 0) {
-                data3x3[0][0] = 0;
-                data3x3[0][1] = 0;
-                data3x3[0][2] = 0;
-            }
-            if (y == (13 - 1)) {
-                data3x3[2][0] = 0;
-                data3x3[2][1] = 0;
-                data3x3[2][2] = 0;
-            }
+            data3x3[2][0] = (x==0) ? 0 : line_buffer[read_buf_idx2][x-1];
+            data3x3[2][1] = line_buffer[read_buf_idx2][x];
+            data3x3[2][2] = (x==(13 - 1)) ? 0 : line_buffer[read_buf_idx2][x+1];
 
             o_data += weight[0] * data3x3[0][0];
             o_data += weight[3] * data3x3[0][1];
@@ -1486,7 +1546,6 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
 
             if(last) {
                  o_data += bias;
-
                 //activattion
                 if(act == ACT_RELU) {
                     if(o_data < 0) {
@@ -1496,6 +1555,27 @@ void CQT_conv2d_8_3x3_hw(float ip[169], float op[169], float weight[9], int bias
             }
 
             *(op + idx_o) = o_data;
+            idx_o++;
+
+            //次のデータの書き込み
+            //パラレル化可能
+            if (y != (13 - 1)) {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = *(ip + idx_i);
+                    idx_i++;
+                }
+            } else {
+                for(li=0;li<13;li++) {
+                    line_buffer[write_buf_idx][li] = 0;
+                }
+            }
+
+            if (write_buf_idx　== 3) {
+                write_buf_idx = 0;
+            } else {
+                write_buf_idx++;
+            }
+
         }
 
     }

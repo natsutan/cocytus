@@ -1,11 +1,8 @@
-import sys
-import math
-from functools import cmp_to_key
+import os
 from keras.models import Sequential
 from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, InputLayer
 from keras.layers.advanced_activations import LeakyReLU
 from keras import backend as K
-from keras.models import model_from_json
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -115,6 +112,9 @@ file_post_fix = ''
 # モデルの構築
 tiny_yolo_model = tiny_yolo_model()
 tiny_yolo_model.load_weights('weight/tyolo.h5')
+
+if not os.path.exists('output'):
+    os.mkdir('output')
 
 with open('tiny-yolo.json', 'w') as fp:
     json_string = tiny_yolo_model.to_json()

@@ -2,17 +2,49 @@
 
 ## 準備
 YAD2K: Yet Another Darknet 2 Kerasが動くようにする。
+### YAD2Kのインストール
 
-https://github.com/allanzelener/YAD2K
-
-tiny-yolo-voｃ版のcfgファイルと、対応する重みデータをダウンロードして、YAD2Kを使って重みデータを作成し、tyolo.h5の名前で保存する。
-tyolo.h5を、weightディレクトリの下へコピーする。
-
-## 使い方
-keras ディレクトリへ移動し、tiny-yolo.pyを実行する。
+作業用ディレクトリへ移動し、git cloneする。
 ```
-cd keras
-python tiny-yolo.py
+git clone https://github.com/allanzelener/YAD2K
+```
+
+### Keras用に重みデータを変換する。
+tiny-yolo-cov版のcfgファイルと、重みデータをダウンロードする。
+```
+cd YAD2K
+wget https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/tiny-yolo-voc.cfg
+wget https://pjreddie.com/media/files/tiny-yolo-voc.weights
+```
+ダウンロードした重みファイルをhdf5形式に変換する。
+```
+./yad2k.py tiny-yolo-voc.cfg tiny-yolo-voc.weights tiny-yolo.h5
+```
+成功すると、以下の用に表示される。
+```
+Total params: 15,867,885.0
+Trainable params: 15,861,773.0
+Non-trainable params: 6,112.0
+_________________________________________________________________
+None
+Saved Keras model to tyolo.h5
+Read 15867885 of 15867885.0 from Darknet weights.
+```
+### 変換したデータのコピー
+変換してできたtyolo.h5を、<コキュートスのインストールディレクトリ>/example/tiny-yolo/keras/weightへコピーする
+
+コマンドの例(~/tmp/以下にコキュートスをインストールした場合)
+```
+cp tyolo.h5 ~/tmp/cocytus/example/tiny-yolo/keras/weight/
+```
+
+## コキュートスによるＣ言語生成
+### jsonモデルの生成
+<コキュートスのインストールディレクトリ>/example/tiny-yolo/keras ディレクトリへ移動し、tiny-yolo.pyを実行する。
+以下、コマンド例。
+```
+cd ~/tmp/cocytus/example/tiny-yolo/keras
+python3 tiny-yolo.py
 ```
 
 ## Cソースの作成

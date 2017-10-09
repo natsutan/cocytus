@@ -1,3 +1,4 @@
+import os
 from keras.applications.vgg16 import VGG16, preprocess_input, decode_predictions
 from keras.preprocessing import image
 from keras import backend as K
@@ -73,11 +74,13 @@ def main():
         json_string = model.to_json()
         fp.write(json_string)
 
-    # レイヤーの出力をnumpyに変換するサンプル
+    # ディレクトリの作成
+    if not os.path.exists('output'):
+        os.mkdir("output")
 
     # 出力するレイヤーを選択
 
-    for l in range(22):
+    for l in range(19):
         layer_dump(model, pre_x, l)
 
     print('finish.')

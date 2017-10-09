@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="cqt_tyolo"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cqt_tyolo">
+				<Option output="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/cqt_tyolo" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/inc"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 cqt_tyolo"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cqt_tyolo/fast">
+				<Option output="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/cqt_tyolo" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/inc"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 cqt_tyolo/fast"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_gen/cqt_debug.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_gen/cqt_debug.h">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_gen/cqt_gen.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_gen/cqt_gen.h">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/BatchNormalization.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/Conv2d_same_1x1.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/Conv2d_same_3x3.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/InputLayer.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/LeakyReLU.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/MaxPooling2D.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/cqt_lib.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_lib/numpy.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/cqt_tyolo.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/ya2k_yolo.h">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/yad2k_yolo.c">
+			<Option target="cqt_tyolo"/>
+		</Unit>
+		<Unit filename="/home/natu/myproj/cocytus/example/tiny-yolo/c_sdsoc/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

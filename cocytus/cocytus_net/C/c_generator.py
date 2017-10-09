@@ -539,7 +539,9 @@ class CqtGenC(CFile):
             if self.compiler.is_target_sdsoc():
                 # sds_alloc
                 if layer_detal.output_dtypes[0] == CQT_Dtype.FLOAT32:
-                    element_size = 4
+                    pass
+                elif  layer_detal.output_dtypes[0] == CQT_Dtype.FLOAT16:
+                    pass
                 else:
                     print('ERROR unsuported dtype %s', layer_detal.output_dtypes[0])
                     sys.exit()

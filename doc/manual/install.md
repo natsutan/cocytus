@@ -32,6 +32,11 @@ githubからソースをクローンすることで、コキュートスが使�
 ```
 を実行してください。
 
+Cのコンパイルにcmakeとgccを使います。インストールされていないのなら、インストールしてください。
+```
+sudo apt-get install cmake gcc
+```
+
 ### 簡単な動作確認
 example/vgg16/kerasに移動して、keras版のvgg16を動かしてください。
 ```

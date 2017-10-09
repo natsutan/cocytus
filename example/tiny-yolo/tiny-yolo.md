@@ -39,22 +39,47 @@ cp tyolo.h5 ~/tmp/cocytus/example/tiny-yolo/keras/weight/
 ```
 
 ## コキュートスによるＣ言語生成
-### jsonモデルの生成
+### 重みの変換
 <コキュートスのインストールディレクトリ>/example/tiny-yolo/keras ディレクトリへ移動し、tiny-yolo.pyを実行する。
 以下、コマンド例。
 ```
 cd ~/tmp/cocytus/example/tiny-yolo/keras
 python3 tiny-yolo.py
 ```
+このように領域が表示されれば成功。
+```
+sheep 0.814217 (428, 145) (590, 336)
+person 0.665931 (178, 109) (282, 371)
+cow 0.438515 (66, 267) (188, 356)
+finish
+```
 
-## Cソースの作成
+### Cソースの作成
 tiny-yoloディレクトリに戻り、コキュートスを起動する。
 ```
 cd ..
-python ../../cocytus.py tiny-yolo.ini
+python3 ../../cocytus/cocytus.py tiny-yolo.ini
+```
+最後にこのよう表示されれば成功
+```
+save conv2d_9/bias:0 to c/weight/conv2d_9_bias_z.npy
+finish
 ```
 
-## Cの実行結果
+### Cソースのコンパイル
+cディレクトリへ移動、コンパイル
+```
+cd .
+cmake .
+make
+```
+
+### Cの実行結果
+cqt_tyoloが実行ファイルです。そのまま実行できます。
+```
+./cqt_tyolo
+```
+
 Ｃプログラムには、領域を描画する機能はありません。実行後、このように表示されれば正しく動作しています。
 
 ```
@@ -63,8 +88,14 @@ person 0.665931 (172, 109), (273, 371)
 cow 0.438520 (64, 267), (182, 356)
 ```
 
-## Keras
-### ネットワーク情報
+### 入力データについて
+githubからクローンした状態では、実行時のディレクトリから"../img/person.jpg.npy"のファイルを処理して終了します。別のファイルを読みこんだり、連続処理が必要な場合は、cqt_tyolo.cを書き換えてください。
+cqt_tyolo.cは、コキュートスのＣ言語生成では上書きされません。
+
+別の画層データをコキュートスで読み込めるようにするには、
+
+
+## ネットワーク情報
 ```
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #

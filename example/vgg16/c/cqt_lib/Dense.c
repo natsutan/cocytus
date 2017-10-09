@@ -1,6 +1,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <limits.h>
 #include "cqt.h"
 #include "cqt_net.h"
 
@@ -24,6 +25,8 @@ int CQT_Dense_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     float bias;
     float accumulator;
     float sm_data;
+
+
 
     float sum = 0.0;
 

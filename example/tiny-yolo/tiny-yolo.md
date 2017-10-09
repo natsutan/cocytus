@@ -2,27 +2,84 @@
 
 ## 準備
 YAD2K: Yet Another Darknet 2 Kerasが動くようにする。
+### YAD2Kのインストール
 
-https://github.com/allanzelener/YAD2K
-
-tiny-yolo-voｃ版のcfgファイルと、対応する重みデータをダウンロードして、YAD2Kを使って重みデータを作成し、tyolo.h5の名前で保存する。
-tyolo.h5を、weightディレクトリの下へコピーする。
-
-## 使い方
-keras ディレクトリへ移動し、tiny-yolo.pyを実行する。
+作業用ディレクトリへ移動し、git cloneする。
 ```
-cd keras
-python tiny-yolo.py
+git clone https://github.com/allanzelener/YAD2K
 ```
 
-## Cソースの作成
+### Keras用に重みデータを変換する。
+tiny-yolo-cov版のcfgファイルと、重みデータをダウンロードする。
+```
+cd YAD2K
+wget https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/tiny-yolo-voc.cfg
+wget https://pjreddie.com/media/files/tiny-yolo-voc.weights
+```
+ダウンロードした重みファイルをhdf5形式に変換する。
+```
+./yad2k.py tiny-yolo-voc.cfg tiny-yolo-voc.weights tiny-yolo.h5
+```
+成功すると、以下の用に表示される。
+```
+Total params: 15,867,885.0
+Trainable params: 15,861,773.0
+Non-trainable params: 6,112.0
+_________________________________________________________________
+None
+Saved Keras model to tyolo.h5
+Read 15867885 of 15867885.0 from Darknet weights.
+```
+### 変換したデータのコピー
+変換してできたtyolo.h5を、<コキュートスのインストールディレクトリ>/example/tiny-yolo/keras/weightへコピーする
+
+コマンドの例(~/tmp/以下にコキュートスをインストールした場合)
+```
+cp tyolo.h5 ~/tmp/cocytus/example/tiny-yolo/keras/weight/
+```
+
+## コキュートスによるＣ言語生成
+### 重みの変換
+<コキュートスのインストールディレクトリ>/example/tiny-yolo/keras ディレクトリへ移動し、tiny-yolo.pyを実行する。
+以下、コマンド例。
+```
+cd ~/tmp/cocytus/example/tiny-yolo/keras
+python3 tiny-yolo.py
+```
+このように領域が表示されれば成功。
+```
+sheep 0.814217 (428, 145) (590, 336)
+person 0.665931 (178, 109) (282, 371)
+cow 0.438515 (66, 267) (188, 356)
+finish
+```
+
+### Cソースの作成
 tiny-yoloディレクトリに戻り、コキュートスを起動する。
 ```
 cd ..
-python ../../cocytus.py tiny-yolo.ini
+python3 ../../cocytus/cocytus.py tiny-yolo.ini
+```
+最後にこのよう表示されれば成功
+```
+save conv2d_9/bias:0 to c/weight/conv2d_9_bias_z.npy
+finish
 ```
 
-## Cの実行結果
+### Cソースのコンパイル
+cディレクトリへ移動、コンパイル
+```
+cd .
+cmake .
+make
+```
+
+### Cの実行結果
+cqt_tyoloが実行ファイルです。そのまま実行できます。
+```
+./cqt_tyolo
+```
+
 Ｃプログラムには、領域を描画する機能はありません。実行後、このように表示されれば正しく動作しています。
 
 ```
@@ -31,8 +88,30 @@ person 0.665931 (172, 109), (273, 371)
 cow 0.438520 (64, 267), (182, 356)
 ```
 
-## Keras
-### ネットワーク情報
+### 入力データについて
+githubからクローンした状態では、実行時のディレクトリから"../img/person.jpg.npy"のファイルを処理して終了します。別のファイルを読みこんだり、連続処理が必要な場合は、cqt_tyolo.cを書き換えてください。
+cqt_tyolo.cは、コキュートスのＣ言語生成では上書きされません。
+
+別の画層データをコキュートスで読み込めるようにするはtools/yolo_conv.pyを使用します。
+```
+python3 tools/yolo_conv.py img/000001.jpg
+```
+このようにスクリプトの後にファイル名を指定すると、000001.jpg.npyが生成されます。
+
+ファイルからではなく、別の形でデータを入力したい場合は、cqt_tyolo.c内でグローバル変数input_1_outputに、入力データの画素値を、1.0から0.0に正規化して代入してください。
+
+### ARM対応について
+コキュートス起動時のiniファイルを、tiny-yolo_neon.iniに変更してください。
+```
+cd ..
+python3 ../../cocytus/cocytus.py tiny-yolo_neon.ini
+```
+c_neon以下にＣソースと重みが変換されるので、ＡＲＭ環境へ持って行きgccでコンパイルしてください。
+
+※デフォルトの状態ではＮＥＯＮによる最適化は行われていません。cqt_lib以下にあるConv2d_same_3x3.cをfor_neonディレクトリにある同名ファイルで上書きしてください。
+
+
+## ネットワーク情報
 ```
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #

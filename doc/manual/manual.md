@@ -127,6 +127,7 @@ c_lib_dir=../../cocytus/cocytus_net/C/template/
 - tools
 - example
     - vgg16
+    - tiny-yolo
 
 参考：
 http://www.hexacosa.net/pph_ja/

@@ -82,7 +82,8 @@ int load_from_numpy(void *dp, const char *numpy_fname, int size, NUMPY_HEADER *h
       }
       break;
 
-  case CQT_FIX16:
+  case CQT_FIX16:   //fall through
+  case CQT_FLOAT16:
       ret = fread(dp, 2, size, fp);
       if (ret != size) {
         return CQT_FREAD_ERR;
@@ -206,7 +207,9 @@ int np_parse_header_dic(char *buf, NUMPY_HEADER *hp)
         hp->descr = CQT_FIX16;
       } else if(strstr(cp, "'|i1'")!=NULL) {
         hp->descr = CQT_FIX8;
-      } else {
+      } else if (strstr(cp, "'<f2'")!=NULL) {
+        hp->descr = CQT_FLOAT16;
+      } else{
         printf("ERROR unkown descr %s\n", cp);
         return CQT_NP_HEADER_ERR;
       }

@@ -15,7 +15,7 @@ def open_inifile(ini_file):
     """
     print("INI:open %s" % ini_file)
     config = configparser.ConfigParser()
-    config.read(ini_file)
+    config.read(ini_file, encoding='utf-8')
     return config
 
 

@@ -81,7 +81,7 @@ class FunctionGenerator:
         template_file = os.path.join(self.template_dir, 'InputLayer', 'InputLayer.c')
 
         with open(output_file, 'w') as fpout:
-            t = string.Template(open(template_file).read())
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name)
             fpout.write(func_str)
 
@@ -156,7 +156,7 @@ class FunctionGenerator:
             return
 
         with open(output_file, 'a') as fpout:
-            t = string.Template(open(template_file).read())
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
@@ -190,7 +190,7 @@ class FunctionGenerator:
             self.maxpoolong2d_first = False
 
         with open(output_file, 'a') as fpout:
-            t = string.Template(open(template_file).read())
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     output_type=ctype_dic[output_type])
@@ -294,7 +294,7 @@ class FunctionGenerator:
             self.batchnormalization_first = False
 
         with open(output_file, 'a') as fpout:
-            t = string.Template(open(template_file).read())
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     weight_type=ctype_dic[weight_type],
@@ -323,7 +323,7 @@ class FunctionGenerator:
             self.leakyrelu_first = False
 
         with open(output_file, 'a') as fpout:
-            t = string.Template(open(template_file).read())
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     output_type=ctype_dic[output_type])

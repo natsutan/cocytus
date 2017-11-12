@@ -334,6 +334,11 @@ class CqtGenH(CFile):
         if self.compiler.is_output_channel_last():
             self.wr('#define CQT_CHANNEL_LAST\n')
 
+        if self.compiler.is_target_zynq():
+            size = self.compiler.get_zynq_bufsize()
+            self.wr('//for zynq\n')
+            self.wr('#define LINE_BUF_SIZE %d\n' % size)
+
         self.cr()
 
         self.wr('CQT_NET* cqt_init(void);\n')

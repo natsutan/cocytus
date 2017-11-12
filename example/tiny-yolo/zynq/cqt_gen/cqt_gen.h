@@ -8,6 +8,8 @@
 #include "cqt.h"
 #include "cqt_net.h"
 
+//for zynq
+#define LINE_BUF_SIZE 416
 
 CQT_NET* cqt_init(void);
 int cqt_load_weight_from_files(CQT_NET* np, const char *path);

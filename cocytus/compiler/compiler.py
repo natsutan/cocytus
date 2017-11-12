@@ -416,6 +416,22 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_target_zynq(self):
+        try:
+            target = self.config.get('Cocyuts', 'target')
+            return target == 'zynq'
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return False
+
+    def get_zynq_bufsize(self):
+        try:
+            size = self.config.get('ZYNQ', 'line_buf_size')
+            return int(size)
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return 512
+
+
+
     def get_max_out_size(self):
         if self.max_out_size == 0:
             self.calc_max_out_size()

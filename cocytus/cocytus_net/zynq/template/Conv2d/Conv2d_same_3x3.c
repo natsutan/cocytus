@@ -1,23 +1,16 @@
-#include <string.h>
-#include <limits.h>
-#include <assert.h>
-#include "cqt.h"
-#include "cqt_net.h"
-#include "../cqt_gen/cqt_gen.h"
 
-
-int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
+int $func_name (CQT_LAYER *lp, void *inp, void *outp)
 {
-    float filter3x3[3*3];
-    float bias;
+    $weight_type filter3x3[3*3];
+    $weight_type bias;
 
     LY_Conv2D *cnvp;
     cnvp = lp->param_p;
 
-    float *ip = (float *)inp;
-    float *op = outp;
-    float *wp = cnvp->weight_p;
-    float *bp = cnvp->bias_p;
+    $input_type *ip = ($input_type *)inp;
+    $output_type *op = outp;
+    $weight_type *wp = cnvp->weight_p;
+    $weight_type *bp = cnvp->bias_p;
 
     int fill_num = cnvp->filters;
     int input_size_x;
@@ -27,8 +20,8 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     int f, x, y, n;
     int idx_i,idx_o;
 
-    float data3x3[3][3];
-    float o_data;
+    $weight_type data3x3[3][3];
+    $output_type o_data;
     int li; // for line buffer
     int write_buf_idx; //次に書き込むラインバッファ 2bit
     int read_buf_idx0; //読み出し位置のインデックス 2bit
@@ -36,9 +29,9 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     int read_buf_idx2; //読み出し位置のインデックス 2bit
 
     //line buffer
-    static float line_buffer[LINE_BUF_SIZE][4]; // line-buffers
+    static $input_type line_buffer[LINE_BUF_SIZE][4]; // line-buffers
 
-    float w_data;
+    $weight_type w_data;
     int last;
 
     input_size_x = lp->cqt_input_shape[1];  //画像サイズ
@@ -53,7 +46,7 @@ int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     assert(cnvp->strides[1]==1);
     assert(fill_num==lp->cqt_output_shape[3]);
 
-    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof(float));
+    memset(op, 0.0, fill_num * input_size_y * input_size_x * sizeof($output_type));
 
     for(f=0;f<fill_num;f++) {
         for(n=0;n<input_size_num;n++){

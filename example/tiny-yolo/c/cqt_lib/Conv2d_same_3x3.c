@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "cqt.h"
 #include "cqt_net.h"
+#include "../cqt_gen/cqt_gen.h"
 
 
 int CQT_Conv2D_same_3x3_if_wf_of (CQT_LAYER *lp, void *inp, void *outp)

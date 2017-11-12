@@ -27,9 +27,9 @@ int CQT_Conv2D_same_1x1_if_wf_wf_of (CQT_LAYER *lp, void *inp, void *outp)
     int idx_i,idx_o, idx_w;
     float o_data;
 
-    input_size_x = lp->cqt_input_shape[1];  //逕ｻ蜒上し繧､繧ｺ
-    input_size_y = lp->cqt_input_shape[2];  //逕ｻ蜒上し繧､繧ｺ
-    input_size_num = lp->cqt_input_shape[3]; //蜈･蜉帙�ｮ謨ｰ
+    input_size_x = lp->cqt_input_shape[1];  //画像サイズ
+    input_size_y = lp->cqt_input_shape[2];  //画像サイズ
+    input_size_num = lp->cqt_input_shape[3]; //入力の数
 
     //parameter check o_data
     assert(cnvp->kernel_size[0]==1);

@@ -80,7 +80,7 @@ class FunctionGenerator:
         output_file = os.path.join(self.target_dir, 'cqt_lib', 'InputLayer.c')
         template_file = os.path.join(self.template_dir, 'InputLayer', 'InputLayer.c')
 
-        with open(output_file, 'w') as fpout:
+        with open(output_file, 'w', encoding='utf-8') as fpout:
             t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name)
             fpout.write(func_str)
@@ -132,7 +132,7 @@ class FunctionGenerator:
             template_file = os.path.join(self.template_dir, 'Conv2d', conv2d_template_fname)
 
             if kernel_size == (3, 3) and self.conv2d_same_3x3_first:
-                with open(output_file, 'w') as fp:
+                with open(output_file, 'w', encoding='utf-8') as fp:
                     fp.write('#include <string.h>\n')
                     fp.write('#include <limits.h>\n')
                     fp.write('#include <assert.h>\n')
@@ -143,7 +143,7 @@ class FunctionGenerator:
                 self.conv2d_same_3x3_first = False
 
             if kernel_size == (1, 1) and self.conv2d_same_1x1_first:
-                with open(output_file, 'w') as fp:
+                with open(output_file, 'w', encoding='utf-8') as fp:
                     fp.write('#include <string.h>\n')
                     fp.write('#include <assert.h>\n')
                     fp.write('#include "cqt.h"\n')
@@ -181,7 +181,7 @@ class FunctionGenerator:
             template_file = os.path.join(self.template_dir, 'MaxPooling2D', 'MaxPooling2D.c')
 
         if self.maxpoolong2d_first:
-            with open(output_file, 'w') as fp:
+            with open(output_file, 'w', encoding='utf-8') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include "cqt.h"\n')
@@ -189,7 +189,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.maxpoolong2d_first = False
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a', encoding='utf-8') as fpout:
             t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
@@ -206,7 +206,7 @@ class FunctionGenerator:
         template_file = os.path.join(self.template_dir, 'Flatten', 'Flatten.c')
 
         if self.flatten_first:
-            with open(output_file, 'w') as fp:
+            with open(output_file, 'w', encoding='utf-8') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include "cqt.h"\n')
@@ -214,8 +214,8 @@ class FunctionGenerator:
                 fp.write('\n')
             self.flatten_first = False
 
-        with open(output_file, 'a') as fpout:
-            t = string.Template(open(template_file).read())
+        with open(output_file, 'a', encoding='utf-8') as fpout:
+            t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
                                     output_type=ctype_dic[output_type])
@@ -237,10 +237,8 @@ class FunctionGenerator:
 
         template_file = os.path.join(self.template_dir, 'Dense', tfile)
 
-
-
         if self.dense_first:
-            with open(output_file, 'w') as fp:
+            with open(output_file, 'w', encoding='utf-8') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include <math.h>\n')
@@ -250,7 +248,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.dense_first = False
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a', encoding='utf-8') as fpout:
             t = string.Template(open(template_file).read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
@@ -283,7 +281,7 @@ class FunctionGenerator:
                 template_file = os.path.join(self.template_dir, 'BatchNormalization', 'BatchNormalization.c')
 
         if self.batchnormalization_first:
-            with open(output_file, 'w') as fp:
+            with open(output_file, 'w', encoding='utf-8') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include <limits.h>\n')
@@ -293,7 +291,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.batchnormalization_first = False
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a', encoding='utf-8') as fpout:
             t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
@@ -313,7 +311,7 @@ class FunctionGenerator:
         template_file = os.path.join(self.template_dir, 'LeakyReLU', 'LeakyReLU.c')
 
         if self.leakyrelu_first:
-            with open(output_file, 'w') as fp:
+            with open(output_file, 'w', encoding='utf-8') as fp:
                 fp.write('#include <string.h>\n')
                 fp.write('#include <assert.h>\n')
                 fp.write('#include <math.h>\n')
@@ -322,7 +320,7 @@ class FunctionGenerator:
                 fp.write('\n')
             self.leakyrelu_first = False
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a', encoding='utf-8') as fpout:
             t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],

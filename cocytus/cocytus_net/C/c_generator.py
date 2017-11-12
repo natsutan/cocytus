@@ -109,7 +109,7 @@ class CGenerator:
 class CFile:
     def __init__(self, file, compier):
         self.file = file
-        self.fp = open(file, 'w')
+        self.fp = open(file, 'w', encoding='utf-8')
         self.compiler = compier
         self.pd_dic = {'valid': 'PD_VALID', 'same': 'PD_SAME'}
         self.df_dic = {'channels_last' : 'DF_CHANNELS_LAST', 'channels_first': 'DF_CHANNELS_FIRST'}

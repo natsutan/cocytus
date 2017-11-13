@@ -63,6 +63,13 @@ class WeightConverter:
                     filepath = os.path.join(self.output_dir, filename)
                     np.save(filepath, data2, allow_pickle=False)
                     print("save %s to %s" % (weight_name, filepath))
+
+                    # Zynq使用時の重み圧縮
+                    # file名 batch_normalization_3_moving_variance_z.npy'
+                    str_last = '_moving_variance_z.npy'
+                    if filename.rfind(str_last) == (len(str_last) - 1) and self.compiler.is_target_zynq():
+                        self.compress_bn(filename)
+
                 elif self.dtype == 'fix16':
                     # convolutionの重みかどうかの判定。
                     fixconv_en, fix_name = self.is_fixconv(weight_name)
@@ -140,17 +147,32 @@ class WeightConverter:
                     np.save(filepath, data_fp16, allow_pickle=False)
                     print("save %s to %s(fp16)" % (weight_name, filepath))
 
-
-
                 else:
                     print("ERROR unkown weight dtype = %s" % self.dtype)
+
+    def compress_bn(self, filename):
+        """
+        Batch Normalizationの重み（gamma, beta, moving mean, moving variance)を1つの重みデータに
+        圧縮する。 (0除算を防ぐためのepsilonは0.001に決め打ち）
+        として、
+        A = mean - (beta * sqrt(variance + epsilon))
+        B = gamma / sqrt(variance + epsilon)
+        とする。BNの計算は
+        (X - A) * B
+        で計算ができる。逆数、ルートの計算を実行時にやらなくてすみ、データ量を減らせる。
+        データの並びは、先頭から
+        A[0]B[0]A[1]B[1]・・・A[n]B[n]
+        の順番
+        :param filename: moving_varianceのファイル名。ここから残りのファイル名を生成する。
+        :return:
+        """
+        print("Batch Normalization Compress %s" % filename)
 
     def calc_bach_invvar(self, data):
         epsilon = 0.001
         outdata = 1.0 / np.sqrt(data + epsilon)
-        print("calc_var min = %f, max = %f" % ( outdata.min(), outdata.max()))
+        print("calc_var min = %f, max = %f" % (outdata.min(), outdata.max()))
         return outdata
-
 
     def tf_reshape(self, data):
         """
@@ -245,10 +267,6 @@ class WeightConverter:
                 return True, name
             else:
                 return False, ''
-
-
-
-
 
 def calc_qpos(x, bit = 16):
     """

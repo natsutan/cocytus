@@ -247,7 +247,6 @@ class CocytusCompiler:
                     cl.output_q = int(self.config.get('Cocyuts', 'layerout_q'))
                     cl.input_q = cl.output_q
 
-
                 # 各レイヤー固有の指定
                 if name in self.config:
                     if 'layerin_q' in self.config[name]:
@@ -281,7 +280,7 @@ class CocytusCompiler:
                                 cl.weight_q = int(self.config.get(name, 'weight_q'))
 
                     else:
-                    # iniファイルに設定が無いときはKerasの型を使う。
+                        # iniファイルに設定が無いときはKerasの型を使う。
                         wtype = w.dtype
 
                     cl.weight_dtypes.append(conv_type_np_to_cqt(wtype))
@@ -357,7 +356,6 @@ class CocytusCompiler:
         :return:
         """
         return self.layers
-
 
     def is_fix8_mode(self):
         """

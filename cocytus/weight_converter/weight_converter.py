@@ -156,7 +156,7 @@ class WeightConverter:
         Batch Normalizationの重み（gamma, beta, moving mean, moving variance)を1つの重みデータに
         圧縮する。 (0除算を防ぐためのepsilonは0.001に決め打ち）
         として、
-        A = mean - (beta * sqrt(variance + epsilon))
+        A = mean - (beta /( sqrt(variance + epsilon) * gamma))
         B = gamma / sqrt(variance + epsilon)
         とする。BNの計算は
         (X - A) * B
@@ -177,13 +177,13 @@ class WeightConverter:
         fname_bn_weight = 'batch_normalization_%s.npy' % num
 
         moving_variance = np.load(os.path.join(self.output_dir, fname_moving_variance))
-        moving_mean = np.load(os.path.join(self.output_dir, fname_moving_variance))
-        gammma = np.load(os.path.join(self.output_dir, fname_gammma))
+        moving_mean = np.load(os.path.join(self.output_dir, fname_moving_mean))
+        gamma = np.load(os.path.join(self.output_dir, fname_gammma))
         beta = np.load(os.path.join(self.output_dir, fname_beta))
 
-        A = moving_mean - (beta * np.sqrt(moving_variance + self.epsilon))
-        B = gammma / np.sqrt(moving_variance + self.epsilon)
-        np_w = np.zeros(len(A) * 2)
+        B = gamma / np.sqrt(moving_variance + self.epsilon)
+        A = moving_mean - (beta / B)
+        np_w = np.zeros(len(A) * 2, dtype=np.float32)
 
         for i in range(len(A)):
             np_w[i*2] = A[i]

@@ -771,7 +771,7 @@ class CqtGenC(CFile):
                     fnames = [fname_bn_weight, ]
                     variable_names = [vname, ]
                     nph_names = [nph_nams, ]
-                    dims = dims * 2
+                    dims = [d * 2 for d in dims]
 
                 self.wr('// %s\n' % name)
                 for fn, vn, npn, dim in zip(fnames, variable_names, nph_names, dims):

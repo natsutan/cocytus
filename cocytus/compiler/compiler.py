@@ -414,7 +414,7 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
-    def is_batch_normalization_enable(self):
+    def is_batch_normalization_optimize_enable(self):
         return self.is_target_zynq()
 
     def is_target_zynq(self):

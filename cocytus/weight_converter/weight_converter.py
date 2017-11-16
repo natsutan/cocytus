@@ -69,7 +69,7 @@ class WeightConverter:
                     # Zynq使用時の重み圧縮
                     # file名 batch_normalization_3_moving_variance_z.npy'
                     str_last = '_moving_variance_z.npy'
-                    if filename.rfind(str_last) == (len(str_last) - 1) and self.compiler.is_batch_normalization_enable():
+                    if filename.rfind(str_last) == (len(str_last) - 1) and self.compiler.is_batch_normalization_optimize_enable():
                         self.compress_bn(filename)
 
                 elif self.dtype == 'fix16':
@@ -126,7 +126,6 @@ class WeightConverter:
                         # 小数点以下の補正
                         adj = (1.0 / (2 ** fix_q)) / 2.0
                         data2 = data2 + adj
-
 
                         d2_max = data2.max()
                         d2_min = data2.min()
@@ -193,7 +192,7 @@ class WeightConverter:
         np.save(os.path.join(self.output_dir, fname_bn_weight), np_w, allow_pickle=False)
 
         os.remove(os.path.join(self.output_dir, fname_moving_variance))
-            os.remove(os.path.join(self.output_dir, fname_moving_mean))
+        os.remove(os.path.join(self.output_dir, fname_moving_mean))
         os.remove(os.path.join(self.output_dir, fname_gammma))
         os.remove(os.path.join(self.output_dir, fname_beta))
 

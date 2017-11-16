@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+import re
 from compiler.compiler import CQT_Dtype
 from cocytus_net.C.function_generator import FunctionGenerator
 
@@ -23,7 +24,7 @@ class CGenerator:
         # ヘッダーファイルの作成、コピー
         template_dir = self.config['Cocyuts']['c_lib_dir']
 
-        self.generate_hedarfiles(target_dir, template_dir)
+        self.generate_header_files(target_dir, template_dir)
 
         # Cソースの作成
         target_dir = self.config['Cocyuts']['output_dir']
@@ -35,9 +36,7 @@ class CGenerator:
         # ライブラリの作成
         self.generate_cqt_lib(target_dir, template_dir)
 
-
-
-    def generate_hedarfiles(self, target_dir, template_dir):
+    def generate_header_files(self, target_dir, template_dir):
         """
         template_dirから、target_dirへヘッダファイルをコピーする。
         :param target_dir: str
@@ -204,28 +203,28 @@ class CFile:
             cqt_layer = self.compiler.get_cqt_layer_obj(name)
             class_name = cqt_layer.keras_layer_type
             if class_name == 'Conv2D':
-                layer_detal = self.compiler.get_cqt_layer_obj(name)
-                w_shape = layer_detal.get_Wshape()
-                w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
+                layer_detail = self.compiler.get_cqt_layer_obj(name)
+                w_shape = layer_detail.get_Wshape()
+                w_name, w_nph_name, b_name, b_nph_name = layer_detail.get_conv2d_weight_variable_name()
                 w_dim_s = dim_str_from_keras_4d_shape(w_shape)
                 b_dim_s = dim_str_from_keras_4d_shape_bias(w_shape)
                 scope_s = add_space(scope)
 
-                w_type = layer_detal.get_weight_type_str()
+                w_type = layer_detail.get_weight_type_str()
 
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
                 self.wr("%s%s %s%s;\n" % (scope_s, w_type, w_name, w_dim_s))
                 self.wr("%s%s %s%s;\n" % (scope_s, w_type, b_name, b_dim_s))
             elif class_name == 'Dense':
-                layer_detal = self.compiler.get_cqt_layer_obj(name)
-                w_shape = layer_detal.get_Wshape()
+                layer_detail = self.compiler.get_cqt_layer_obj(name)
+                w_shape = layer_detail.get_Wshape()
                 input_dim = w_shape[0]
                 output_dim = w_shape[1]
                 scope_s = add_space(scope)
-                w_type = layer_detal.get_weight_type_str()
+                w_type = layer_detail.get_weight_type_str()
 
-                w_name, w_nph_name, b_name, b_nph_name = layer_detal.get_conv2d_weight_variable_name()
+                w_name, w_nph_name, b_name, b_nph_name = layer_detail.get_conv2d_weight_variable_name()
 
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, w_nph_name))
                 self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, b_nph_name))
@@ -233,22 +232,30 @@ class CFile:
                 self.wr("%s%s %s[%s];\n" % (scope_s, w_type, b_name, output_dim))
 
             elif class_name == 'BatchNormalization':
-                layer_detal = self.compiler.get_cqt_layer_obj(name)
-                b_dim, gm_dim, mm_dim, mv_dim = layer_detal.get_Wshape()
+                layer_detail = self.compiler.get_cqt_layer_obj(name)
+                b_dim, gm_dim, mm_dim, mv_dim = layer_detail.get_Wshape()
+                w_type = layer_detail.get_weight_type_str()
+                beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = \
+                    layer_detail.get_batchnormalization_weight_variable_name()
 
-                beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
-                w_type = layer_detal.get_weight_type_str()
+                if self.compiler.is_batch_normalization_optimize_enable():
+                    m = re.findall("\d+", mv_name)
+                    num = m[-1]
+                    nph_name = 'nph_batch_normalization_%s_W' % num
+                    val_name = 'batch_normalization_%s_W' % num
+                    self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, nph_name))
+                    self.wr("%s%s %s[%d];\n" % (scope_s, w_type, val_name, b_dim * 2))
 
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, beta_nph_name))
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, gamma_nph_name))
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mm_nph_name))
-                self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mv_nph_name))
+                else:
+                    self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, beta_nph_name))
+                    self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, gamma_nph_name))
+                    self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mm_nph_name))
+                    self.wr('%sNUMPY_HEADER %s;\n' % (scope_s, mv_nph_name))
 
-                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, beta_name, b_dim))
-                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, gamma_name, gm_dim))
-                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mm_name, mm_dim))
-                self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mv_name, mv_dim))
-
+                    self.wr("%s%s %s[%d];\n" % (scope_s, w_type, beta_name, b_dim))
+                    self.wr("%s%s %s[%d];\n" % (scope_s, w_type, gamma_name, gm_dim))
+                    self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mm_name, mm_dim))
+                    self.wr("%s%s %s[%d];\n" % (scope_s, w_type, mv_name, mv_dim))
 
     def wr_output_definition(self, scope=None, conv_pointer=False):
         """
@@ -266,7 +273,6 @@ class CFile:
             layer_detal = self.compiler.get_cqt_layer_obj(name)
             class_name = layer_detal.keras_layer_type
             o_shape = layer_detal.get_output_shape()
-
 
             o_name = layer_detal.get_output_variable_name()
             o_type = layer_detal.get_output_type_str()
@@ -287,8 +293,6 @@ class CFile:
                 dim_s = dim_str_from_keras_4d_shape_output_noen(o_shape, layer_detal)
 
                 self.wr('%s%s %s%s;\n' % (scope_s, o_type, o_name, dim_s))
-
-
 
     def wr_assign(self, variable_name, value, tab=1):
         """
@@ -361,7 +365,6 @@ class CqtGenH(CFile):
 
         self.wr_output_definition(scope='extern', conv_pointer=self.compiler.is_target_sdsoc())
         self.cr()
-
 
         self.fp.write('\n')
 
@@ -559,8 +562,7 @@ class CqtGenC(CFile):
                 self.wr('\tif (%s == NULL) {\n' % o_name)
                 self.wr('\t\treturn NULL;\n')
                 self.wr('\t}\n')
-                self.cr();
-
+                self.cr()
 
             self.cr()
 
@@ -591,7 +593,6 @@ class CqtGenC(CFile):
         self.wr_assign("%s.weight_p" % name, '&'+ w_name)
         self.wr_assign("%s.bias_np_header_p" % name, '&'+ b_nph_name)
         self.wr_assign("%s.bias_p" % name, '&'+ b_name)
-
 
     def write_maxpooling2d(self, l):
         """
@@ -644,14 +645,28 @@ class CqtGenC(CFile):
         self.wr_assign("%s.center" % name, config['center'])
         self.wr_assign("%s.scale" % name, config['scale'])
         beta_name, beta_nph_name, gamma_name, gamma_nph_name, mm_name, mm_nph_name, mv_name, mv_nph_name = layer_detal.get_batchnormalization_weight_variable_name()
-        self.wr_assign("%s.beta_np_header_p" % name, '&' + beta_nph_name)
-        self.wr_assign("%s.beta_p" % name, '&' + beta_name)
-        self.wr_assign("%s.gamma_np_header_p" % name, '&' + gamma_nph_name)
-        self.wr_assign("%s.gamma_p" % name, '&' + gamma_name)
-        self.wr_assign("%s.moving_mean_np_header_p" % name, '&' + mm_nph_name)
-        self.wr_assign("%s.moving_mean_p" % name, '&' + mm_name)
-        self.wr_assign("%s.moving_variance_np_header_p" % name, '&' + mv_nph_name)
-        self.wr_assign("%s.moving_variance_p" % name, '&' + mv_name)
+        if self.compiler.is_batch_normalization_optimize_enable():
+            m = re.findall("\d+", beta_name)
+            num = m[-1]
+            vname = 'batch_normalization_%s_W' % num
+            nph_name = 'nph_batch_normalization_%s_W' % num
+            self.wr_assign("%s.beta_np_header_p" % name, '&' + nph_name)
+            self.wr_assign("%s.beta_p" % name, '&' + vname)
+            self.wr_assign("%s.gamma_np_header_p" % name, 'NULL')
+            self.wr_assign("%s.gamma_p" % name, 'NULL')
+            self.wr_assign("%s.moving_mean_np_header_p" % name, 'NULL')
+            self.wr_assign("%s.moving_mean_p" % name, 'NULL')
+            self.wr_assign("%s.moving_variance_np_header_p" % name, 'NULL')
+            self.wr_assign("%s.moving_variance_p" % name, 'NULL')
+        else:
+            self.wr_assign("%s.beta_np_header_p" % name, '&' + beta_nph_name)
+            self.wr_assign("%s.beta_p" % name, '&' + beta_name)
+            self.wr_assign("%s.gamma_np_header_p" % name, '&' + gamma_nph_name)
+            self.wr_assign("%s.gamma_p" % name, '&' + gamma_name)
+            self.wr_assign("%s.moving_mean_np_header_p" % name, '&' + mm_nph_name)
+            self.wr_assign("%s.moving_mean_p" % name, '&' + mm_name)
+            self.wr_assign("%s.moving_variance_np_header_p" % name, '&' + mv_nph_name)
+            self.wr_assign("%s.moving_variance_p" % name, '&' + mv_name)
 
     def write_leakyrelu(self, l):
         """
@@ -664,7 +679,6 @@ class CqtGenC(CFile):
         layer_detal = self.compiler.get_cqt_layer_obj(name)
         self.wr_assign("%s.alpha" % name, config['alpha'])
 
-
     def write_cqt_load_weight_from_files(self):
         self.wr('int cqt_load_weight_from_files(CQT_NET* np, const char *path) {\n')
         self.wr('\tchar buf[CQT_MAX_PATH];\n')
@@ -674,7 +688,6 @@ class CqtGenC(CFile):
         self.wr('\tint ret;\n')
         self.wr('\n')
 
-        #model_config = self.get_config()
         layers = self.compiler.get_layers()
 
         for i, l in enumerate(layers):
@@ -691,7 +704,7 @@ class CqtGenC(CFile):
                     fname_w = name + '_kernel_z.npy'
                     fname_b = name + '_bias_z.npy'
                 else:
-                    raise ValueError('Unkown weight_filename_mode %d' % self.compiler.weight_filename_mode)
+                    raise ValueError('Unknown weight_filename_mode %d' % self.compiler.weight_filename_mode)
 
                 [variable_name_w, variable_name_w_header, variable_name_b,
                  variable_name_b_header] = layer_detal.get_conv2d_weight_variable_name()
@@ -732,6 +745,7 @@ class CqtGenC(CFile):
                     self.wr('\t}\n')
 
                 self.cr()
+
             elif class_name == 'BatchNormalization':
                 # 重みのファイル名
                 fname_beta = name + '_beta_z.npy'
@@ -745,6 +759,19 @@ class CqtGenC(CFile):
                 variable_names = [beta_name, gamma_name, mm_name, mv_name]
                 nph_names = [beta_nph_name, gamma_nph_name, mm_nph_name, mv_nph_name]
                 dims = layer_detal.get_Wshape()
+
+                # BN層の重みを圧縮するときは、変数名等を上書き
+                if self.compiler.is_batch_normalization_optimize_enable():
+                    m = re.findall("\d+", fname_mv)
+                    num = m[-1]
+                    fname_bn_weight = 'batch_normalization_%s.npy' % num
+                    vname = 'batch_normalization_%s_W' % num
+                    nph_nams = 'nph_batch_normalization_%s_W' % num
+
+                    fnames = [fname_bn_weight, ]
+                    variable_names = [vname, ]
+                    nph_names = [nph_nams, ]
+                    dims = dims * 2
 
                 self.wr('// %s\n' % name)
                 for fn, vn, npn, dim in zip(fnames, variable_names, nph_names, dims):

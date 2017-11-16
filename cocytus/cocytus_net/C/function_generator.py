@@ -155,7 +155,7 @@ class FunctionGenerator:
             print('ERROR unsupported Conv2d %s kernel = %s padding = %s' % (name, str(kernel_size), padding))
             return
 
-        with open(output_file, 'a') as fpout:
+        with open(output_file, 'a',  encoding='utf-8') as fpout:
             t = string.Template(open(template_file, encoding='utf-8').read())
             func_str = t.substitute(func_name=func_name,
                                     input_type=ctype_dic[input_type],
@@ -165,8 +165,6 @@ class FunctionGenerator:
                                     func_name_hw=func_name+'_hw'
                                     )
             fpout.write(func_str)
-
-
 
     def generate_maxpooling2d(self, layer_detail):
 

@@ -414,6 +414,9 @@ class CocytusCompiler:
         except (configparser.NoSectionError, configparser.NoOptionError):
             return False
 
+    def is_batch_normalization_enable(self):
+        return self.is_target_zynq()
+
     def is_target_zynq(self):
         try:
             target = self.config.get('Cocyuts', 'target')

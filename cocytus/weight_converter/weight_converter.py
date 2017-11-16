@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import itertools
 import os
-import math
+import re
 
 
 class WeightConverter:
@@ -12,6 +12,8 @@ class WeightConverter:
         self.h5file = os.path.expanduser(h5file)
         self.dtype = dtype
         self.compiler = compiler
+        # BN計算用
+        self.epsilon = 0.001
 
     def convert(self):
         """
@@ -67,7 +69,7 @@ class WeightConverter:
                     # Zynq使用時の重み圧縮
                     # file名 batch_normalization_3_moving_variance_z.npy'
                     str_last = '_moving_variance_z.npy'
-                    if filename.rfind(str_last) == (len(str_last) - 1) and self.compiler.is_target_zynq():
+                    if filename.rfind(str_last) == (len(str_last) - 1) and self.compiler.is_batch_normalization_enable():
                         self.compress_bn(filename)
 
                 elif self.dtype == 'fix16':
@@ -167,6 +169,33 @@ class WeightConverter:
         :return:
         """
         print("Batch Normalization Compress %s" % filename)
+        m = re.findall("\d+", filename)
+        num = m[-1]
+        fname_moving_variance = filename
+        fname_moving_mean = 'batch_normalization_%s_moving_mean_z.npy' % num
+        fname_gammma = 'batch_normalization_%s_gamma_z.npy' % num
+        fname_beta = 'batch_normalization_%s_beta_z.npy' % num
+        fname_bn_weight = 'batch_normalization_%s.npy' % num
+
+        moving_variance = np.load(os.path.join(self.output_dir, fname_moving_variance))
+        moving_mean = np.load(os.path.join(self.output_dir, fname_moving_variance))
+        gammma = np.load(os.path.join(self.output_dir, fname_gammma))
+        beta = np.load(os.path.join(self.output_dir, fname_beta))
+
+        A = moving_mean - (beta * np.sqrt(moving_variance + self.epsilon))
+        B = gammma / np.sqrt(moving_variance + self.epsilon)
+        np_w = np.zeros(len(A) * 2)
+
+        for i in range(len(A)):
+            np_w[i*2] = A[i]
+            np_w[i*2+1] = B[i]
+
+        np.save(os.path.join(self.output_dir, fname_bn_weight), np_w, allow_pickle=False)
+
+        os.remove(os.path.join(self.output_dir, fname_moving_variance))
+            os.remove(os.path.join(self.output_dir, fname_moving_mean))
+        os.remove(os.path.join(self.output_dir, fname_gammma))
+        os.remove(os.path.join(self.output_dir, fname_beta))
 
     def calc_bach_invvar(self, data):
         epsilon = 0.001

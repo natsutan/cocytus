@@ -473,3 +473,7 @@ _ngo/
 _xmsgs/
 
 
+.idea/*
+example/tiny-yolo/c/weight/*
+example/tiny-yolo/zynq/.idea/*
+example/tiny-yolo/zynq/cmake-build-debug/*

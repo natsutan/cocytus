@@ -45,9 +45,6 @@ int main(void)
     }
 
 
-    cqt_layer0_dump();
-    cqt_layer1_dump();
-
     // ここから領域の計算
     yolo_parameter.width = 620;
     yolo_parameter.height = 424;
